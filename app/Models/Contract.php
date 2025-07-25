@@ -54,6 +54,21 @@ class Contract extends Model
         return $this->hasMany(Machine::class);
     }
 
+    /**
+     * Determine if the contract is expired (end_date in the past).
+     */
+    public function getIsExpiredAttribute()
+    {
+        return $this->end_date < now();
+    }
+
+    /**
+     * Get the dynamic status: returns 'expired' if expired, otherwise the stored status.
+     */
+    public function getDynamicStatusAttribute()
+    {
+        return $this->is_expired ? 'expired' : $this->status;
+    }
 
 
 }

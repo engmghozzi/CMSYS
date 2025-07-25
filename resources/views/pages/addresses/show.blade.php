@@ -1,5 +1,5 @@
 <x-layouts.app :title="__('Address Details')">
-    <div class="container mx-auto px-4 py-6 max-w-7xl">
+    <div class="min-h-screen">
         <!-- Page Header -->
         <div class="flex justify-between items-center mb-6">
             <div>
@@ -19,7 +19,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
                     </svg>
-                    Edit Address
+                    {{ __('Edit Address') }}
                 </a>
             </div>
         </div>
@@ -37,45 +37,57 @@
 
         <!-- Address Information Card -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h2 class="text-xl font-semibold text-gray-900">Address Information</h2>
+            <div class="px-6 py-3 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">{{ __('Address Information') }}</h2>
             </div>
-            <div class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="p-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
-                        <label class="text-sm font-medium text-gray-500">Area</label>
-                        <p class="mt-1 text-lg font-semibold text-gray-900">{{ $address->area }}</p>
+                        <label class="text-xs font-medium text-gray-500">{{ __('Area') }}</label>
+                        <p class="text-sm text-gray-900">{{ $address->area }}</p>
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-gray-500">Block</label>
-                        <p class="mt-1 text-lg text-gray-900">{{ $address->block }}</p>
+                        <label class="text-xs font-medium text-gray-500">{{ __('Block') }}</label>
+                        <p class="text-sm text-gray-900">{{ $address->block }}</p>
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-gray-500">Street</label>
-                        <p class="mt-1 text-lg text-gray-900">{{ $address->street }}</p>
+                        <label class="text-xs font-medium text-gray-500">{{ __('Street') }}</label>
+                        <p class="text-sm text-gray-900">{{ $address->street }}</p>
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-gray-500">House Number</label>
-                        <p class="mt-1 text-lg text-gray-900">{{ $address->house_num ?: 'Not specified' }}</p>
+                        <label class="text-xs font-medium text-gray-500">{{ __('House Number') }}</label>
+                        <p class="text-sm text-gray-900">{{ $address->house_num ?: __('Not specified') }}</p>
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-gray-500">Floor Number</label>
-                        <p class="mt-1 text-lg text-gray-900">{{ $address->floor_num ?: 'Not specified' }}</p>
+                        <label class="text-xs font-medium text-gray-500">{{ __('Floor Number') }}</label>
+                        <p class="text-sm text-gray-900">{{ $address->floor_num ?: __('Not specified') }}</p>
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-gray-500">Flat Number</label>
-                        <p class="mt-1 text-lg text-gray-900">{{ $address->flat_num ?: 'Not specified' }}</p>
+                        <label class="text-xs font-medium text-gray-500">{{ __('Flat Number') }}</label>
+                        <p class="text-sm text-gray-900">{{ $address->flat_num ?: __('Not specified') }}</p>
                     </div>
                     <div>
-                        <label class="text-sm font-medium text-gray-500">PACI Number</label>
-                        <p class="mt-1 text-lg text-gray-900">{{ $address->paci_num ?: 'Not specified' }}</p>
+                        <label class="text-xs font-medium text-gray-500">{{ __('PACI Number') }}</label>
+                        <p class="text-sm text-gray-900">{{ $address->paci_num ?: __('Not specified') }}</p>
                     </div>
                     @if($address->address_notes)
-                        <div class="md:col-span-2 lg:col-span-3">
-                            <label class="text-sm font-medium text-gray-500">Address Notes</label>
-                            <p class="mt-1 text-lg text-gray-900">{{ $address->address_notes }}</p>
+                        <div class="sm:col-span-2 lg:col-span-1">
+                            <label class="text-xs font-medium text-gray-500">{{ __('Address Notes') }}</label>
+                            <p class="text-sm text-gray-900">{{ $address->address_notes }}</p>
                         </div>
                     @endif
+                </div>
+                <div class="flex flex-wrap justify-between text-xs text-gray-500 mt-3 pt-3 border-t border-gray-200">
+                    <div class="space-x-1">
+                        <span>{{ __('Created by') }}: {{ $address->creator->name }}</span>
+                        <span>•</span>
+                        <span>{{ $address->created_at->format('M d, Y') }}</span>
+                    </div>
+                    <div class="space-x-1">
+                        <span>{{ __('Updated by') }}: {{ $address->updater->name }}</span>
+                        <span>•</span>
+                        <span>{{ $address->updated_at->format('M d, Y') }}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -90,7 +102,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Contracts</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('Contracts') }}</p>
                         <p class="text-2xl font-bold text-gray-900">{{ $address->contracts->count() }}</p>
                     </div>
                 </div>
@@ -104,7 +116,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Total Payments</p>
+                    <p class="text-sm font-medium text-gray-500">{{ __('Total Payments') }}</p>
                         <p class="text-2xl font-bold text-gray-900">{{ $address->payments->count() }}</p>
                     </div>
                 </div>
@@ -119,7 +131,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">Machines</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('Machines') }}</p>
                         <p class="text-2xl font-bold text-gray-900">{{ $address->machines->count() }}</p>
                     </div>
                 </div>
@@ -129,13 +141,13 @@
         <!-- Contracts Section -->
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
             <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                <h2 class="text-xl font-semibold text-gray-900">Contracts</h2>
+                <h2 class="text-xl font-semibold text-gray-900">{{ __('Contracts') }}</h2>
                 <a href="{{ route('contracts.create', $client->id) }}"
                    class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
                     </svg>
-                    Add Contract
+                    {{ __('Add Contract') }}
                 </a>
             </div>
             <div class="p-6">
@@ -144,48 +156,71 @@
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">No contracts</h3>
-                        <p class="mt-1 text-sm text-gray-500">Get started by creating a contract for this address.</p>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('No contracts') }}</h3>
+                        <p class="mt-1 text-sm text-gray-500">{{ __('Get started by creating a contract for this address.') }}</p>
                     </div>
                 @else
-                    <div class="space-y-4">
+                    <div class="grid grid-cols-1 gap-4">
                         @foreach ($address->contracts as $contract)
-                            <div class="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors">
-                                <div class="flex justify-between items-start mb-4">
-                                    <div>
-                                        <div class="flex items-center gap-3 mb-2">
-                                            <h3 class="text-lg font-semibold text-gray-900">{{ $contract->contract_num }}</h3>
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                @if($contract->status === 'active') bg-green-100 text-green-800
-                                                @elseif($contract->status === 'signed') bg-blue-100 text-blue-800
-                                                @elseif($contract->status === 'expired') bg-red-100 text-red-800
-                                                @else bg-gray-100 text-gray-800
-                                                @endif">
-                                                {{ ucfirst($contract->status) }}
-                                            </span>
-                                            @if ($contract->is_fully_collected)
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                    Fully Collected
+                            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                                    <!-- Contract Basic Info -->
+                                    <div class="flex items-center gap-4">
+                                        <div>
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <h3 class="text-base font-semibold text-gray-900">{{ $contract->contract_num }}</h3>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                                    @if($contract->status === 'active') bg-green-100 text-green-800
+                                                    @elseif($contract->status === 'signed') bg-blue-100 text-blue-800
+                                                    @elseif($contract->status === 'expired') bg-red-100 text-red-800
+                                                    @elseif($contract->status === 'cancelled') bg-brown-100 text-brown-800
+                                                    @elseif($contract->status === 'draft') bg-gray-100 text-gray-800
+                                                    @else bg-orange-100 text-orange-800
+                                                    @endif">
+                                                    {{ __($contract->status) }}
                                                 </span>
-                                            @endif
+                                                @if ($contract->is_fully_collected)
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        {{ __('Fully Collected') }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <p class="text-sm text-gray-600">{{ $contract->type }} {{ __('Contract') }}</p>
                                         </div>
-                                        <p class="text-gray-600">{{ $contract->type }} Contract</p>
                                     </div>
-                                    <div class="flex gap-2">
+
+                                    <!-- Financial Summary -->
+                                    <div class="flex flex-wrap items-center gap-6">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-sm text-gray-500">{{ __('Total') }}:</span>
+                                            <span class="text-sm font-medium">{{ number_format($contract->total_amount, 3) }} {{ __('KWD') }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-sm text-gray-500">{{ __('Paid') }}:</span>
+                                            <span class="text-sm font-medium">{{ number_format($contract->paid_amount, 3) }} {{ __('KWD') }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-sm text-gray-500">{{ __('Remaining') }}:</span>
+                                            <span class="text-sm font-medium">{{ number_format($contract->remaining_amount, 3) }} {{ __('KWD') }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="flex flex-wrap items-center gap-2">
                                         <a href="{{ route('contracts.show', [$client->id, $contract->id]) }}"
-                                           class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                           class="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 transition-colors">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
-                                            View Details
+                                            {{ __('View') }}
                                         </a>
                                         <a href="{{ route('contracts.edit', [$client->id, $contract->id]) }}"
-                                           class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors">
+                                           class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200 transition-colors">
                                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
                                             </svg>
-                                            Edit
+                                            {{ __('Edit') }}
                                         </a>
                                         <form method="POST" action="{{ route('contracts.destroy', [$client->id, $contract->id]) }}"
                                               onsubmit="return confirm('Are you sure you want to delete this contract?');"
@@ -193,76 +228,54 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                    class="inline-flex items-center gap-1 rounded-md bg-red-100 px-3 py-2 text-sm text-red-700 hover:bg-red-200 transition-colors">
+                                                    class="inline-flex items-center gap-1 rounded-md bg-red-100 px-3 py-1.5 text-sm text-red-700 hover:bg-red-200 transition-colors">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H8V5a1 1 0 011-1z" />
                                                 </svg>
-                                                Delete
+                                                {{ __('Delete') }}
                                             </button>
                                         </form>
                                     </div>
                                 </div>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                                <div class="mt-4 pt-4 border-t border-gray-200 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                                     <div>
-                                        <label class="text-sm font-medium text-gray-500">Financial Summary</label>
-                                        <div class="mt-2 space-y-1">
-                                            <p class="text-sm"><span class="font-medium">Total:</span> {{ number_format($contract->total_amount, 3) }} KWD</p>
-                                            <p class="text-sm"><span class="font-medium">Paid:</span> {{ number_format($contract->paid_amount, 3) }} KWD</p>
-                                            <p class="text-sm"><span class="font-medium">Remaining:</span> {{ number_format($contract->remaining_amount, 3) }} KWD</p>
-                                        </div>
+                                        <p><span class="text-gray-500">{{ __('Duration') }}:</span> {{ $contract->duration_months }} {{ __('months') }}</p>
+                                        <p><span class="text-gray-500">{{ __('Start') }}:</span> {{ \Carbon\Carbon::parse($contract->start_date)->format('M d, Y') }}</p>
+                                        <p><span class="text-gray-500">{{ __('End') }}:</span> {{ \Carbon\Carbon::parse($contract->end_date)->format('M d, Y') }}</p>
                                     </div>
                                     
                                     <div>
-                                        <label class="text-sm font-medium text-gray-500">Contract Details</label>
-                                        <div class="mt-2 space-y-1">
-                                            <p class="text-sm"><span class="font-medium">Duration:</span> {{ $contract->duration_months }} months</p>
-                                            <p class="text-sm"><span class="font-medium">Start:</span> {{ \Carbon\Carbon::parse($contract->start_date)->format('M d, Y') }}</p>
-                                            <p class="text-sm"><span class="font-medium">End:</span> {{ \Carbon\Carbon::parse($contract->end_date)->format('M d, Y') }}</p>
-                                        </div>
+                                        <p><span class="text-gray-500">{{ __('Central Machines') }}:</span> {{ $contract->centeral_machines }}</p>
+                                        <p><span class="text-gray-500">{{ __('Unit Machines') }}:</span> {{ $contract->unit_machines }}</p>
                                     </div>
                                     
                                     <div>
-                                        <label class="text-sm font-medium text-gray-500">Machines</label>
-                                        <div class="mt-2 space-y-1">
-                                            <p class="text-sm"><span class="font-medium">Central:</span> {{ $contract->centeral_machines }}</p>
-                                            <p class="text-sm"><span class="font-medium">Units:</span> {{ $contract->unit_machines }}</p>
-                                        </div>
+                                        @if($contract->commission_amount)
+                                            <p><span class="text-gray-500">{{ __('Commission') }}:</span> {{ number_format($contract->commission_amount, 3) }} KWD</p>
+                                            <p><span class="text-gray-500">{{ __('Type') }}:</span> {{ $contract->commission_type }}</p>
+                                            <p><span class="text-gray-500">{{ __('Recipient') }}:</span> {{ $contract->commission_recipient }}</p>
+                                        @else
+                                            <p class="text-gray-500">{{ __('No commission') }}</p>
+                                        @endif
                                     </div>
                                     
-                                    <div>
-                                        <label class="text-sm font-medium text-gray-500">Commission</label>
-                                        <div class="mt-2 space-y-1">
-                                            @if($contract->commission_amount)
-                                                <p class="text-sm"><span class="font-medium">Amount:</span> {{ number_format($contract->commission_amount, 3) }} KWD</p>
-                                                <p class="text-sm"><span class="font-medium">Type:</span> {{ $contract->commission_type }}</p>
-                                                <p class="text-sm"><span class="font-medium">Recipient:</span> {{ $contract->commission_recipient }}</p>
-                                            @else
-                                                <p class="text-sm text-gray-500">No commission</p>
-                                            @endif
-                                        </div>
+                                    <div class="flex flex-col gap-2">
+                                        @if($contract->attachment_url)
+                                            <a href="{{ asset('storage/' . $contract->attachment_url) }}" 
+                                               target="_blank"
+                                               class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                </svg>
+                                                {{ __('View Document') }}
+                                            </a>
+                                        @endif
+                                        @if($contract->details)
+                                            <p class="text-gray-700">{{ Str::limit($contract->details, 100) }}</p>
+                                        @endif
                                     </div>
                                 </div>
-                                
-                                @if($contract->attachment_url)
-                                    <div class="mt-4 pt-4 border-t border-gray-200">
-                                        <a href="{{ asset('storage/' . $contract->attachment_url) }}" 
-                                           target="_blank"
-                                           class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                            </svg>
-                                            View Contract Document
-                                        </a>
-                                    </div>
-                                @endif
-                                
-                                @if($contract->details)
-                                    <div class="mt-4 pt-4 border-t border-gray-200">
-                                        <label class="text-sm font-medium text-gray-500">Notes</label>
-                                        <p class="mt-1 text-sm text-gray-700">{{ Str::limit($contract->details, 200) }}</p>
-                                    </div>
-                                @endif
                             </div>
                         @endforeach
                     </div>

@@ -198,7 +198,7 @@ class ContractController extends Controller
         ]);
 
         return redirect()
-            ->route('clients.show', $client->id)
+            ->route('contracts.show', [$client->id, $contract->id])
             ->with('success', 'Contract updated successfully.');
     }
 

@@ -24,7 +24,7 @@ class ClientFactory extends Factory
         return [
             'name'=>$this->faker->name(),
             'mobile_number' => $this->faker->phoneNumber(),
-            'alternate_mobile_number' => $this->faker->phoneNumber(),
+            'alternate_mobile_number' => $this->faker->optional()->phoneNumber(),
             'client_type' => $this->faker->randomElement(['Client','Company','Contractor','Other']),
             'created_by'=>$creator_user,
             'updated_by'=>$updator_user

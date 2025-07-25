@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');     
             $table->string('mobile_number');
-            $table->string('alternate_mobile_number');
+            $table->string('alternate_mobile_number')->nullable();
             $table->enum('client_type',['Client','Company','Contractor','Other'])->default('Client');
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->foreignId('updated_by')->constrained('users')->onDelete('cascade');

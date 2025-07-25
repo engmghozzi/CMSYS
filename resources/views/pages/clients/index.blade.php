@@ -118,124 +118,91 @@
         </div>
         
         <!-- Clients Table -->
-        <div class="bg-white rounded-lg shadow border border-gray-200">
-            <table class="w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('ID') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Name') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Status') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Mobile') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Alt Mobile') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Type') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Created By') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Updated By') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Actions') }}</th>
-                    </tr>
-                </thead>
-                
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse ($clients as $client)
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+        <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+            <div class="flex flex-col space-y-3">
+                @forelse ($clients as $client)
+                    <div class="bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+                        <div class="p-3 flex items-center justify-between">
+                            <!-- Left Side - Main Info -->
+                            <div class="flex items-center space-x-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 shrink-0">
                                     #{{ $client->id }}
                                 </span>
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">{{ $client->name }}</div>
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium {{ $client->getStatusBadgeClasses() }}">
-                                    {{ __(ucfirst($client->status)) }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                                <div class="flex items-center {{ app()->getLocale() === 'ar' ? 'flex-row-reverse' : 'flex-row' }}">
-                                    <svg class="w-4 h-4 text-gray-400 {{ app()->getLocale() === 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                
+                                <div class="min-w-0"> <!-- This ensures text truncation works -->
+                                    <h3 class="font-medium text-gray-900 truncate">{{ $client->name }}</h3>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $client->getStatusBadgeClasses() }}">
+                                            {{ __(ucfirst($client->status)) }}
+                                        </span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                            {{ __($client->client_type) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Middle - Contact Info -->
+                            <div class="hidden md:flex flex-col space-y-1 flex-grow px-4">
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                     </svg>
                                     {{ $client->mobile_number }}
                                 </div>
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
                                 @if($client->alternate_mobile_number)
-                                    <div class="flex items-center {{ app()->getLocale() === 'ar' ? 'flex-row-reverse' : 'flex-row' }}">
-                                        <svg class="w-4 h-4 text-gray-400 {{ app()->getLocale() === 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                         </svg>
                                         {{ $client->alternate_mobile_number }}
                                     </div>
-                                @else
-                                    <span class="text-gray-400">-</span>
                                 @endif
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
-                                    {{ __($client->client_type) }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                                {{ $client->creator->name }}
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                                {{ $client->updater->name }}
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                                <div class="flex items-center {{ app()->getLocale() === 'ar' ? 'justify-end flex-row-reverse' : 'justify-start flex-row' }} gap-2">
+                            </div>
+
+                            <!-- Right Side - Actions -->
+                            <div class="flex items-center gap-2">
+                                <div class="hidden sm:block text-xs text-right text-gray-500">
+                                    <div>{{ __('Created by') }}: {{ $client->creator->name }}</div>
+                                    <div>{{ __('Updated by') }}: {{ $client->updater->name }}</div>
+                                </div>
+                                
+                                <div class="flex items-center gap-1">
                                     @if(auth()->user()->hasPermission('clients.read'))
-                                        <a 
-                                            class="inline-flex items-center justify-center w-8 h-8 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                                            href="{{ route('clients.show', $client) }}"
-                                            title="{{ __('View') }}"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        <a href="{{ route('clients.show', $client) }}"
+                                            class="inline-flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
                                         </a>
                                     @endif
-                                    <form 
-                                        method="POST" 
+                                    <form method="POST" 
                                         action="{{ route('clients.destroy', $client) }}"
                                         onsubmit="return confirm('{{ __('Are you sure you want to delete this client?') }}');"
-                                        class="inline"
-                                    >
+                                        class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button 
-                                            type="submit"
-                                            class="inline-flex items-center justify-center m-1 w-8 h-8 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-                                            title="{{ __('Delete') }}"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H8V5a1 1 0 011-1z" />
+                                        <button type="submit"
+                                            class="inline-flex items-center justify-center w-8 h-8 text-red-600 hover:bg-red-50 rounded-full transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m4-12v1H6V5a1 1 0 011-1h10a1 1 0 011 1z"/>
                                             </svg>
                                         </button>
                                     </form>
                                 </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                                                                <td colspan="9" class="px-4 py-8 text-center align-middle">
-                                <div class="flex flex-col items-center justify-center">
-                                    <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                    </svg>
-                                    <h3 class="text-lg font-medium text-gray-900 mb-1">{{ __('No clients found') }}</h3>
-                                    <p class="text-gray-500">{{ __('Get started by creating a new client.') }}</p>
-                                </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="flex flex-col items-center justify-center py-8">
+                        <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900 mb-1">{{ __('No clients found') }}</h3>
+                        <p class="text-gray-500">{{ __('Get started by creating a new client.') }}</p>
+                    </div>
+                @endforelse
+            </div>
         </div>
 
         <!-- Pagination -->

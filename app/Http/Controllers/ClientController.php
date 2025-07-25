@@ -109,8 +109,9 @@ class ClientController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'mobile_number' => 'required|string|max:20',
-            'alternate_mobile_number' => 'nullable|string|max:20',
+            //mobile number must be 8 digits
+            'mobile_number' => 'required|string|max:8|min:8',
+            'alternate_mobile_number' => 'nullable|string|max:8|min:8',
             'client_type' => 'required|in:Client,Company,Contractor,Other',
             'status' => 'required|in:vip,ordinary,blocked',
         ]);

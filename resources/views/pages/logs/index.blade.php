@@ -87,117 +87,70 @@
         </div>
 
         <!-- Logs Table -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-900">{{ __('Activity Logs') }}</h3>
-                <p class="text-sm text-gray-600 mt-1">{{ __('Showing') }} {{ $logs->total() }} {{ __('entries') }}</p>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('Date & Time') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('User') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('Action') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('Model') }}
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                {{ __('Description') }}
-                            </th>
-                            <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24 hidden md:table-cell">
-                                {{ __('IP') }}
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($logs as $log)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                <div class="font-medium">{{ $log->created_at->format('M d, Y') }}</div>
-                                <div class="text-gray-500">{{ $log->created_at->format('H:i:s') }} (KWT)</div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                        <span class="text-sm font-medium text-blue-600">
-                                            {{ strtoupper(substr($log->user->name, 0, 1)) }}
+        <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+            <div class="flex flex-col space-y-3">
+                @forelse($logs as $log)
+                    <div class="bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+                        <div class="p-3 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <!-- Left Side - Date & Action -->
+                            <div class="flex items-center space-x-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 shrink-0">
+                                    {{ $log->created_at->format('M d, Y H:i') }}
+                                </span>
+                                <div class="min-w-0">
+                                    <h3 class="font-medium text-gray-900 truncate">{{ $log->user->name }}</h3>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                            {{ $log->user->email }}
+                                        </span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium @if($log->action_type === 'create') bg-green-100 text-green-800 @elseif($log->action_type === 'update') bg-blue-100 text-blue-800 @elseif($log->action_type === 'delete') bg-red-100 text-red-800 @elseif($log->action_type === 'login') bg-purple-100 text-purple-800 @elseif($log->action_type === 'logout') bg-gray-100 text-gray-800 @else bg-yellow-100 text-yellow-800 @endif">
+                                            {{ ucfirst($log->action_type) }}
                                         </span>
                                     </div>
-                                    <div class="ml-3">
-                                        <div class="text-sm font-medium text-gray-900">{{ $log->user->name }}</div>
-                                        <div class="text-sm text-gray-500">{{ $log->user->email }}</div>
-                                    </div>
                                 </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
-                                    @if($log->action_type === 'create') bg-green-100 text-green-800
-                                    @elseif($log->action_type === 'update') bg-blue-100 text-blue-800
-                                    @elseif($log->action_type === 'delete') bg-red-100 text-red-800
-                                    @elseif($log->action_type === 'login') bg-purple-100 text-purple-800
-                                    @elseif($log->action_type === 'logout') bg-gray-100 text-gray-800
-                                    @else bg-yellow-100 text-yellow-800 @endif">
-                                    {{ ucfirst($log->action_type) }}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                @if($log->model_type)
-                                    <div class="font-medium">{{ class_basename($log->model_type) }}</div>
-                                    <div class="text-gray-500">ID: {{ $log->model_id }}</div>
-                                    @if($log->new_values && is_array($log->new_values))
-                                        <div class="text-xs text-gray-400 mt-1">
-                                            @foreach($log->new_values as $key => $value)
-                                                @if($key !== 'id' && !is_array($value) && !is_object($value))
-                                                    <span class="inline-block mr-2">
-                                                        @if($key === 'mobile_number')
-                                                            📱 {{ Str::limit($value, 15) }}
-                                                        @elseif($key === 'status')
-                                                            🏷️ {{ $value }}
-                                                        @elseif($key === 'name')
-                                                            👤 {{ Str::limit($value, 20) }}
-                                                        @elseif($key === 'email')
-                                                            📧 {{ Str::limit($value, 20) }}
-                                                        @else
+                            </div>
+                            <!-- Middle - Model & Description -->
+                            <div class="flex flex-col md:flex-row md:items-center gap-2 flex-grow px-4">
+                                <div class="flex flex-col text-sm text-gray-600">
+                                    @if($log->model_type)
+                                        <span class="font-medium">{{ class_basename($log->model_type) }} (ID: {{ $log->model_id }})</span>
+                                        @if($log->new_values && is_array($log->new_values))
+                                            <div class="text-xs text-gray-400 mt-1">
+                                                @foreach($log->new_values as $key => $value)
+                                                    @if($key !== 'id' && !is_array($value) && !is_object($value))
+                                                        <span class="inline-block mr-2">
                                                             {{ $key }}: {{ Str::limit($value, 20) }}
-                                                        @endif
-                                                    </span>
-                                                @endif
-                                            @endforeach
-                                        </div>
+                                                        </span>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    @else
+                                        <span class="text-gray-400">-</span>
                                     @endif
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
-                            </td>
-                            <td class="px-6 py-4 text-sm text-gray-900">
-                                <div class="max-w-48 truncate" title="{{ $log->description }}">
+                                </div>
+                                <div class="max-w-48 truncate text-sm text-gray-900" title="{{ $log->description }}">
                                     {{ Str::limit($log->description, 40) }}
                                 </div>
-                            </td>
-                            <td class="px-3 py-4 whitespace-nowrap text-xs text-gray-500 hidden md:table-cell">
+                            </div>
+                            <!-- Right Side - IP -->
+                            <div class="flex flex-col text-xs text-right text-gray-500">
                                 <div class="truncate max-w-20" title="{{ $log->ip_address ?? __('N/A') }}">
                                     {{ $log->ip_address ? Str::limit($log->ip_address, 15) : __('N/A') }}
                                 </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                                {{ __('No logs found') }}
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="flex flex-col items-center justify-center py-8">
+                        <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900 mb-1">{{ __('No logs found') }}</h3>
+                    </div>
+                @endforelse
             </div>
+        </div>
 
             <!-- Pagination -->
             @if($logs->hasPages())

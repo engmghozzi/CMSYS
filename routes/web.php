@@ -60,13 +60,13 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('clients/{client}/contracts/{contract}', [ContractController::class, 'destroy'])->name('contracts.destroy');
    
    
-    Route::get('clients/{client}/payments', [PaymentController::class, 'index'])->name('pages.payments.index');
-    Route::get('clients/{client}/payments/create', [PaymentController::class, 'create'])->name('pages.payments.create');
-    Route::post('clients/{client}/payments', [PaymentController::class, 'store'])->name('pages.payments.store');
-    Route::get('clients/{client}/payments/{payment}', [PaymentController::class, 'show'])->name('pages.payments.show');
-    Route::get('clients/{client}/payments/{payment}/edit', [PaymentController::class, 'edit'])->name('pages.payments.edit');
-    Route::put('clients/{client}/payments/{payment}', [PaymentController::class, 'update'])->name('pages.payments.update');
-    Route::delete('clients/{client}/payments/{payment}', [PaymentController::class, 'destroy'])->name('pages.payments.destroy');
+    Route::get('clients/{client}/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('clients/{client}/payments/create', [PaymentController::class, 'create'])->name('payments.create');
+    Route::post('clients/{client}/payments', [PaymentController::class, 'store'])->name('payments.store');
+    Route::get('clients/{client}/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
+    Route::get('clients/{client}/payments/{payment}/edit', [PaymentController::class, 'edit'])->name('payments.edit');
+    Route::put('clients/{client}/payments/{payment}', [PaymentController::class, 'update'])->name('payments.update');
+    Route::delete('clients/{client}/payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
     
     
     // Contract-specific payment creation

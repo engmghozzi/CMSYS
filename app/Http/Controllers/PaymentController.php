@@ -57,7 +57,7 @@ class PaymentController extends Controller
     // Create a new payment for a specific contract
     public function createFromContract(Request $request, Client $client, Contract $contract)
     {
-        return view('payments.create-from-contract', compact('client', 'contract'));
+        return view('pages.payments.create-from-contract', compact('client', 'contract'));
     }
 
     // Store a new payment
@@ -65,7 +65,7 @@ class PaymentController extends Controller
     {
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
-            'payment_date' => 'required|date',
+            'payment_date' => 'required|date|before_or_equal:due_date',
             'due_date' => 'required|date|after_or_equal:payment_date',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
@@ -110,7 +110,7 @@ class PaymentController extends Controller
     {
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
-            'payment_date' => 'required|date',
+            'payment_date' => 'required|date|before_or_equal:due_date',
             'due_date' => 'required|date|after_or_equal:payment_date',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
@@ -151,14 +151,14 @@ class PaymentController extends Controller
     {
         $client = $payment->client;
         $contracts = $client->contracts; // fetch contracts related to this client
-        return view('payments.edit', compact('payment', 'client', 'contracts'));
+        return view('pages.payments.edit', compact('payment', 'client', 'contracts'));
     }
 
     public function update(Request $request, Client $client, Payment $payment)
     {
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
-            'payment_date' => 'required|date',
+            'payment_date' => 'required|date|before_or_equal:due_date',
             'due_date' => 'required|date|after_or_equal:payment_date',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
@@ -170,7 +170,8 @@ class PaymentController extends Controller
 
         $payment->update($validated);
 
-        return redirect()->route('clients.show', $client->id)->with('success', 'Payment updated successfully.');
+        // Redirect to contract show page with payments tab active
+        return redirect()->route('contracts.show', [$client->id, $payment->contract_id])->with('success', 'Payment updated successfully.')->with('active_tab', 'payments');
     }
 
     public function destroy(Client $client, Payment $payment)

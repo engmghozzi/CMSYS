@@ -34,7 +34,7 @@ class MachineController extends Controller
     public function storeFromContract(Request $request, Client $client, Contract $contract)
     {
         $data = $request->validate([
-            'serial_number' => 'required|string|max:100|unique:machines,serial_number',
+            'serial_number' => 'required|string|max:100',
             'brand' => ['required', 'string', Rule::in(array_column(MachineBrand::cases(), 'value'))],
             'type'=>['required','string',Rule::in(array_column(MachineType::cases(), 'value'))],
             'UOM' => 'required|string|max:50',
@@ -59,7 +59,7 @@ class MachineController extends Controller
     public function store(Request $request, Client $client)
     {
         $data = $request->validate([
-            'serial_number' => 'required|string|max:100|unique:machines,serial_number',
+            'serial_number' => 'required|string|max:100',
             'brand' => ['required', 'string', Rule::in(array_column(MachineBrand::cases(), 'value'))],
             'type'=>['required','string',Rule::in(array_column(MachineType::cases(), 'value'))],
             'UOM' => 'required|string|max:50',
@@ -93,7 +93,7 @@ class MachineController extends Controller
     public function update(Request $request, Client $client, Machine $machine)
     {
         $data = $request->validate([
-            'serial_number' => 'required|string|max:100|unique:machines,serial_number,' . $machine->id,
+            'serial_number' => 'required|string|max:100',
             'brand' => ['required', 'string', Rule::in(array_column(MachineBrand::cases(), 'value'))],
             'type'=>['required','string',Rule::in(array_column(MachineType::cases(), 'value'))],
             'UOM' => 'required|string|max:50',
@@ -109,7 +109,8 @@ class MachineController extends Controller
 
         $machine->update($data);
 
-        return redirect()->route('clients.show', $client)->with('success', 'Machine updated successfully.');
+        // Redirect to contract show page with machines tab active
+        return redirect()->route('contracts.show', [$client->id, $machine->contract_id])->with('success', 'Machine updated successfully.')->with('active_tab', 'machines');
     }
 
 }

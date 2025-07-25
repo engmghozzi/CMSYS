@@ -93,118 +93,79 @@
         </div>
         
         <!-- Payments Table -->
-        <div class="bg-white rounded-lg shadow border border-gray-200">
-            <table class="w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Payment No.') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Contract No.') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Client Name') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Mobile') }}</th>                     
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Amount') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Status') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Method') }}</th>
-                        <th class="px-4 py-3 text-left align-middle text-xs font-semibold text-gray-700 uppercase tracking-wider">{{ __('Notes') }}</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse ($payments as $payment)
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+        <div class="bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+            <div class="flex flex-col space-y-3">
+                @forelse ($payments as $payment)
+                    <div class="bg-white rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200">
+                        <div class="p-3 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <!-- Left Side - Main Info -->
+                            <div class="flex items-center space-x-4">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 shrink-0">
                                     #{{ $payment->id }}
                                 </span>
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
-                                    {{ $payment->contract->contract_num }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">
-                                    <a href="{{ route('clients.show', $payment->client->id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
-                                        {{ $payment->client->name }}
-                                    </a>
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
-                                <div class="space-y-1">
-                                    <div class="flex items-center {{ app()->getLocale() === 'ar' ? 'flex-row-reverse' : 'flex-row' }}">
-                                        <svg class="w-4 h-4 text-gray-400 {{ app()->getLocale() === 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                        </svg>
-                                        <a href="{{ route('clients.show', $payment->client->id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
-                                            {{ $payment->client->mobile_number }}
+                                <div class="min-w-0">
+                                    <h3 class="font-medium text-gray-900 truncate">
+                                        <a href="{{ route('clients.show', $payment->client->id) }}" class="hover:underline">
+                                            {{ $payment->client->name }}
                                         </a>
+                                    </h3>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                            {{ $payment->contract->contract_num }}
+                                        </span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium @if ($payment->status === 'Paid') bg-green-100 text-green-800 @elseif ($payment->status === 'Unpaid') bg-red-100 text-red-800 @elseif ($payment->status === 'Pending') bg-yellow-100 text-yellow-800 @elseif ($payment->status === 'Overdue') bg-orange-100 text-orange-800 @else bg-gray-100 text-gray-800 @endif">
+                                            {{ __($payment->status) }}
+                                        </span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">
+                                            {{ __($payment->method) }}
+                                        </span>
                                     </div>
-                                    @if($payment->client->alternate_mobile_number)
-                                        <div class="flex items-center {{ app()->getLocale() === 'ar' ? 'flex-row-reverse' : 'flex-row' }}">
-                                            <svg class="w-4 h-4 text-gray-400 {{ app()->getLocale() === 'ar' ? 'ml-2' : 'mr-2' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                            </svg>
-                                            <a href="{{ route('clients.show', $payment->client->id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
-                                                {{ $payment->client->alternate_mobile_number }}
-                                            </a>
-                                        </div>
-                                    @endif
                                 </div>
-                            </td>     
-                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
-                                <span class="font-semibold text-green-600">{{ number_format($payment->amount) }}</span>
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
-                                @if ($payment->status === 'Paid')
-                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
-                                        {{ __($payment->status) }}
-                                    </span>
-                                @elseif ($payment->status === 'Unpaid')
-                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
-                                        {{ __($payment->status) }}
-                                    </span>
-                                @elseif ($payment->status === 'Pending')
-                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
-                                        {{ __($payment->status) }}
-                                    </span>
-                                @elseif ($payment->status === 'Overdue')
-                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-800">
-                                        {{ __($payment->status) }}
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                                        {{ __($payment->status) }}
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap">
-                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800">
-                                    {{ __($payment->method) }}
-                                </span>
-                            </td>
-                            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                            </div>
+                            <!-- Middle - Amount & Notes -->
+                            <div class="flex flex-col md:flex-row md:items-center gap-2 flex-grow px-4">
+                                <span class="font-semibold text-green-600">{{ number_format($payment->amount) }} KWD</span>
                                 @if($payment->notes)
-                                    <div class="max-w-xs truncate" title="{{ $payment->notes }}">
+                                    <div class="max-w-xs truncate text-sm text-gray-600" title="{{ $payment->notes }}">
                                         {{ $payment->notes }}
                                     </div>
                                 @else
-                                    <span class="text-gray-400">-</span>
+                                    <span class="text-gray-400 text-sm">-</span>
                                 @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="8" class="px-4 py-8 text-center align-middle">
-                                <div class="flex flex-col items-center justify-center">
-                                    <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </div>
+                            <!-- Right Side - Contact -->
+                            <div class="flex flex-col text-xs text-right text-gray-500">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                     </svg>
-                                    <h3 class="text-lg font-medium text-gray-900 mb-1">{{ __('No payments found') }}</h3>
-                                    <p class="text-gray-500">{{ __('No payments match your search criteria.') }}</p>
+                                    <a href="{{ route('clients.show', $payment->client->id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                                        {{ $payment->client->mobile_number }}
+                                    </a>
                                 </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                                @if($payment->client->alternate_mobile_number)
+                                    <div class="flex items-center text-gray-500">
+                                        <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                        </svg>
+                                        <a href="{{ route('clients.show', $payment->client->id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                                            {{ $payment->client->alternate_mobile_number }}
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="flex flex-col items-center justify-center py-8">
+                        <svg class="w-12 h-12 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900 mb-1">{{ __('No payments found') }}</h3>
+                        <p class="text-gray-500">{{ __('No payments match your search criteria.') }}</p>
+                    </div>
+                @endforelse
+            </div>
         </div>
 
         <!-- Pagination -->

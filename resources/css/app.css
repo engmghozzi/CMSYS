@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
+@import url('https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -44,6 +45,18 @@
     ::backdrop,
     ::file-selector-button {
         border-color: var(--color-gray-200, currentColor);
+    }
+
+    /* Arabic font configuration */
+    html[lang="ar"],
+    html[dir="rtl"] {
+        font-family: 'Noto Kufi Arabic', 'Noto Kufi', 'Arial', sans-serif;
+    }
+
+    /* Apply Noto Kufi to Arabic text */
+    .arabic-text,
+    [lang="ar"] {
+        font-family: 'Noto Kufi Arabic', 'Noto Kufi', 'Arial', sans-serif;
     }
 }
 
