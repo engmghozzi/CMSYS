@@ -260,7 +260,7 @@
                                             </div>
                                             <div>
                                                 <span class="text-gray-500">{{__('Cost')}}:</span>
-                                                <span class="font-medium text-gray-900">{{ number_format($machine->cost, 3) }} KWD</span>
+                                                <span class="font-medium text-gray-900">{{ number_format($machine->cost, 3) }} {{__('KWD')}}</span>
                                             </div>
                                             <div>
                                                 <span class="text-gray-500">{{__('Brand')}}:</span>

@@ -117,9 +117,9 @@
                             <!-- Top Row -->
                             <div class="flex items-center justify-between mb-2">
                                 <div class="flex items-center gap-3">
-                                    <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        #{{ $contract->contract_num }}
-                                    </span>
+                                    <a href="{{ route('contracts.show', [$contract->client->id, $contract->id]) }}" class="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200">
+                                        {{ $contract->contract_num }}
+                                    </a>
                                     <h3 class="font-medium text-gray-900">
                                         <a href="{{ route('contracts.show', [$contract->client->id, $contract->id]) }}" class="hover:underline">
                                             {{ $contract->client->name }}
@@ -138,7 +138,8 @@
 
                             <!-- Middle Row -->
                             <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm mb-2">
-                                <span class="text-gray-600">{{ $contract->start_date }} - {{ $contract->end_date }}</span>
+                                <span class="text-gray-600">{{__('Start Date')}}: {{ $contract->start_date }}</span>
+                                <span class="text-gray-600">{{__('End Date')}}: {{ $contract->end_date }}</span>
                                 <span class="text-gray-600">{{ __('Total') }}: <span class="text-green-600 font-medium">{{ number_format($contract->total_amount) }} KWD</span></span>
                                 <span class="text-gray-600">{{ __('Paid') }}: <span class="text-green-600 font-medium">{{ number_format($contract->paid_amount) }} KWD</span></span>
                                 <span class="text-gray-600">{{ __('Rem.') }}: <span class="@if($contract->remaining_amount > 0) text-red-600 @else text-green-600 @endif font-medium">{{ number_format($contract->remaining_amount) }} KWD</span></span>
@@ -151,14 +152,14 @@
                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                     </svg>
-                                    {{ $contract->client->mobile_number }}
+                                    &nbsp; &nbsp;{{ $contract->client->mobile_number }}
                                 </a>
                                 @if($contract->client->alternate_mobile_number)
                                     <a href="{{ route('clients.show', $contract->client->id) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline">
                                         <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                                         </svg>
-                                        {{ $contract->client->alternate_mobile_number }}
+                                        &nbsp; &nbsp;{{ $contract->client->alternate_mobile_number }}
                                     </a>
                                 @endif
                             </div>

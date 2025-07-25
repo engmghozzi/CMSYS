@@ -20,13 +20,44 @@ class DashboardController extends Controller
         $activeContracts = Contract::where('status', 'active')->count();
         $completedContracts = Contract::where('status', 'completed')->count();
         $pendingContracts = Contract::where('status', 'pending')->count();
+        $totalContractsAmount = Contract::sum('total_amount');
+        
+        // Contract Types Statistics - Always show all types even if count is 0
+        $contractTypeL = Contract::where('type', 'L')->count();
+        $contractTypeLS = Contract::where('type', 'LS')->count();
+        $contractTypeC = Contract::where('type', 'C')->count();
+        $contractTypeOther = Contract::where('type', 'Other')->count();
+        
+        // Contract Status Statistics - Always show all statuses even if count is 0
+        $contractStatusDraft = Contract::where('status', 'draft')->count();
+        $contractStatusSigned = Contract::where('status', 'signed')->count();
+        $contractStatusActive = Contract::where('status', 'active')->count();
+        $contractStatusExpired = Contract::where('status', 'expired')->count();
+        $contractStatusCancelled = Contract::where('status', 'cancelled')->count();
+        
+        // Client Types Statistics - Always show all types even if count is 0
+        $clientTypes = [
+            'Client' => Client::where('client_type', 'Client')->count(),
+            'Company' => Client::where('client_type', 'Company')->count(),
+            'Contractor' => Client::where('client_type', 'Contractor')->count(),
+            'Other' => Client::where('client_type', 'Other')->count(),
+        ];
+        
+        // Client Status Statistics - Always show all statuses even if count is 0
+        $clientStatus = [
+            'vip' => Client::where('status', 'vip')->count(),
+            'ordinary' => Client::where('status', 'ordinary')->count(),
+            'blocked' => Client::where('status', 'blocked')->count(),
+        ];
 
         // Payment Statistics
-        $totalRevenue = Payment::where('status', 'paid')->sum('amount');
-        $totalPayments = Payment::sum('amount');
-        $collectionRate = $totalPayments > 0 ? round(($totalRevenue / $totalPayments) * 100, 1) : 0;
-        $outstandingAmount = Payment::where('status', '!=', 'paid')->sum('amount');
-        $overduePayments = Payment::where('due_date', '<', now())->where('status', '!=', 'paid')->count();
+        $totalRevenue = Contract::sum('total_amount'); // Total Revenue = sum of all contracts amount
+        $paid = Payment::where('status', 'Paid')->sum('amount'); // Paid = all paid transactions
+        $unpaid = Payment::where('status', 'Unpaid')->sum('amount'); // Unpaid transactions only
+        $pending = Payment::where('status', 'Pending')->sum('amount'); // Pending transactions only
+        $overdue = Payment::where('status', 'Overdue')->sum('amount'); // Overdue transactions only
+        $collectionRate = $totalRevenue > 0 ? round(($paid / $totalRevenue) * 100, 1) : 0;
+        $overduePayments = Payment::where('due_date', '<', now())->where('status', '!=', 'Paid')->count();
 
         // Client Statistics
         $totalClients = Client::count();
@@ -64,15 +95,42 @@ class DashboardController extends Controller
         // Recent Activity
         $recentContracts = Contract::with('client')->latest()->take(5)->get();
         $recentPayments = Payment::with('contract.client')->latest()->take(5)->get();
+        
+        // Machines by Brand Statistics
+        $machinesByBrand = Machine::select('brand', DB::raw('count(*) as count'))
+            ->groupBy('brand')
+            ->pluck('count', 'brand')
+            ->toArray();
+            
+        // Machines by Type Statistics
+        $machinesByType = Machine::select('type', DB::raw('count(*) as count'))
+            ->groupBy('type')
+            ->pluck('count', 'type')
+            ->toArray();
 
         return view('dashboard', compact(
             'totalContracts',
             'activeContracts',
             'completedContracts',
             'pendingContracts',
+            'totalContractsAmount',
+            'contractTypeL',
+            'contractTypeLS',
+            'contractTypeC',
+            'contractTypeOther',
+            'contractStatusDraft',
+            'contractStatusSigned',
+            'contractStatusActive',
+            'contractStatusExpired',
+            'contractStatusCancelled',
+            'clientTypes',
+            'clientStatus',
             'totalRevenue',
+            'paid',
+            'unpaid',
+            'pending',
+            'overdue',
             'collectionRate',
-            'outstandingAmount',
             'overduePayments',
             'totalClients',
             'newClientsThisMonth',
@@ -85,7 +143,9 @@ class DashboardController extends Controller
             'averageEfficiency',
             'highEfficiencyMachines',
             'recentContracts',
-            'recentPayments'
+            'recentPayments',
+            'machinesByBrand',
+            'machinesByType'
         ));
     }
 } 

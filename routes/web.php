@@ -51,7 +51,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('clients/{client}/addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
    
    
-    Route::get('clients/{client}/contracts', [ContractController::class, 'index'])->name('contracts.globalindex');
+    Route::get('clients/{client}/contracts', [ContractController::class, 'globalindex'])->name('contracts.globalindex');
     Route::get('clients/{client}/contracts/create', [ContractController::class, 'create'])->name('contracts.create');
     Route::post('clients/{client}/contracts', [ContractController::class, 'store'])->name('contracts.store');
     Route::get('clients/{client}/contracts/{contract}', [ContractController::class, 'show'])->name('contracts.show');

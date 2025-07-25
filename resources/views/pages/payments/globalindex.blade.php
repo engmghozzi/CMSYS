@@ -110,9 +110,9 @@
                                         </a>
                                     </h3>
                                     <div class="flex items-center gap-2 mt-1">
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                        <a href="{{ route('contracts.show', [$payment->client->id, $payment->contract->id]) }}" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200">
                                             {{ $payment->contract->contract_num }}
-                                        </span>
+                                        </a>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium @if ($payment->status === 'Paid') bg-green-100 text-green-800 @elseif ($payment->status === 'Unpaid') bg-red-100 text-red-800 @elseif ($payment->status === 'Pending') bg-yellow-100 text-yellow-800 @elseif ($payment->status === 'Overdue') bg-orange-100 text-orange-800 @else bg-gray-100 text-gray-800 @endif">
                                             {{ __($payment->status) }}
                                         </span>
@@ -124,7 +124,7 @@
                             </div>
                             <!-- Middle - Amount & Notes -->
                             <div class="flex flex-col md:flex-row md:items-center gap-2 flex-grow px-4">
-                                <span class="font-semibold text-green-600">{{ number_format($payment->amount) }} KWD</span>
+                                <span class="font-semibold text-green-600">{{ number_format($payment->amount) }} {{__('KWD')}}</span>
                                 @if($payment->notes)
                                     <div class="max-w-xs truncate text-sm text-gray-600" title="{{ $payment->notes }}">
                                         {{ $payment->notes }}
@@ -138,19 +138,19 @@
                                 <div class="flex items-center">
                                     <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                    </svg>
-                                    <a href="{{ route('clients.show', $payment->client->id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                                    </svg> &nbsp;
+                                    <span class="text-blue-600">
                                         {{ $payment->client->mobile_number }}
-                                    </a>
+                                    </span>
                                 </div>
                                 @if($payment->client->alternate_mobile_number)
                                     <div class="flex items-center text-gray-500">
                                         <svg class="w-4 h-4 text-gray-400 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                        </svg>
-                                        <a href="{{ route('clients.show', $payment->client->id) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                                        </svg> &nbsp; 
+                                        <span class="text-blue-600">
                                             {{ $payment->client->alternate_mobile_number }}
-                                        </a>
+                                        </span>
                                     </div>
                                 @endif
                             </div>

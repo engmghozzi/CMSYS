@@ -287,6 +287,23 @@
     "Add Payment":"Add Payment",
     "Payment Date":"Payment Date",
     "Due Date":"Due Date",
-    "Payment Notes":"Payment Notes"
-    
+    "Payment Notes":"Payment Notes",
+    "Contracts Statistics":"Contracts Statistics",
+    "Clients Statistics":"Clients Statistics",
+    "Payments Statistics":"Payments Statistics",
+    "Machines Statistics":"Machines Statistics",
+    "Contract Types":"Contract Types",
+    "Client Types":"Client Types",
+    "Machines by Brand":"Machines by Brand",
+    "Contract Status":"Contract Status",
+    "Other":"Other",
+    "Client Status":"Client Status",
+    "vip":"VIP",
+    "ordinary":"Ordinary",
+    "blocked":"Blocked",
+    "Machines by Type":"Machines by Type",
+    "Add Address to":"Add Address to",
+    "Add Contract for":"Add Contract for",
+    "Incentive Bonus":"Incentive Bonus",
+    "Referral Commission":"Referral Commission"
 }

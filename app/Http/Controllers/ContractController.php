@@ -136,7 +136,7 @@ class ContractController extends Controller
         ]);
 
         return redirect()
-            ->route('clients.show', $client->id)
+            ->route('addresses.show', [$client->id, $validated['address_id']])
             ->with('success', 'Contract created successfully.');
     }
 
