@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Auth;
 
+use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -43,7 +44,9 @@ class Login extends Component
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        // Redirect to first accessible page for the user
+        $redirectRoute = $this->getFirstAccessibleRoute();
+        $this->redirectIntended(default: route($redirectRoute, absolute: false), navigate: true);
     }
 
     /**
@@ -73,5 +76,50 @@ class Login extends Component
     protected function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
+    }
+
+    /**
+     * Get the first accessible route for the authenticated user
+     */
+    private function getFirstAccessibleRoute(): string
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        
+        // Check permissions in order of preference
+        if ($user->hasPermission('dashboard.read')) {
+            return 'dashboard';
+        }
+        
+        if ($user->hasPermission('clients.read')) {
+            return 'clients.index';
+        }
+        
+        if ($user->hasPermission('contracts.read')) {
+            return 'contracts.globalindex';
+        }
+        
+        if ($user->hasPermission('payments.read')) {
+            return 'payments.globalindex';
+        }
+        
+        if ($user->hasPermission('users.read')) {
+            return 'users.index';
+        }
+        
+        if ($user->hasPermission('roles.manage')) {
+            return 'roles.index';
+        }
+        
+        if ($user->hasPermission('features.manage')) {
+            return 'features.index';
+        }
+        
+        if ($user->hasPermission('logs.read')) {
+            return 'logs.index';
+        }
+        
+        // Fallback to home if no permissions
+        return 'home';
     }
 }

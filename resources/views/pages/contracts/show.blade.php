@@ -14,13 +14,15 @@
                     </svg>
                     {{ __('Back to Address') }}
                 </a>
-                <a href="{{ route('contracts.edit', [$client->id, $contract->id]) }}"
-                   class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
-                    </svg>
-                    {{ __('Edit Contract') }}
-                </a>
+                @if(auth()->user()->hasPermission('contracts.update'))
+                    <a href="{{ route('contracts.edit', [$client->id, $contract->id]) }}"
+                    class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                        </svg>
+                        {{ __('Edit Contract') }}
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -215,8 +217,18 @@
                                                 </span>
                                                 <h3 class="text-base font-semibold text-gray-900 truncate">{{ $machine->serial_number }}</h3>
                                             </div>
-                                            @if(auth()->user()->hasAnyOfPermissions(['machines.update', 'machines.delete']))
+                                            @if(auth()->user()->hasAnyOfPermissions(['machines.update', 'machines.delete', 'machines.read']))
                                                 <div class="flex gap-1">
+                                                    @if(auth()->user()->hasPermission('machines.read'))
+                                                        <a href="{{ route('machines.show', [$client->id, $machine->id]) }}"
+                                                           class="p-1 text-gray-500 hover:text-gray-700 transition-colors"
+                                                           title="{{__('View')}}">
+                                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                            </svg>
+                                                        </a>
+                                                    @endif
                                                     @if(auth()->user()->hasPermission('machines.update'))
                                                         <a href="{{ route('machines.edit', [$client->id, $machine->id]) }}"
                                                            class="p-1 text-gray-500 hover:text-gray-700 transition-colors"
@@ -349,8 +361,9 @@
                                         </div>
 
                                         <!-- Actions -->
-                                        @if(auth()->user()->hasAnyOfPermissions(['payments.update', 'payments.delete']))
+                                        @if(auth()->user()->hasAnyOfPermissions(['payments.update', 'payments.delete', 'payments.read']))
                                             <div class="flex gap-2 shrink-0">
+
                                                 @if(auth()->user()->hasPermission('payments.update'))
                                                     <a href="{{ route('payments.edit', [$client->id, $payment->id]) }}"
                                                        class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors">

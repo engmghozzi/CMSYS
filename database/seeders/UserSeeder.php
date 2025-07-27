@@ -19,12 +19,13 @@ class UserSeeder extends Seeder
         $adminRole = Role::where('name', 'admin')->first();
         $employeeRole = Role::where('name', 'employee')->first();
         $accountantRole = Role::where('name', 'accountant')->first();
+        $viewerRole = Role::where('name', 'viewer')->first();
 
         // Create Default Super Admin (Mahmoud Ghozzi)
         $defaultSuperAdmin = User::updateOrCreate(
-            ['email' => 'eng.m.yossry@gmail.com'],
+            ['email' => 'mahmoud@aliandothman.com.kw'],
             [
-                'name' => 'Mahmoud Ghozzi',
+                'name' => 'Eng. Mahmoud Yossry',
                 'email' => 'eng.m.yossry@gmail.com',
                 'password' => bcrypt('0000000000'),
                 'is_active' => true,
@@ -34,11 +35,11 @@ class UserSeeder extends Seeder
 
         // Create Super Admin
         User::updateOrCreate(
-            ['email' => 'superadmin@example.com'],
+            ['email' => 'mahmoud@aliandothman.com.kw'],
             [
-                'name' => 'Super Admin',
-                'email' => 'superadmin@example.com',
-                'password' => bcrypt('password'),
+                'name' => 'Mahmoud Ghozzi',
+                'email' => 'mahmoud@aliandothman.com.kw',
+                'password' => bcrypt('0000000000'),
                 'is_active' => true,
                 'role_id' => $superAdminRole->id,
             ]
@@ -46,23 +47,23 @@ class UserSeeder extends Seeder
 
         // Create Admin
         User::updateOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'salah@aliandothman.com.kw'],
             [
-                'name' => 'Admin User',
-                'email' => 'admin@example.com',
-                'password' => bcrypt('password'),
+                'name' => 'Salah Salem',
+                'email' => 'salah@aliandothman.com.kw',
+                'password' => bcrypt('0000000000'),
                 'is_active' => true,
-                'role_id' => $adminRole->id,
+                'role_id' => $superAdminRole->id,
             ]
         );
 
         // Create Employee
         User::updateOrCreate(
-            ['email' => 'employee@example.com'],
+            ['email' => 'hosni@aliandothman.com.kw'],
             [
-                'name' => 'Employee User',
-                'email' => 'employee@example.com',
-                'password' => bcrypt('password'),
+                'name' => 'Hosni',
+                'email' => 'hosni@aliandothman.com.kw',
+                'password' => bcrypt('0000000000'),
                 'is_active' => true,
                 'role_id' => $employeeRole->id,
             ]
@@ -70,21 +71,26 @@ class UserSeeder extends Seeder
 
         // Create Accountant
         User::updateOrCreate(
-            ['email' => 'accountant@example.com'],
+            ['email' => 'mohamed@aliandothman.com.kw'],
             [
-                'name' => 'Accountant User',
-                'email' => 'accountant@example.com',
-                'password' => bcrypt('password'),
+                'name' => 'Mohamed Zaki',
+                'email' => 'mohamed@aliandothman.com.kw',
+                'password' => bcrypt('0000000000'),
                 'is_active' => true,
                 'role_id' => $accountantRole->id,
             ]
         );
+        // Create Viewer
+        User::updateOrCreate(
+            ['email' => 'rakan@aliandothman.com.kw'],
+            [
+                'name' => 'Rakan',
+                'email' => 'rakan@aliandothman.com.kw',
+                'password' => bcrypt('0000000000'),
+                'is_active' => true,
+                'role_id' => $viewerRole->id,
+            ]
+        );
 
-        // Create additional random users
-        User::factory()
-            ->count(6)
-            ->create([
-                'role_id' => $employeeRole->id,
-            ]);
     }
 }

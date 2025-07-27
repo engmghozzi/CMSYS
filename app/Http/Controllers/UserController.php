@@ -19,8 +19,9 @@ class UserController extends Controller
         $search = $request->get('search');
         $email = $request->get('email');
         $isActive = $request->get('is_active');
+        $role = $request->get('role');
 
-        $query = User::query();
+        $query = User::with('role');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -33,19 +34,25 @@ class UserController extends Controller
             $query->where('email', 'like', "%{$email}%");
         }
 
-        // Filter by is_active if provided and not 'all'
         if ($isActive !== null && $isActive !== 'all') {
             $query->where('is_active', $isActive);
         }
 
-        $users = $query->latest()->paginate(10)->withQueryString();
+        if ($role) {
+            $query->whereHas('role', function ($q) use ($role) {
+                $q->where('name', $role);
+            });
+        }
 
-        return view('pages.users.index', compact('users'));
+        $users = $query->latest()->paginate(10)->withQueryString();
+        $roles = Role::active()->get();
+
+        return view('pages.users.index', compact('users', 'roles'));
     }
 
     public function create()
     {
-        $roles = Role::active()->get();
+        $roles = Role::active()->with('features')->get();
         $features = Feature::active()->orderBy('category')->orderBy('display_name')->get();
         
         return view('pages.users.create', compact('roles', 'features'));
@@ -66,21 +73,23 @@ class UserController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         $validated['is_active'] = $request->has('is_active');
 
-        $user = User::create($validated);
+        DB::transaction(function () use ($validated, $request) {
+            $user = User::create($validated);
 
-        // Handle feature assignments
-        $allFeatures = \App\Models\Feature::all();
-        $selectedFeatures = $request->get('features', []);
-        
-        foreach ($allFeatures as $feature) {
-            if (in_array($feature->id, $selectedFeatures)) {
-                // Feature is selected - grant it
-                $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => true]]);
-            } else {
-                // Feature is not selected - explicitly revoke it
-                $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => false]]);
+            // Handle feature assignments
+            $allFeatures = Feature::all();
+            $selectedFeatures = $request->get('features', []);
+            
+            foreach ($allFeatures as $feature) {
+                if (in_array($feature->id, $selectedFeatures)) {
+                    // Feature is selected - grant it
+                    $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => true]]);
+                } else {
+                    // Feature is not selected - explicitly revoke it
+                    $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => false]]);
+                }
             }
-        }
+        });
 
         return redirect()->route('users.index')
             ->with('success', 'User created successfully');
@@ -89,16 +98,22 @@ class UserController extends Controller
     public function show(User $user, Request $request)
     {
         $editing = $request->has('edit');
-        return view('pages.users.show', compact('user', 'editing'));
+        $effectivePermissions = $user->getEffectivePermissions();
+        $allPermissions = $user->getAllPermissions();
+        
+        return view('pages.users.show', compact('user', 'editing', 'effectivePermissions', 'allPermissions'));
     }
 
     public function edit(User $user)
     {
-        $roles = Role::active()->get();
+        $roles = Role::active()->with('features')->get();
         $features = Feature::active()->orderBy('category')->orderBy('display_name')->get();
-        $userFeatures = $user->features()->wherePivot('is_granted', true)->pluck('features.id')->toArray();
+        $userFeatures = $user->features()->wherePivot('is_granted', true)->get()->pluck('id')->toArray();
+        $userGrantedFeatures = $user->features()->wherePivot('is_granted', true)->get();
+        $userRevokedFeatures = $user->features()->wherePivot('is_granted', false)->get();
+        $effectivePermissions = $user->getEffectivePermissions();
         
-        return view('pages.users.edit', compact('user', 'roles', 'features', 'userFeatures'));
+        return view('pages.users.edit', compact('user', 'roles', 'features', 'userFeatures', 'userGrantedFeatures', 'userRevokedFeatures', 'effectivePermissions'));
     }
 
     public function update(Request $request, $id)
@@ -123,21 +138,23 @@ class UserController extends Controller
 
         $validated['is_active'] = $request->has('is_active');
 
-        $user->update($validated);
+        DB::transaction(function () use ($user, $validated, $request) {
+            $user->update($validated);
 
-        // Handle feature assignments
-        $allFeatures = \App\Models\Feature::all();
-        $selectedFeatures = $request->get('features', []);
-        
-        foreach ($allFeatures as $feature) {
-            if (in_array($feature->id, $selectedFeatures)) {
-                // Feature is selected - grant it
-                $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => true]]);
-            } else {
-                // Feature is not selected - explicitly revoke it
-                $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => false]]);
+            // Handle feature assignments
+            $allFeatures = Feature::all();
+            $selectedFeatures = $request->get('features', []);
+            
+            foreach ($allFeatures as $feature) {
+                if (in_array($feature->id, $selectedFeatures)) {
+                    // Feature is selected - grant it
+                    $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => true]]);
+                } else {
+                    // Feature is not selected - explicitly revoke it
+                    $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => false]]);
+                }
             }
-        }
+        });
 
         return redirect()->route('users.show', $user->id)
             ->with('success', 'User updated successfully');
@@ -150,5 +167,65 @@ class UserController extends Controller
 
         return redirect()->route('users.index')
             ->with('success', 'User deleted successfully');
+    }
+
+    // Additional methods for permission management
+    public function permissions(User $user)
+    {
+        $effectivePermissions = $user->getEffectivePermissions();
+        $allPermissions = $user->getAllPermissions();
+        $features = Feature::active()->orderBy('category')->orderBy('display_name')->get();
+        
+        return view('pages.users.permissions', compact('user', 'effectivePermissions', 'allPermissions', 'features'));
+    }
+
+    public function updatePermissions(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'permissions' => 'sometimes|array',
+            'permissions.*' => 'exists:features,id',
+        ]);
+
+        $selectedPermissions = $request->get('permissions', []);
+        $user->syncPermissions($selectedPermissions);
+
+        return redirect()->route('users.permissions', $user)
+            ->with('success', 'User permissions updated successfully');
+    }
+
+    public function clearOverrides(User $user)
+    {
+        $user->clearPermissionOverrides();
+
+        return redirect()->route('users.permissions', $user)
+            ->with('success', 'User permission overrides cleared successfully');
+    }
+
+    public function testPermissions(User $user)
+    {
+        $testPermissions = [
+            'users.read', 'users.create', 'users.update', 'users.delete',
+            'roles.read', 'roles.create', 'roles.update', 'roles.delete',
+            'features.read', 'features.create', 'features.update', 'features.delete',
+            'clients.read', 'clients.create', 'clients.update', 'clients.delete',
+            'contracts.read', 'contracts.create', 'contracts.update', 'contracts.delete',
+            'payments.read', 'payments.create', 'payments.update', 'payments.delete',
+            'machines.read', 'machines.create', 'machines.update', 'machines.delete',
+        ];
+
+        $results = [];
+        foreach ($testPermissions as $permission) {
+            $results[$permission] = $user->hasPermission($permission);
+        }
+
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role ? $user->role->name : null
+            ],
+            'permissions' => $results
+        ]);
     }
 }

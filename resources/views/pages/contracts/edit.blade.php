@@ -32,21 +32,21 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div>
+                <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Contract Type') }}</label>
                         <select name="type" required class="w-full border rounded px-4 py-2 bg-white shadow-sm">
-                            @foreach (['L', 'LS', 'C', 'Other'] as $type)
-                                <option value="{{ $type }}" {{ old('type', $contract->type) === $type ? 'selected' : '' }}>{{ $type }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                        @foreach (['L', 'LS', 'C', 'Other'] as $type)
+                            <option value="{{ $type }}" {{ old('type', $contract->type) === $type ? 'selected' : '' }}>{{ $type }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-                    <div>
+                <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Start Date') }}</label>
                         <input type="date" name="start_date" value="{{ old('start_date', $contract->start_date) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
-                    </div>
+                </div>
 
-                    <div>
+                <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Duration')}} ({{__('months')}})</label>
                         <input type="number" step="0.01" name="duration_months" value="{{ old('duration_months', $contract->duration_months) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
                     </div>
@@ -56,12 +56,12 @@
             <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                 <h2 class="text-lg font-semibold mb-4">{{ __('Machines') }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+                <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Central Machines') }}</label>
                         <input type="number" name="centeral_machines" value="{{ old('centeral_machines', $contract->centeral_machines) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
-                    </div>
+                </div>
 
-                    <div>
+                <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Unit Machines') }}</label>
                         <input type="number" name="unit_machines" value="{{ old('unit_machines', $contract->unit_machines) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
                     </div>
@@ -71,12 +71,12 @@
             <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                 <h2 class="text-lg font-semibold mb-4">{{ __('Financial Information') }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+                <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Total Amount') }}</label>
                         <input type="number" step="0.001" name="total_amount" value="{{ old('total_amount', $contract->total_amount) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
-                    </div>
+                </div>
 
-                    <div>
+                <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Status') }}</label>
                         <select name="status" class="w-full border rounded px-4 py-2 bg-white shadow-sm">
                             @foreach (['draft', 'signed', 'active', 'expired', 'cancelled'] as $status)
@@ -92,29 +92,29 @@
             <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
                 <h2 class="text-lg font-semibold mb-4">{{ __('Commission') }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
+                <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Commission Amount') }}</label>
                         <input type="number" step="0.001" name="commission_amount" value="{{ old('commission_amount', $contract->commission_amount) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
-                    </div>
+                </div>
 
-                    <div>
+                <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Commission Type') }}</label>
                         <select name="commission_type" class="w-full border rounded px-4 py-2 bg-white shadow-sm">
-                            <option value="">None</option>
-                            @foreach (['Incentive Bonus', 'Referral Commission', 'Other'] as $type)
-                                <option value="{{ $type }}" {{ old('commission_type', $contract->commission_type) === $type ? 'selected' : '' }}>
-                                    {{ $type }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                        <option value="">None</option>
+                        @foreach (['Incentive Bonus', 'Referral Commission', 'Other'] as $type)
+                            <option value="{{ $type }}" {{ old('commission_type', $contract->commission_type) === $type ? 'selected' : '' }}>
+                                {{ $type }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-                    <div>
+                <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Commission Recipient') }}</label>
                         <input type="text" name="commission_recipient" value="{{ old('commission_recipient', $contract->commission_recipient) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
-                    </div>
+                </div>
 
-                    <div>
+                <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Commission Date') }}</label>
                         <input type="date" name="commission_date" value="{{ old('commission_date', $contract->commission_date) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
                     </div>
@@ -126,22 +126,22 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Details') }}</label>
                     <textarea name="details" rows="4" class="w-full border rounded px-4 py-2 bg-white shadow-sm">{{ old('details', $contract->details) }}</textarea>
-                </div>
+            </div>
 
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Attachment') }} ({{ __('Upload to replace') }})</label>
                     <input type="file" name="attachment_url" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
-                    @if($contract->attachment_url)
-                        <p class="mt-1 text-sm text-gray-500">
+                @if($contract->attachment_url)
+                    <p class="mt-1 text-sm text-gray-500">
                             <a href="{{ asset('storage/' . $contract->attachment_url) }}" class="text-blue-500 underline" target="_blank">{{ __('View Document') }}</a>
-                        </p>
-                    @endif
+                    </p>
+                @endif
                 </div>
             </div>
 
             <div class="flex justify-end space-x-2 mt-6">
                 <a href="{{ route('contracts.show', [$client->id, $contract->id]) }}"
-                    class="inline-flex items-center gap-2 rounded bg-gray-500 px-3 py-2 text-white hover:bg-red-500 hover:text-white">
+                   class="inline-flex items-center gap-2 rounded bg-gray-500 px-3 py-2 text-white hover:bg-red-500 hover:text-white">
                     {{ __('Cancel') }}
                 </a>
                 <button type="submit"

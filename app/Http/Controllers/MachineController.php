@@ -112,6 +112,10 @@ class MachineController extends Controller
         // Redirect to contract show page with machines tab active
         return redirect()->route('contracts.show', [$client->id, $machine->contract_id])->with('success', 'Machine updated successfully.')->with('active_tab', 'machines');
     }
+    public function show(Client $client, Machine $machine)
+    {
+        return view('pages.machines.show', compact('client', 'machine'));
+    }
 
 }
 

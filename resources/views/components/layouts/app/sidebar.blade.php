@@ -13,12 +13,31 @@
 
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                    <flux:navlist.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
-                    <flux:navlist.item icon="building-office" :href="route('clients.index')" :current="request()->routeIs('clients.index')" wire:navigate>{{ __('Clients') }}</flux:navlist.item>
-                    <flux:navlist.item icon="document-text" :href="route('contracts.globalindex')" :current="request()->routeIs('contracts.globalindex')" wire:navigate>{{ __('Contracts') }}</flux:navlist.item>
-                    <flux:navlist.item icon="credit-card" :href="route('payments.globalindex')" :current="request()->routeIs('payments.globalindex')" wire:navigate>{{ __('Payments') }}</flux:navlist.item>
-                    <flux:navlist.item icon="clipboard-document-list" :href="route('logs.index')" :current="request()->routeIs('logs.index')" wire:navigate>{{ __('Logs') }}</flux:navlist.item>
+
+                    @if(auth()->user()?->hasPermission('dashboard.read'))
+                        <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    @endif
+                    @if(auth()->user()?->hasPermission('users.read'))
+                        <flux:navlist.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.index')" wire:navigate>{{ __('Users') }}</flux:navlist.item>
+                    @endif
+                    @if(auth()->user()?->hasPermission('clients.read'))
+                        <flux:navlist.item icon="building-office" :href="route('clients.index')" :current="request()->routeIs('clients.index')" wire:navigate>{{ __('Clients') }}</flux:navlist.item>
+                    @endif
+                    @if(auth()->user()?->hasPermission('contracts.read'))
+                        <flux:navlist.item icon="document-text" :href="route('contracts.globalindex')" :current="request()->routeIs('contracts.globalindex')" wire:navigate>{{ __('Contracts') }}</flux:navlist.item>
+                    @endif
+                    @if(auth()->user()?->hasPermission('payments.read'))
+                        <flux:navlist.item icon="credit-card" :href="route('payments.globalindex')" :current="request()->routeIs('payments.globalindex')" wire:navigate>{{ __('Payments') }}</flux:navlist.item>
+                    @endif
+                    @if(auth()->user()?->hasPermission('roles.manage'))
+                        <flux:navlist.item icon="user-group" :href="route('roles.index')" :current="request()->routeIs('roles.index')" wire:navigate>{{ __('Roles') }}</flux:navlist.item>
+                    @endif
+                    @if(auth()->user()?->hasPermission('features.manage'))
+                        <flux:navlist.item icon="clipboard-document-list" :href="route('features.index')" :current="request()->routeIs('features.index')" wire:navigate>{{ __('Features') }}</flux:navlist.item>
+                    @endif
+                    @if(auth()->user()?->hasPermission('logs.read'))
+                        <flux:navlist.item icon="clipboard-document-list" :href="route('logs.index')" :current="request()->routeIs('logs.index')" wire:navigate>{{ __('Logs') }}</flux:navlist.item>
+                    @endif
                 </flux:navlist.group>
             </flux:navlist>
 
@@ -27,8 +46,8 @@
             <!-- Desktop User Menu -->
             <flux:dropdown class="hidden lg:block" position="bottom" align="start">
                 <flux:profile
-                    :name="auth()->user()->name"
-                    :initials="auth()->user()->initials()"
+                    :name="auth()->user()?->name ?? 'User'"
+                    :initials="auth()->user()?->initials() ?? 'U'"
                     icon:trailing="chevrons-up-down"
                 />
 
@@ -40,13 +59,13 @@
                                     <span
                                         class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
                                     >
-                                        {{ auth()->user()->initials() }}
+                                        {{ auth()->user()?->initials() ?? 'U' }}
                                     </span>
                                 </span>
 
                                 <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                                    <span class="truncate font-semibold">{{ auth()->user()?->name ?? 'User' }}</span>
+                                    <span class="truncate text-xs">{{ auth()->user()?->email ?? 'No Email' }}</span>
                                 </div>
                             </div>
                         </div>
@@ -78,7 +97,7 @@
 
             <flux:dropdown position="top" align="end">
                 <flux:profile
-                    :initials="auth()->user()->initials()"
+                    :initials="auth()->user()?->initials() ?? 'U'"
                     icon-trailing="chevron-down"
                 />
 
@@ -90,13 +109,13 @@
                                     <span
                                         class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
                                     >
-                                        {{ auth()->user()->initials() }}
+                                        {{ auth()->user()?->initials() ?? 'U' }}
                                     </span>
                                 </span>
 
                                 <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
+                                    <span class="truncate font-semibold">{{ auth()->user()?->name ?? 'User' }}</span>
+                                    <span class="truncate text-xs">{{ auth()->user()?->email ?? 'No Email' }}</span>
                                 </div>
                             </div>
                         </div>

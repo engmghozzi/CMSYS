@@ -176,6 +176,7 @@
                                             </svg>
                                         </a>
                                     @endif
+                                    @if(auth()->user()->hasPermission('clients.delete'))
                                     <form method="POST" 
                                         action="{{ route('clients.destroy', $client) }}"
                                         onsubmit="return confirm('{{ __('Are you sure you want to delete this client?') }}');"
@@ -189,6 +190,7 @@
                                             </svg>
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </div>
                         </div>

@@ -13,6 +13,10 @@ class FeatureSeeder extends Seeder
     public function run(): void
     {
         $features = [
+            // Dashboard
+            ['name' => 'dashboard.read', 'display_name' => 'View Dashboard', 'category' => 'dashboard', 'action' => 'read', 'resource' => 'dashboard'],
+            ['name' => 'dashboard.manage', 'display_name' => 'Manage Dashboard', 'category' => 'dashboard', 'action' => 'manage', 'resource' => 'dashboard'],
+            
             // User Management
             ['name' => 'users.create', 'display_name' => 'Create Users', 'category' => 'users', 'action' => 'create', 'resource' => 'users'],
             ['name' => 'users.read', 'display_name' => 'View Users', 'category' => 'users', 'action' => 'read', 'resource' => 'users'],
@@ -42,6 +46,12 @@ class FeatureSeeder extends Seeder
             ['name' => 'machines.read', 'display_name' => 'View Machines', 'category' => 'machines', 'action' => 'read', 'resource' => 'machines'],
             ['name' => 'machines.update', 'display_name' => 'Edit Machines', 'category' => 'machines', 'action' => 'update', 'resource' => 'machines'],
             ['name' => 'machines.delete', 'display_name' => 'Delete Machines', 'category' => 'machines', 'action' => 'delete', 'resource' => 'machines'],
+            
+            // Address Management
+            ['name' => 'addresses.create', 'display_name' => 'Create Addresses', 'category' => 'addresses', 'action' => 'create', 'resource' => 'addresses'],
+            ['name' => 'addresses.read', 'display_name' => 'View Addresses', 'category' => 'addresses', 'action' => 'read', 'resource' => 'addresses'],
+            ['name' => 'addresses.update', 'display_name' => 'Edit Addresses', 'category' => 'addresses', 'action' => 'update', 'resource' => 'addresses'],
+            ['name' => 'addresses.delete', 'display_name' => 'Delete Addresses', 'category' => 'addresses', 'action' => 'delete', 'resource' => 'addresses'],
             
             // System Management
             ['name' => 'roles.manage', 'display_name' => 'Manage Roles', 'category' => 'system', 'action' => 'manage', 'resource' => 'roles'],

@@ -179,4 +179,5 @@ class PaymentController extends Controller
         $payment->delete();
         return redirect()->route('clients.show', $client->id)->with('success', 'Payment deleted successfully.');
     }
+
 }

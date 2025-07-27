@@ -69,4 +69,76 @@ class Role extends Model
     {
         $this->features()->updateExistingPivot($featureId, ['is_granted' => false]);
     }
+
+    // Enhanced role management methods
+    public function getAllPermissions()
+    {
+        $permissions = collect();
+        
+        // Get feature-based permissions
+        $featurePermissions = $this->features()->wherePivot('is_granted', true)->get();
+        foreach ($featurePermissions as $permission) {
+            $permissions->push([
+                'name' => $permission->name,
+                'display_name' => $permission->display_name,
+                'category' => $permission->category,
+                'source' => 'feature'
+            ]);
+        }
+        
+        // Get legacy array-based permissions
+        if ($this->permissions) {
+            foreach ($this->permissions as $permission) {
+                $permissions->push([
+                    'name' => $permission,
+                    'display_name' => $permission,
+                    'category' => 'legacy',
+                    'source' => 'array'
+                ]);
+            }
+        }
+        
+        return $permissions->unique('name');
+    }
+
+    public function syncPermissions($permissions)
+    {
+        $allFeatures = Feature::all();
+        
+        foreach ($allFeatures as $feature) {
+            if (in_array($feature->id, $permissions)) {
+                $this->grantFeature($feature->id);
+            } else {
+                $this->revokeFeature($feature->id);
+            }
+        }
+    }
+
+    public function getUsersCount()
+    {
+        return $this->users()->count();
+    }
+
+    public function canBeDeleted()
+    {
+        return $this->users()->count() === 0;
+    }
+
+    public function getEffectivePermissions()
+    {
+        $effectivePermissions = collect();
+        $allFeatures = Feature::all();
+        
+        foreach ($allFeatures as $feature) {
+            $hasPermission = $this->features()->where('features.name', $feature->name)->wherePivot('is_granted', true)->exists();
+            $effectivePermissions->push([
+                'name' => $feature->name,
+                'display_name' => $feature->display_name,
+                'category' => $feature->category,
+                'has_permission' => $hasPermission
+            ]);
+        }
+        
+        return $effectivePermissions;
+    }
 }

@@ -13,6 +13,20 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    /**
+     * Ensure date is a Carbon instance
+     */
+    private function ensureCarbonDate($date)
+    {
+        if (is_null($date)) {
+            return now();
+        }
+        if (is_string($date)) {
+            return Carbon::parse($date);
+        }
+        return $date;
+    }
+
     public function index()
     {
         // Contract Statistics
@@ -50,7 +64,7 @@ class DashboardController extends Controller
             'blocked' => Client::where('status', 'blocked')->count(),
         ];
 
-        // Payment Statistics
+        // Enhanced Payment Statistics
         $totalRevenue = Contract::sum('total_amount'); // Total Revenue = sum of all contracts amount
         $paid = Payment::where('status', 'Paid')->sum('amount'); // Paid = all paid transactions
         $unpaid = Payment::where('status', 'Unpaid')->sum('amount'); // Unpaid transactions only
@@ -58,6 +72,200 @@ class DashboardController extends Controller
         $overdue = Payment::where('status', 'Overdue')->sum('amount'); // Overdue transactions only
         $collectionRate = $totalRevenue > 0 ? round(($paid / $totalRevenue) * 100, 1) : 0;
         $overduePayments = Payment::where('due_date', '<', now())->where('status', '!=', 'Paid')->count();
+
+        // Financial KPIs
+        $averageContractValue = $totalContracts > 0 ? round($totalRevenue / $totalContracts, 3) : 0;
+        $monthlyRevenue = Contract::whereMonth('created_at', now()->month)->sum('total_amount');
+        $yearlyRevenue = Contract::whereYear('created_at', now()->year)->sum('total_amount');
+        $lastMonthRevenue = Contract::whereMonth('created_at', now()->subMonth()->month)->sum('total_amount');
+        $revenueGrowth = $lastMonthRevenue > 0 ? round((($monthlyRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100, 1) : 0;
+
+        // Monthly Revenue Trends (Last 12 months)
+        $monthlyRevenueTrends = [];
+        for ($i = 11; $i >= 0; $i--) {
+            $month = now()->subMonths($i);
+            $monthlyRevenueTrends[] = [
+                'month' => $month->format('M Y'),
+                'revenue' => Contract::whereYear('created_at', $month->year)
+                    ->whereMonth('created_at', $month->month)
+                    ->sum('total_amount')
+            ];
+        }
+
+        // Top Revenue Clients
+        $topRevenueClients = Contract::with('client')
+            ->select('client_id', DB::raw('SUM(total_amount) as total_revenue'))
+            ->groupBy('client_id')
+            ->orderBy('total_revenue', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Revenue by Contract Type
+        $revenueByContractType = Contract::select('type', DB::raw('SUM(total_amount) as total_revenue'))
+            ->groupBy('type')
+            ->orderBy('total_revenue', 'desc')
+            ->get();
+
+        // Payment Performance Metrics
+        $paymentPerformance = [
+            'on_time' => Payment::where('status', 'Paid')->where('paid_date', '<=', DB::raw('due_date'))->count(),
+            'late' => Payment::where('status', 'Paid')->where('paid_date', '>', DB::raw('due_date'))->count(),
+            'overdue' => Payment::where('status', '!=', 'Paid')->where('due_date', '<', now())->count(),
+            'pending' => Payment::where('status', 'Pending')->count(),
+        ];
+
+        // Cash Flow Analysis
+        $currentMonthPayments = Payment::whereMonth('paid_date', now()->month)
+            ->whereYear('paid_date', now()->year)
+            ->where('status', 'Paid')
+            ->sum('amount');
+        
+        $nextMonthExpectedPayments = Payment::whereMonth('due_date', now()->addMonth()->month)
+            ->whereYear('due_date', now()->addMonth()->year)
+            ->where('status', '!=', 'Paid')
+            ->sum('amount');
+
+        // Outstanding Payments by Age
+        $outstandingPaymentsByAge = [
+            'current' => Payment::where('status', '!=', 'Paid')
+                ->where('due_date', '>=', now())
+                ->sum('amount'),
+            '30_days' => Payment::where('status', '!=', 'Paid')
+                ->where('due_date', '<', now())
+                ->where('due_date', '>=', now()->subDays(30))
+                ->sum('amount'),
+            '60_days' => Payment::where('status', '!=', 'Paid')
+                ->where('due_date', '<', now()->subDays(30))
+                ->where('due_date', '>=', now()->subDays(60))
+                ->sum('amount'),
+            '90_days' => Payment::where('status', '!=', 'Paid')
+                ->where('due_date', '<', now()->subDays(60))
+                ->where('due_date', '>=', now()->subDays(90))
+                ->sum('amount'),
+            'over_90_days' => Payment::where('status', '!=', 'Paid')
+                ->where('due_date', '<', now()->subDays(90))
+                ->sum('amount'),
+        ];
+
+        // Recent Financial Activities
+        $recentFinancialActivities = collect();
+        
+        // Recent payments
+        $recentPayments = Payment::with('contract.client')
+            ->where('status', 'Paid')
+            ->whereNotNull('paid_date')
+            ->latest('paid_date')
+            ->take(5)
+            ->get()
+            ->map(function($payment) {
+                return [
+                    'type' => 'payment',
+                    'title' => __('Payment received'),
+                    'description' => __('Payment of :amount KWD from :client', [
+                        'amount' => number_format($payment->amount, 3),
+                        'client' => $payment->contract->client->name ?? 'N/A'
+                    ]),
+                    'amount' => $payment->amount,
+                    'date' => $this->ensureCarbonDate($payment->paid_date),
+                    'status' => 'positive'
+                ];
+            });
+        
+        // Recent contracts
+        $recentContracts = Contract::with('client')
+            ->latest()
+            ->take(5)
+            ->get()
+            ->map(function($contract) {
+                return [
+                    'type' => 'contract',
+                    'title' => __('New contract signed'),
+                    'description' => __('Contract :type for :amount KWD with :client', [
+                        'type' => $contract->type,
+                        'amount' => number_format($contract->total_amount, 3),
+                        'client' => $contract->client->name ?? 'N/A'
+                    ]),
+                    'amount' => $contract->total_amount,
+                    'date' => $contract->created_at,
+                    'status' => 'positive'
+                ];
+            });
+        
+        $recentFinancialActivities = $recentPayments->merge($recentContracts)
+            ->sortByDesc('date')
+            ->take(10);
+
+        // Financial Alerts
+        $financialAlerts = collect();
+        
+        // Overdue payments
+        $overduePayments = Payment::with('contract.client')
+            ->where('status', '!=', 'Paid')
+            ->where('due_date', '<', now())
+            ->get();
+        
+        foreach($overduePayments as $payment) {
+            $daysOverdue = now()->diffInDays($this->ensureCarbonDate($payment->due_date));
+            $financialAlerts->push([
+                'type' => 'overdue',
+                'title' => __('Overdue Payment'),
+                'description' => __('Payment of :amount KWD from :client is :days days overdue', [
+                    'amount' => number_format($payment->amount, 3),
+                    'client' => $payment->contract->client->name ?? 'N/A',
+                    'days' => $daysOverdue
+                ]),
+                'severity' => $daysOverdue > 90 ? 'critical' : ($daysOverdue > 60 ? 'high' : 'medium'),
+                'date' => $this->ensureCarbonDate($payment->due_date)
+            ]);
+        }
+        
+        // Low collection rate alert
+        if ($collectionRate < 70) {
+            $financialAlerts->push([
+                'type' => 'collection_rate',
+                'title' => __('Low Collection Rate'),
+                'description' => __('Collection rate is :rate% which is below the target of 70%', [
+                    'rate' => $collectionRate
+                ]),
+                'severity' => 'high',
+                'date' => now()
+            ]);
+        }
+        
+        // High outstanding payments alert
+        $totalOutstanding = array_sum($outstandingPaymentsByAge);
+        if ($totalOutstanding > ($totalRevenue * 0.3)) {
+            $financialAlerts->push([
+                'type' => 'outstanding',
+                'title' => __('High Outstanding Payments'),
+                'description' => __('Outstanding payments of :amount KWD represent :percentage% of total revenue', [
+                    'amount' => number_format($totalOutstanding, 3),
+                    'percentage' => round(($totalOutstanding / $totalRevenue) * 100, 1)
+                ]),
+                'severity' => 'high',
+                'date' => now()
+            ]);
+        }
+
+        // Financial Health Score
+        $financialHealthScore = 100;
+        
+        // Deduct points for low collection rate
+        if ($collectionRate < 90) $financialHealthScore -= (90 - $collectionRate) * 2;
+        if ($collectionRate < 70) $financialHealthScore -= 20;
+        
+        // Deduct points for overdue payments
+        $overduePercentage = $totalRevenue > 0 ? ($outstandingPaymentsByAge['over_90_days'] / $totalRevenue) * 100 : 0;
+        if ($overduePercentage > 10) $financialHealthScore -= $overduePercentage * 2;
+        
+        // Deduct points for negative growth
+        if ($revenueGrowth < 0) $financialHealthScore -= abs($revenueGrowth);
+        
+        $financialHealthScore = max(0, min(100, $financialHealthScore));
+        
+        $financialHealthStatus = $financialHealthScore >= 80 ? 'excellent' : 
+                               ($financialHealthScore >= 60 ? 'good' : 
+                               ($financialHealthScore >= 40 ? 'fair' : 'poor'));
 
         // Client Statistics
         $totalClients = Client::count();
@@ -145,7 +353,23 @@ class DashboardController extends Controller
             'recentContracts',
             'recentPayments',
             'machinesByBrand',
-            'machinesByType'
+            'machinesByType',
+            // New Financial Data
+            'averageContractValue',
+            'monthlyRevenue',
+            'yearlyRevenue',
+            'revenueGrowth',
+            'monthlyRevenueTrends',
+            'topRevenueClients',
+            'revenueByContractType',
+            'paymentPerformance',
+            'currentMonthPayments',
+            'nextMonthExpectedPayments',
+            'outstandingPaymentsByAge',
+            'recentFinancialActivities',
+            'financialAlerts',
+            'financialHealthScore',
+            'financialHealthStatus'
         ));
     }
 } 

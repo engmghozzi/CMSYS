@@ -14,13 +14,15 @@
                     </svg>
                     {{ __('Back to Client') }}
                 </a>
-                <a href="{{ route('addresses.edit', [$client->id, $address->id]) }}"
-                   class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
-                    </svg>
-                    {{ __('Edit Address') }}
-                </a>
+                @if(auth()->user()->hasPermission('addresses.update'))
+                    <a href="{{ route('addresses.edit', [$client->id, $address->id]) }}"
+                    class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                        </svg>
+                        {{ __('Edit Address') }}
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -142,13 +144,15 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
             <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h2 class="text-xl font-semibold text-gray-900">{{ __('Contracts') }}</h2>
-                <a href="{{ route('contracts.create', $client->id) }}"
-                   class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
-                    {{ __('Add Contract') }}
-                </a>
+                @if(auth()->user()->hasPermission('addresses.edit'))
+                    <a href="{{ route('contracts.create', $client->id) }}"
+                    class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        {{ __('Add Contract') }}
+                    </a>
+                @endif
             </div>
             <div class="p-6">
                 @if ($address->contracts->isEmpty())
@@ -207,34 +211,40 @@
 
                                     <!-- Actions -->
                                     <div class="flex flex-wrap items-center gap-2">
-                                        <a href="{{ route('contracts.show', [$client->id, $contract->id]) }}"
-                                           class="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 transition-colors">
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                            </svg>
-                                            {{ __('View') }}
-                                        </a>
-                                        <a href="{{ route('contracts.edit', [$client->id, $contract->id]) }}"
-                                           class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200 transition-colors">
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
-                                            </svg>
-                                            {{ __('Edit') }}
-                                        </a>
-                                        <form method="POST" action="{{ route('contracts.destroy', [$client->id, $contract->id]) }}"
-                                              onsubmit="return confirm('Are you sure you want to delete this contract?');"
-                                              class="inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                    class="inline-flex items-center gap-1 rounded-md bg-red-100 px-3 py-1.5 text-sm text-red-700 hover:bg-red-200 transition-colors">
+                                        @if(auth()->user()->hasPermission('contracts.read'))
+                                            <a href="{{ route('contracts.show', [$client->id, $contract->id]) }}"
+                                            class="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 transition-colors">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H8V5a1 1 0 011-1z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                                 </svg>
-                                                {{ __('Delete') }}
-                                            </button>
-                                        </form>
+                                                {{ __('View') }}
+                                            </a>
+                                        @endif
+                                        @if(auth()->user()->hasPermission('contracts.update'))
+                                            <a href="{{ route('contracts.edit', [$client->id, $contract->id]) }}"
+                                            class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200 transition-colors">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                                                </svg>
+                                                {{ __('Edit') }}
+                                            </a>
+                                        @endif
+                                        @if(auth()->user()->hasPermission('contracts.destroy'))
+                                            <form method="POST" action="{{ route('contracts.destroy', [$client->id, $contract->id]) }}"
+                                                onsubmit="return confirm('Are you sure you want to delete this contract?');"
+                                                class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        class="inline-flex items-center gap-1 rounded-md bg-red-100 px-3 py-1.5 text-sm text-red-700 hover:bg-red-200 transition-colors">
+                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H8V5a1 1 0 011-1z" />
+                                                    </svg>
+                                                    {{ __('Delete') }}
+                                                </button>                        
+                                            </form> 
+                                        @endif        
                                     </div>
                                 </div>
 
