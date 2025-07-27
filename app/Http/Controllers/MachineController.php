@@ -21,20 +21,38 @@ class MachineController extends Controller
     }
     public function create(Request $request,Client $client,Contract $contract)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add machines to a blocked client.');
+        }
+
         return view('pages.machines.create', compact('client', 'contract'));
     }
 
     // Create a new machine for a specific contract
     public function createFromContract(Request $request, Client $client, Contract $contract)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add machines to a blocked client.');
+        }
+
         return view('pages.machines.create-from-contract', compact('client', 'contract'));
     }
 
     // Store a new machine from a specific contract
     public function storeFromContract(Request $request, Client $client, Contract $contract)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add machines to a blocked client.');
+        }
+
         $data = $request->validate([
-            'serial_number' => 'required|string|max:100',
+            'serial_number' => 'required|string|min:0',
             'brand' => ['required', 'string', Rule::in(array_column(MachineBrand::cases(), 'value'))],
             'type'=>['required','string',Rule::in(array_column(MachineType::cases(), 'value'))],
             'UOM' => 'required|string|max:50',
@@ -58,6 +76,12 @@ class MachineController extends Controller
 
     public function store(Request $request, Client $client)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add machines to a blocked client.');
+        }
+
         $data = $request->validate([
             'serial_number' => 'required|string|max:100',
             'brand' => ['required', 'string', Rule::in(array_column(MachineBrand::cases(), 'value'))],
@@ -83,15 +107,33 @@ class MachineController extends Controller
 
     public function destroy(Client $client, Machine $machine)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot delete machines for a blocked client.');
+        }
+
         $machine->delete();
         return redirect()->route('clients.show', $client)->with('success', 'Machine deleted successfully.');
     }
     public function edit(Client $client, Machine $machine)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot edit machines for a blocked client.');
+        }
+
         return view('pages.machines.edit', compact('client', 'machine'));
     }
     public function update(Request $request, Client $client, Machine $machine)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot update machines for a blocked client.');
+        }
+
         $data = $request->validate([
             'serial_number' => 'required|string|max:100',
             'brand' => ['required', 'string', Rule::in(array_column(MachineBrand::cases(), 'value'))],

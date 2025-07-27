@@ -120,13 +120,34 @@
                         </div>
                         
                         <div class="bg-blue-50 rounded-lg p-4 mb-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 
-                                @if($userGrantedFeatures->count() > 0)
+                                @php
+                                    $currentRole = $user->role;
+                                    $roleGrantedFeatures = $currentRole ? $currentRole->features()->wherePivot('is_granted', true)->get() : collect();
+                                    $additionalGrantedFeatures = $userGrantedFeatures->whereNotIn('id', $roleGrantedFeatures->pluck('id'));
+                                @endphp
+                                
+                                @if($roleGrantedFeatures->count() > 0)
                                     <div>
-                                        <h4 class="font-medium text-green-800 mb-2">{{ __('Granted Permissions') }}</h4>
+                                        <h4 class="font-medium text-indigo-800 mb-2">{{ __('Role Permissions') }}</h4>
+                                        <p class="text-xs text-indigo-600 mb-2">{{ __('Automatically granted by role') }}</p>
                                         <div class="space-y-1">
-                                            @foreach($userGrantedFeatures as $feature)
+                                            @foreach($roleGrantedFeatures as $feature)
+                                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                                                    {{ __($feature->display_name) }}
+                                                </span>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
+                                
+                                @if($additionalGrantedFeatures->count() > 0)
+                                    <div>
+                                        <h4 class="font-medium text-green-800 mb-2">{{ __('Additional Permissions') }}</h4>
+                                        <p class="text-xs text-green-600 mb-2">{{ __('Manually granted beyond role') }}</p>
+                                        <div class="space-y-1">
+                                            @foreach($additionalGrantedFeatures as $feature)
                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
                                                     {{ __($feature->display_name) }}
                                                 </span>
@@ -138,6 +159,7 @@
                                 @if($userRevokedFeatures->count() > 0)
                                     <div>
                                         <h4 class="font-medium text-red-800 mb-2">{{ __('Revoked Permissions') }}</h4>
+                                        <p class="text-xs text-red-600 mb-2">{{ __('Explicitly revoked') }}</p>
                                         <div class="space-y-1">
                                             @foreach($userRevokedFeatures as $feature)
                                                 <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">
@@ -157,11 +179,11 @@
                         </div>
                     </div>
 
-                    <!-- Custom Features Section -->
+                    <!-- Additional Features Section -->
                     <div class="mt-6 border-t border-gray-200 pt-6">
                         <div class="mb-4">
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Custom Permissions') }}</h3>
-                            <p class="text-sm text-gray-600">{{ __('Override role features or add additional permissions for this user. Uncheck to revoke permissions, check to grant them.') }}</p>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Additional Permissions') }}</h3>
+                            <p class="text-sm text-gray-600">{{ __('Select additional permissions beyond what the role provides. Role permissions are automatically granted.') }}</p>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -169,6 +191,7 @@
                                 $featuresByCategory = $features->groupBy('category');
                                 $userGrantedFeatureIds = $userGrantedFeatures->pluck('id')->toArray();
                                 $userRevokedFeatureIds = $userRevokedFeatures->pluck('id')->toArray();
+                                $roleGrantedFeatureIds = $roleGrantedFeatures->pluck('id')->toArray();
                             @endphp
                             
                             @foreach($featuresByCategory as $category => $categoryFeatures)
@@ -177,9 +200,10 @@
                                     <div class="space-y-2">
                                         @foreach($categoryFeatures as $feature)
                                             @php
-                                                $isGranted = in_array($feature->id, $userGrantedFeatureIds);
+                                                $isRoleGranted = in_array($feature->id, $roleGrantedFeatureIds);
+                                                $isUserGranted = in_array($feature->id, $userGrantedFeatureIds);
                                                 $isRevoked = in_array($feature->id, $userRevokedFeatureIds);
-                                                $isChecked = $isGranted || (!$isRevoked && !$user->features()->where('features.id', $feature->id)->exists());
+                                                $isChecked = $isUserGranted && !$isRoleGranted; // Only show as checked if user granted it beyond role
                                             @endphp
                                             <label class="flex items-center feature-checkbox" data-feature-id="{{ $feature->id }}">
                                                 <input type="checkbox" 
@@ -187,8 +211,13 @@
                                                        value="{{ $feature->id }}"
                                                        id="feature_{{ $feature->id }}"
                                                        {{ $isChecked ? 'checked' : '' }}
-                                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded feature-input">
-                                                <span class="ml-2 text-sm text-gray-700">{{ __($feature->display_name) }}</span>
+                                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded feature-input additional-feature">
+                                                <span class="ml-2 text-sm text-gray-700">
+                                                    {{ __($feature->display_name) }}
+                                                    @if($isRoleGranted)
+                                                        <span class="text-xs text-indigo-600">({{ __('Role granted') }})</span>
+                                                    @endif
+                                                </span>
                                             </label>
                                         @endforeach
                                     </div>
@@ -239,6 +268,12 @@
                                 roleFeaturesPreview.appendChild(featureSpan);
                             }
                         });
+                        
+                        // Add note about automatic granting
+                        const noteDiv = document.createElement('div');
+                        noteDiv.className = 'mt-3 text-sm text-indigo-600 font-medium';
+                        noteDiv.textContent = '{{ __("These permissions will be automatically granted to the user.") }}';
+                        roleFeaturesPreview.appendChild(noteDiv);
                     } else {
                         roleFeaturesPreview.innerHTML = '<div class="text-center text-gray-500">{{ __("No features assigned to this role") }}</div>';
                     }

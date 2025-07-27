@@ -99,7 +99,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('roles/{role}/permissions', [RoleController::class, 'permissions'])->name('roles.permissions')->middleware('permission:roles.manage');
     Route::put('roles/{role}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.permissions.update')->middleware('permission:roles.manage');
     Route::get('roles/{role}/users', [RoleController::class, 'users'])->name('roles.users')->middleware('permission:roles.manage');
-    Route::get('roles/{role}/test-permissions', [RoleController::class, 'testPermissions'])->name('roles.test-permissions')->middleware('permission:roles.manage');
+
 
 // Feature Management routes with permissions
     Route::resource('features', FeatureController::class)->middleware('permission:features.manage');
@@ -112,7 +112,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('users/{user}/permissions', [UserController::class, 'permissions'])->name('users.permissions')->middleware('permission:users.manage');
     Route::put('users/{user}/permissions', [UserController::class, 'updatePermissions'])->name('users.permissions.update')->middleware('permission:users.manage');
     Route::delete('users/{user}/permissions', [UserController::class, 'clearOverrides'])->name('users.permissions.clear')->middleware('permission:users.manage');
-    Route::get('users/{user}/test-permissions', [UserController::class, 'testPermissions'])->name('users.test-permissions')->middleware('permission:users.manage');
+
 
     // Test route for role deletion debugging
     Route::get('test/role-delete/{role}', function($role) {

@@ -15,13 +15,24 @@
                     {{ __('Back') }}
                 </a>
                 @if(auth()->user()->hasPermission('clients.update'))
-                    <a href="{{ route('clients.edit', $client->id) }}"
-                       class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 sm:px-4 py-2 text-sm text-white hover:bg-blue-700 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
-                        </svg>
-                        {{__('Edit Client')}}
-                    </a>
+                    @if($client->isBlocked())
+                        <button disabled
+                               class="inline-flex items-center gap-2 rounded-lg bg-gray-400 px-3 sm:px-4 py-2 text-sm text-white cursor-not-allowed"
+                               title="Cannot edit blocked client">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                            </svg>
+                            {{__('Edit Client')}}
+                        </button>
+                    @else
+                        <a href="{{ route('clients.edit', $client->id) }}"
+                           class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 sm:px-4 py-2 text-sm text-white hover:bg-blue-700 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                            </svg>
+                            {{__('Edit Client')}}
+                        </a>
+                    @endif
                 @endif
             </div>
         </div>
@@ -33,6 +44,30 @@
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                     </svg>
                     <p class="ml-3 text-sm text-green-800">{{ session('success') }}</p>
+                </div>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
+                <div class="flex items-center">
+                    <svg class="h-5 w-5 text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="ml-3 text-sm text-red-800">{{ session('error') }}</p>
+                </div>
+            </div>
+        @endif
+
+        @if($client->isBlocked())
+            <div class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
+                <div class="flex items-center">
+                    <svg class="h-5 w-5 text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="ml-3 text-sm text-red-800">
+                        <strong>Warning:</strong> This client is blocked. You cannot edit the client or add addresses, contracts, payments, or machines.
+                    </p>
                 </div>
             </div>
         @endif
@@ -150,13 +185,24 @@
             <div class="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h2 class="text-lg sm:text-xl font-semibold text-gray-900">{{__('Addresses')}}</h2>
                 @if(auth()->user()->hasPermission('clients.create'))
-                    <a href="{{ route('addresses.create', $client->id) }}"
-                       class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 sm:px-4 py-2 text-sm text-white hover:bg-blue-700 transition-colors">
-                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                        </svg>
-                        {{__('Add Address')}}
-                    </a>
+                    @if($client->isBlocked())
+                        <button disabled
+                               class="inline-flex items-center gap-2 rounded-lg bg-gray-400 px-3 sm:px-4 py-2 text-sm text-white cursor-not-allowed"
+                               title="Cannot add addresses to blocked client">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                            </svg>
+                            {{__('Add Address')}}
+                        </button>
+                    @else
+                        <a href="{{ route('addresses.create', $client->id) }}"
+                           class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 sm:px-4 py-2 text-sm text-white hover:bg-blue-700 transition-colors">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                            </svg>
+                            {{__('Add Address')}}
+                        </a>
+                    @endif
                 @endif
             </div>
             <div class="p-4">
@@ -205,28 +251,50 @@
                                         </a>
                                     @endif
                                     @if(auth()->user()->hasPermission('clients.update'))
-                                        <a href="{{ route('addresses.edit', [$client->id, $address->id]) }}"
-                                           class="flex-1 inline-flex items-center justify-center gap-1 rounded-md bg-gray-100 px-2 py-1.5 text-xs text-gray-700 hover:bg-gray-200 transition-colors">
-                                            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
-                                            </svg>
-                                            {{__('Edit')}}
-                                        </a>
+                                        @if($client->isBlocked())
+                                            <button disabled
+                                                   class="flex-1 inline-flex items-center justify-center gap-1 rounded-md bg-gray-300 px-2 py-1.5 text-xs text-gray-500 cursor-not-allowed"
+                                                   title="Cannot edit addresses for blocked client">
+                                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                                                </svg>
+                                                {{__('Edit')}}
+                                            </button>
+                                        @else
+                                            <a href="{{ route('addresses.edit', [$client->id, $address->id]) }}"
+                                               class="flex-1 inline-flex items-center justify-center gap-1 rounded-md bg-gray-100 px-2 py-1.5 text-xs text-gray-700 hover:bg-gray-200 transition-colors">
+                                                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                                                </svg>
+                                                {{__('Edit')}}
+                                            </a>
+                                        @endif
                                     @endif
                                     @if(auth()->user()->hasPermission('clients.delete'))
-                                        <form method="POST" action="{{ route('addresses.destroy', [$client->id, $address->id]) }}"
-                                              onsubmit="return confirm('Are you sure you want to delete this address?');"
-                                              class="flex-1">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                    class="w-full inline-flex items-center justify-center gap-1 rounded-md bg-red-100 px-2 py-1.5 text-xs text-red-700 hover:bg-red-200 transition-colors">
+                                        @if($client->isBlocked())
+                                            <button disabled
+                                                   class="flex-1 inline-flex items-center justify-center gap-1 rounded-md bg-gray-300 px-2 py-1.5 text-xs text-gray-500 cursor-not-allowed"
+                                                   title="Cannot delete addresses for blocked client">
                                                 <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H8V5a1 1 0 011-1z" />
                                                 </svg>
                                                 {{__('Delete')}}
                                             </button>
-                                        </form>
+                                        @else
+                                            <form method="POST" action="{{ route('addresses.destroy', [$client->id, $address->id]) }}"
+                                                  onsubmit="return confirm('Are you sure you want to delete this address?');"
+                                                  class="flex-1">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        class="w-full inline-flex items-center justify-center gap-1 rounded-md bg-red-100 px-2 py-1.5 text-xs text-red-700 hover:bg-red-200 transition-colors">
+                                                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H8V5a1 1 0 011-1z" />
+                                                    </svg>
+                                                    {{__('Delete')}}
+                                                </button>
+                                            </form>
+                                        @endif
                                     @endif
                                 </div>
                             </div>

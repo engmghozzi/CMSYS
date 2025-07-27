@@ -71,6 +71,12 @@ class ClientController extends Controller
     //edit
     public function edit(Client $client)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot edit a blocked client.');
+        }
+
         return view('pages.clients.edit', [
             'client' => $client,
             'editing' => true
@@ -81,6 +87,12 @@ class ClientController extends Controller
     public function update(Request $request, $id)
     {
         $client = Client::findOrFail($id);
+
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot update a blocked client.');
+        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',

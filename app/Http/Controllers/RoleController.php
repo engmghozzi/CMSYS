@@ -218,30 +218,5 @@ class RoleController extends Controller
         return view('pages.roles.users', compact('role', 'users'));
     }
 
-    public function testPermissions(Role $role)
-    {
-        $testPermissions = [
-            'users.read', 'users.create', 'users.update', 'users.delete',
-            'roles.read', 'roles.create', 'roles.update', 'roles.delete',
-            'features.read', 'features.create', 'features.update', 'features.delete',
-            'clients.read', 'clients.create', 'clients.update', 'clients.delete',
-            'contracts.read', 'contracts.create', 'contracts.update', 'contracts.delete',
-            'payments.read', 'payments.create', 'payments.update', 'payments.delete',
-            'machines.read', 'machines.create', 'machines.update', 'machines.delete',
-        ];
 
-        $results = [];
-        foreach ($testPermissions as $permission) {
-            $results[$permission] = $role->features()->where('features.name', $permission)->wherePivot('is_granted', true)->exists();
-        }
-
-        return response()->json([
-            'role' => [
-                'id' => $role->id,
-                'name' => $role->name,
-                'display_name' => $role->display_name
-            ],
-            'permissions' => $results
-        ]);
-    }
 } 

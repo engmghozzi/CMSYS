@@ -13,10 +13,7 @@
                            class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                             {{ __('Back to Role') }}
                         </a>
-                        <button onclick="testPermissions()" 
-                                class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                            {{ __('Test Permissions') }}
-                        </button>
+
                     </div>
                 </div>
             </div>
@@ -200,18 +197,5 @@
         </div>
     </div>
 
-    <script>
-        function testPermissions() {
-            fetch('{{ route("roles.test-permissions", $role) }}')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Permission Test Results:', data);
-                    alert('Permission test completed. Check console for results.');
-                })
-                .catch(error => {
-                    console.error('Error testing permissions:', error);
-                    alert('Error testing permissions. Check console for details.');
-                });
-        }
-    </script>
+
 </x-layouts.app> 

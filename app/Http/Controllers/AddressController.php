@@ -11,6 +11,12 @@ class AddressController extends Controller
     //create
     public function create(Request $request,Client $client)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add addresses to a blocked client.');
+        }
+
         return view('pages.addresses.create', compact('client'));
     }
     
@@ -23,6 +29,12 @@ class AddressController extends Controller
     //store
     public function store(Request $request, Client $client)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add addresses to a blocked client.');
+        }
+
         $validated = $request->validate([
             'area' => 'required|string|max:255',
             'block' => 'required|string|max:255',
@@ -47,12 +59,24 @@ class AddressController extends Controller
     //edit
     public function edit(Client $client, Address $address)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot edit addresses for a blocked client.');
+        }
+
         return view('pages.addresses.edit', compact('address','client'));
     }
 
     //update
     public function update(Request $request,Client $client, Address $address)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot update addresses for a blocked client.');
+        }
+
         $validated = $request->validate([
             'area' => 'required|string|max:255',
             'block' => 'required|string|max:255',
@@ -76,6 +100,12 @@ class AddressController extends Controller
     //destroy
     public function destroy(Client $client, Address $address)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot delete addresses for a blocked client.');
+        }
+
         $address->delete();
 
         return redirect()

@@ -111,11 +111,11 @@
                         </div>
                     </div>
 
-                    <!-- Custom Features Section -->
+                    <!-- Additional Features Section -->
                     <div class="mt-6 border-t border-gray-200 pt-6">
                         <div class="mb-4">
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Custom Permissions') }}</h3>
-                            <p class="text-sm text-gray-600">{{ __('Override role features or add additional permissions for this user. Uncheck to revoke permissions, check to grant them.') }}</p>
+                            <h3 class="text-lg font-medium text-gray-900 mb-2">{{ __('Additional Permissions') }}</h3>
+                            <p class="text-sm text-gray-600">{{ __('Select additional permissions beyond what the role provides. Role permissions are automatically granted.') }}</p>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -133,7 +133,7 @@
                                                        name="features[]" 
                                                        value="{{ $feature->id }}"
                                                        id="feature_{{ $feature->id }}"
-                                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded feature-input">
+                                                       class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded feature-input additional-feature">
                                                 <span class="ml-2 text-sm text-gray-700">{{ __($feature->display_name) }}</span>
                                             </label>
                                         @endforeach
@@ -186,6 +186,12 @@
                                 roleFeaturesPreview.appendChild(featureSpan);
                             }
                         });
+                        
+                        // Add note about automatic granting
+                        const noteDiv = document.createElement('div');
+                        noteDiv.className = 'mt-3 text-sm text-indigo-600 font-medium';
+                        noteDiv.textContent = '{{ __("These permissions will be automatically granted to the user.") }}';
+                        roleFeaturesPreview.appendChild(noteDiv);
                     } else {
                         roleFeaturesPreview.innerHTML = '<div class="text-center text-gray-500">{{ __("No features assigned to this role") }}</div>';
                     }

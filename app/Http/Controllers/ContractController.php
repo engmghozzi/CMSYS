@@ -68,6 +68,12 @@ class ContractController extends Controller
     //create
     public function create(Request $request,Client $client)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add contracts to a blocked client.');
+        }
+
         return view('pages.contracts.create', compact('client'));
     }
     
@@ -80,6 +86,12 @@ class ContractController extends Controller
     //store
     public function store(Request $request, Client $client)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add contracts to a blocked client.');
+        }
+
         $validated = $request->validate([
             'address_id' => 'required|exists:addresses,id|unique:contracts,address_id',
             'type' => 'required|in:L,LS,C,Other',
@@ -143,12 +155,24 @@ class ContractController extends Controller
     //edit
     public function edit(Client $client, Contract $contract)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot edit contracts for a blocked client.');
+        }
+
         return view('pages.contracts.edit', compact('contract','client'));
     }
 
     //update
     public function update(Request $request, Client $client, Contract $contract)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot update contracts for a blocked client.');
+        }
+
         $validated = $request->validate([
             'address_id' => 'required|exists:addresses,id|unique:contracts,address_id,' . $contract->id,
             'type' => 'required|in:L,LS,C,Other',
@@ -205,6 +229,12 @@ class ContractController extends Controller
     //destroy
     public function destroy(Client $client, Contract $contract)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot delete contracts for a blocked client.');
+        }
+
         $contract->delete();
 
         return redirect()

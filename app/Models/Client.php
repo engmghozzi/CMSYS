@@ -69,4 +69,12 @@ class Client extends Model
             default => 'Unknown'
         };
     }
+
+    /**
+     * Check if the client is blocked
+     */
+    public function isBlocked(): bool
+    {
+        return $this->status === 'blocked';
+    }
 }

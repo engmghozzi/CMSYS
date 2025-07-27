@@ -76,16 +76,25 @@ class UserController extends Controller
         DB::transaction(function () use ($validated, $request) {
             $user = User::create($validated);
 
-            // Handle feature assignments
+            // Get the selected role and its granted features
+            $role = Role::with('features')->find($validated['role_id']);
+            $roleGrantedFeatures = $role->features()->wherePivot('is_granted', true)->pluck('features.id')->toArray();
+            
+            // Get additional features selected by user
+            $additionalFeatures = $request->get('features', []);
+            
+            // Get all features to handle the complete permission set
             $allFeatures = Feature::all();
-            $selectedFeatures = $request->get('features', []);
             
             foreach ($allFeatures as $feature) {
-                if (in_array($feature->id, $selectedFeatures)) {
-                    // Feature is selected - grant it
+                $isRoleGranted = in_array($feature->id, $roleGrantedFeatures);
+                $isUserGranted = in_array($feature->id, $additionalFeatures);
+                
+                if ($isRoleGranted || $isUserGranted) {
+                    // Grant feature if it's part of role OR user explicitly selected it
                     $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => true]]);
                 } else {
-                    // Feature is not selected - explicitly revoke it
+                    // Explicitly revoke feature if it's not granted by role and not selected by user
                     $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => false]]);
                 }
             }
@@ -113,7 +122,11 @@ class UserController extends Controller
         $userRevokedFeatures = $user->features()->wherePivot('is_granted', false)->get();
         $effectivePermissions = $user->getEffectivePermissions();
         
-        return view('pages.users.edit', compact('user', 'roles', 'features', 'userFeatures', 'userGrantedFeatures', 'userRevokedFeatures', 'effectivePermissions'));
+        // Get current role's granted features for comparison
+        $currentRole = $user->role;
+        $roleGrantedFeatures = $currentRole ? $currentRole->features()->wherePivot('is_granted', true)->get() : collect();
+        
+        return view('pages.users.edit', compact('user', 'roles', 'features', 'userFeatures', 'userGrantedFeatures', 'userRevokedFeatures', 'effectivePermissions', 'roleGrantedFeatures'));
     }
 
     public function update(Request $request, $id)
@@ -141,16 +154,25 @@ class UserController extends Controller
         DB::transaction(function () use ($user, $validated, $request) {
             $user->update($validated);
 
-            // Handle feature assignments
+            // Get the selected role and its granted features
+            $role = Role::with('features')->find($validated['role_id']);
+            $roleGrantedFeatures = $role->features()->wherePivot('is_granted', true)->pluck('features.id')->toArray();
+            
+            // Get additional features selected by user
+            $additionalFeatures = $request->get('features', []);
+            
+            // Get all features to handle the complete permission set
             $allFeatures = Feature::all();
-            $selectedFeatures = $request->get('features', []);
             
             foreach ($allFeatures as $feature) {
-                if (in_array($feature->id, $selectedFeatures)) {
-                    // Feature is selected - grant it
+                $isRoleGranted = in_array($feature->id, $roleGrantedFeatures);
+                $isUserGranted = in_array($feature->id, $additionalFeatures);
+                
+                if ($isRoleGranted || $isUserGranted) {
+                    // Grant feature if it's part of role OR user explicitly selected it
                     $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => true]]);
                 } else {
-                    // Feature is not selected - explicitly revoke it
+                    // Explicitly revoke feature if it's not granted by role and not selected by user
                     $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => false]]);
                 }
             }
@@ -201,31 +223,5 @@ class UserController extends Controller
             ->with('success', 'User permission overrides cleared successfully');
     }
 
-    public function testPermissions(User $user)
-    {
-        $testPermissions = [
-            'users.read', 'users.create', 'users.update', 'users.delete',
-            'roles.read', 'roles.create', 'roles.update', 'roles.delete',
-            'features.read', 'features.create', 'features.update', 'features.delete',
-            'clients.read', 'clients.create', 'clients.update', 'clients.delete',
-            'contracts.read', 'contracts.create', 'contracts.update', 'contracts.delete',
-            'payments.read', 'payments.create', 'payments.update', 'payments.delete',
-            'machines.read', 'machines.create', 'machines.update', 'machines.delete',
-        ];
 
-        $results = [];
-        foreach ($testPermissions as $permission) {
-            $results[$permission] = $user->hasPermission($permission);
-        }
-
-        return response()->json([
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role ? $user->role->name : null
-            ],
-            'permissions' => $results
-        ]);
-    }
 }

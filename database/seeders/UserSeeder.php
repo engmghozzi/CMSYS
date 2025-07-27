@@ -21,7 +21,7 @@ class UserSeeder extends Seeder
         $accountantRole = Role::where('name', 'accountant')->first();
         $viewerRole = Role::where('name', 'viewer')->first();
 
-        // Create Default Super Admin (Mahmoud Ghozzi)
+        // Create Default Super Admin (Mahmoud Yossry)
         $defaultSuperAdmin = User::updateOrCreate(
             ['email' => 'mahmoud@aliandothman.com.kw'],
             [
@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Create Super Admin
+        // Create Super Admin Mahmoud Ghozzi
         User::updateOrCreate(
             ['email' => 'mahmoud@aliandothman.com.kw'],
             [
@@ -45,7 +45,7 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Create Admin
+        // Create Admin Salah
         User::updateOrCreate(
             ['email' => 'salah@aliandothman.com.kw'],
             [
@@ -57,7 +57,7 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Create Employee
+        // Create Employee Hosni
         User::updateOrCreate(
             ['email' => 'hosni@aliandothman.com.kw'],
             [
@@ -69,7 +69,31 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Create Accountant
+        // Create Employee Ahmed
+        User::updateOrCreate(
+            ['email' => 'hosni@aliandothman.com.kw'],
+            [
+                'name' => 'Hosni',
+                'email' => 'hosni@aliandothman.com.kw',
+                'password' => bcrypt('0000000000'),
+                'is_active' => true,
+                'role_id' => $employeeRole->id,
+            ]
+        );
+
+        // Create Employee Abdelrahman
+        User::updateOrCreate(
+            ['email' => 'abdelrahman@aliandothman.com.kw'],
+            [
+                'name' => 'Abdelrahman',
+                'email' => 'abdelrahman@aliandothman.com.kw',
+                'password' => bcrypt('0000000000'),
+                'is_active' => true,
+                'role_id' => $employeeRole->id,
+            ]
+        );
+
+        // Create Accountant Mohamed
         User::updateOrCreate(
             ['email' => 'mohamed@aliandothman.com.kw'],
             [
@@ -80,7 +104,7 @@ class UserSeeder extends Seeder
                 'role_id' => $accountantRole->id,
             ]
         );
-        // Create Viewer
+        // Create Viewer Rakan
         User::updateOrCreate(
             ['email' => 'rakan@aliandothman.com.kw'],
             [

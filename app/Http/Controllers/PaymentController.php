@@ -50,6 +50,12 @@ class PaymentController extends Controller
     // Create a new payment for a client
     public function create(Request $request, Client $client)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add payments to a blocked client.');
+        }
+
         $contracts = $client->contracts; // fetch contracts related to this client
         return view('payments.create', compact('client', 'contracts'));
     }
@@ -57,12 +63,24 @@ class PaymentController extends Controller
     // Create a new payment for a specific contract
     public function createFromContract(Request $request, Client $client, Contract $contract)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add payments to a blocked client.');
+        }
+
         return view('pages.payments.create-from-contract', compact('client', 'contract'));
     }
 
     // Store a new payment
     public function store(Request $request, Client $client)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add payments to a blocked client.');
+        }
+
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
             'payment_date' => 'required|date|before_or_equal:due_date',
@@ -108,6 +126,12 @@ class PaymentController extends Controller
     // Store a new payment from a specific contract
     public function storeFromContract(Request $request, Client $client, Contract $contract)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add payments to a blocked client.');
+        }
+
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
             'payment_date' => 'required|date|before_or_equal:due_date',
@@ -149,6 +173,12 @@ class PaymentController extends Controller
 
     public function edit(Request $request, Client $client, Payment $payment)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot edit payments for a blocked client.');
+        }
+
         $client = $payment->client;
         $contracts = $client->contracts; // fetch contracts related to this client
         return view('pages.payments.edit', compact('payment', 'client', 'contracts'));
@@ -156,6 +186,12 @@ class PaymentController extends Controller
 
     public function update(Request $request, Client $client, Payment $payment)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot update payments for a blocked client.');
+        }
+
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
             'payment_date' => 'required|date|before_or_equal:due_date',
@@ -176,6 +212,12 @@ class PaymentController extends Controller
 
     public function destroy(Client $client, Payment $payment)
     {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot delete payments for a blocked client.');
+        }
+
         $payment->delete();
         return redirect()->route('clients.show', $client->id)->with('success', 'Payment deleted successfully.');
     }
