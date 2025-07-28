@@ -92,7 +92,7 @@
                         <select name="status" 
                                 class="form-select w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 px-3 py-2" 
                                 required>
-                            @foreach(['Unpaid', 'Pending', 'Paid', 'Overdue'] as $status)
+                            @foreach(['Unpaid', 'Paid'] as $status)
                                 <option value="{{ $status }}" {{ $payment->status === $status ? 'selected' : '' }}>
                                     {{ __($status) }}
                                 </option>

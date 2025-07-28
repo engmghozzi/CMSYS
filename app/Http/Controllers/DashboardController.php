@@ -68,8 +68,6 @@ class DashboardController extends Controller
         $totalRevenue = Contract::sum('total_amount'); // Total Revenue = sum of all contracts amount
         $paid = Payment::where('status', 'Paid')->sum('amount'); // Paid = all paid transactions
         $unpaid = Payment::where('status', 'Unpaid')->sum('amount'); // Unpaid transactions only
-        $pending = Payment::where('status', 'Pending')->sum('amount'); // Pending transactions only
-        $overdue = Payment::where('status', 'Overdue')->sum('amount'); // Overdue transactions only
         $collectionRate = $totalRevenue > 0 ? round(($paid / $totalRevenue) * 100, 1) : 0;
         $overduePayments = Payment::where('due_date', '<', now())->where('status', '!=', 'Paid')->count();
 
@@ -110,8 +108,6 @@ class DashboardController extends Controller
         $paymentPerformance = [
             'on_time' => Payment::where('status', 'Paid')->where('paid_date', '<=', DB::raw('due_date'))->count(),
             'late' => Payment::where('status', 'Paid')->where('paid_date', '>', DB::raw('due_date'))->count(),
-            'overdue' => Payment::where('status', '!=', 'Paid')->where('due_date', '<', now())->count(),
-            'pending' => Payment::where('status', 'Pending')->count(),
         ];
 
         // Cash Flow Analysis
@@ -336,8 +332,6 @@ class DashboardController extends Controller
             'totalRevenue',
             'paid',
             'unpaid',
-            'pending',
-            'overdue',
             'collectionRate',
             'overduePayments',
             'totalClients',

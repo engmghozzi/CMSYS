@@ -38,9 +38,7 @@ class PaymentFactory extends Factory
             'amount' => $this->faker->randomFloat(0, 50, 2000),
             'status' => $this->faker->randomElement([
                 'Unpaid',
-                'Pending',
-                'Paid',
-                'Overdue'
+                'Paid'
             ]),
             
             'method' => $this->faker->randomElement([

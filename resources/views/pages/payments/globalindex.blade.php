@@ -41,8 +41,6 @@
                             <option value="" {{ request('status', '') == '' ? 'selected' : '' }}>{{ __('All Status') }}</option>
                             <option value="Paid" {{ request('status') === 'Paid' ? 'selected' : '' }}>{{ __('Paid') }}</option>
                             <option value="Unpaid" {{ request('status') === 'Unpaid' ? 'selected' : '' }}>{{ __('Unpaid') }}</option>
-                            <option value="Pending" {{ request('status') === 'Pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
-                            <option value="Overdue" {{ request('status') === 'Overdue' ? 'selected' : '' }}>{{ __('Overdue') }}</option>
                         </select>
                     </div>
                     <div class="md:col-span-1">
@@ -113,7 +111,7 @@
                                         <a href="{{ route('contracts.show', [$payment->client->id, $payment->contract->id]) }}" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200">
                                             {{ $payment->contract->contract_num }}
                                         </a>
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium @if ($payment->status === 'Paid') bg-green-100 text-green-800 @elseif ($payment->status === 'Unpaid') bg-red-100 text-red-800 @elseif ($payment->status === 'Pending') bg-yellow-100 text-yellow-800 @elseif ($payment->status === 'Overdue') bg-orange-100 text-orange-800 @else bg-gray-100 text-gray-800 @endif">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium @if ($payment->status === 'Paid') bg-green-100 text-green-800 @elseif ($payment->status === 'Unpaid') bg-red-100 text-red-800 @else bg-gray-100 text-gray-800 @endif">
                                             {{ __($payment->status) }}
                                         </span>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">

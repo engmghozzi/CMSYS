@@ -80,9 +80,7 @@
                         <label class="block text-sm font-medium text-gray-700">Status</label>
                         <select name="status" class="form-select w-full border rounded px-4 py-2" required>
                             <option value="Unpaid">Unpaid</option>
-                            <option value="Pending">Pending</option>
                             <option value="Paid">Paid</option>
-                            <option value="Overdue">Overdue</option>
                         </select>
                     </div>
 

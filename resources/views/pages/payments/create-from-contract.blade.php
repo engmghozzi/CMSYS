@@ -122,9 +122,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Status') }}</label>
                         <select name="status" class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
                             <option value="Unpaid" {{ old('status') == 'Unpaid' ? 'selected' : '' }}>{{ __('Unpaid') }}</option>
-                            <option value="Pending" {{ old('status') == 'Pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
                             <option value="Paid" {{ old('status') == 'Paid' ? 'selected' : '' }}>{{ __('Paid') }}</option>
-                            <option value="Overdue" {{ old('status') == 'Overdue' ? 'selected' : '' }}>{{ __('Overdue') }}</option>
                         </select>
                     </div>
 

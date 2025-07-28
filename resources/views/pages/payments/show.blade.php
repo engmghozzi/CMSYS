@@ -44,9 +44,9 @@
             <div class="px-4 py-3 border-b border-gray-200 bg-gray-50 rounded-t-xl">
                 <div class="flex items-center space-x-2">
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium 
-                        @if($payment->status === 'paid') bg-green-100 text-green-700 border border-green-300
-                        @elseif($payment->status === 'pending') bg-yellow-100 text-yellow-700 border border-yellow-300
-                        @else bg-red-100 text-red-700 border border-red-300
+                        @if($payment->status === 'Paid') bg-green-100 text-green-700 border border-green-300
+                        @elseif($payment->status === 'Unpaid') bg-red-100 text-red-700 border border-red-300
+                        @else bg-gray-100 text-gray-700 border border-gray-300
                         @endif">
                         {{ __($payment->status) }}
                     </span>

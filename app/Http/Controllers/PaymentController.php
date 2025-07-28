@@ -87,7 +87,7 @@ class PaymentController extends Controller
             'due_date' => 'required|date|after_or_equal:payment_date',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
-            'status' => 'required|in:Unpaid,Pending,Paid,Overdue',
+            'status' => 'required|in:Unpaid,Paid',
         ]);
 
         $contractId = $request->input('contract_id');
@@ -138,7 +138,7 @@ class PaymentController extends Controller
             'due_date' => 'required|date|after_or_equal:payment_date',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
-            'status' => 'required|in:Unpaid,Pending,Paid,Overdue',
+            'status' => 'required|in:Unpaid,Paid',
         ]);
 
         // Calculate total paid so far
@@ -198,7 +198,7 @@ class PaymentController extends Controller
             'due_date' => 'required|date|after_or_equal:payment_date',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
-            'status' => 'required|in:Unpaid,Pending,Paid,Overdue',
+            'status' => 'required|in:Unpaid,Paid',
         ]);
 
         $validated['updated_by'] = Auth::id();
