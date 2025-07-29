@@ -1,8 +1,5 @@
 <?php
 
-use App\Http\Middleware\LanguageMiddleware;
-use App\Http\Middleware\CheckPermission;
-use App\Http\Middleware\CheckBlockedClient;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,11 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->web(LanguageMiddleware::class);
-        $middleware->alias([
-            'permission' => CheckPermission::class,
-            'check.blocked.client' => CheckBlockedClient::class,
-        ]);
+        //
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
