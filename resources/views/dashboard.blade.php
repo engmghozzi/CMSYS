@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Dashboard')">
+<x-layouts.app :title="__('Dashboard2')">
     <div class="min-h-screen p-3 md:p-4">
         <!-- Financial & Payments Overview -->
         @if(auth()->user()?->hasPermission('reports.financial'))
