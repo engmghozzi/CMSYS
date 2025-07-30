@@ -76,8 +76,8 @@
                 </div>
 
                 @php
-                    $userGrantedFeatures = $user->features()->wherePivot('is_granted', true)->get();
-                    $userRevokedFeatures = $user->features()->wherePivot('is_granted', false)->get();
+                    $userGrantedFeatures = $user->features()->where('user_features.is_granted', true)->get();
+                    $userRevokedFeatures = $user->features()->where('user_features.is_granted', false)->get();
                     $roleGrantedFeatures = $user->role ? $user->role->features : collect();
                 @endphp
 
@@ -87,7 +87,7 @@
                     
                     <div class="flex flex-col space-y-8">
                         <!-- Granted Permissions -->
-                        @if($userGrantedFeatures->count() > 0)
+                        @if($userGrantedFeatures->isNotEmpty())
                             <div class="bg-green-50 rounded-lg p-4">
                                 <div class="flex items-center mb-4">
                                     <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center mr-3">
@@ -107,29 +107,8 @@
                             </div>
                         @endif
 
-                        <!-- Revoked Permissions -->
-                        @if($userRevokedFeatures->count() > 0)
-                            <div class="bg-red-50 rounded-lg p-4">
-                                <div class="flex items-center mb-4">
-                                    <div class="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center mr-3">
-                                        <svg class="h-4 w-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </div>
-                                    <h4 class="text-base font-medium text-red-800">{{ __('Revoked Permissions') }}</h4>
-                                </div>
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                    @foreach($userRevokedFeatures as $feature)
-                                        <div class="flex items-center bg-white p-3 rounded-lg shadow-sm">
-                                            <span class="text-sm text-gray-900">{{ __($feature->display_name) }}</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-
                         <!-- Inherited Permissions -->
-                        @if($roleGrantedFeatures->count() > 0)
+                        @if($roleGrantedFeatures->isNotEmpty())
                             <div class="bg-indigo-50 rounded-lg p-4">
                                 <div class="flex items-center mb-4">
                                     <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center mr-3">
@@ -152,7 +131,7 @@
                         @endif
 
                         <!-- No Permissions Message -->
-                        @if($userGrantedFeatures->count() == 0 && $userRevokedFeatures->count() == 0 && $roleGrantedFeatures->count() == 0)
+                        @if($userGrantedFeatures->isEmpty() && $userRevokedFeatures->isEmpty() && $roleGrantedFeatures->isEmpty())
                             <div class="text-center py-8">
                                 <div class="mx-auto h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
                                     <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

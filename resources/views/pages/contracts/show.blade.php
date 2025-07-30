@@ -296,7 +296,11 @@
                 <div x-show="tab === 'payments'">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-semibold text-gray-900">{{__('Payment Transactions')}}</h2>
-                        @if(auth()->user()->hasPermission('payments.create'))
+                        @php
+                            $totalPaid = $contract->payments->sum('amount');
+                            $remaining = $contract->total_amount - $totalPaid;
+                        @endphp
+                        @if(auth()->user()->hasPermission('payments.create') && $remaining > 0)
                             <a href="{{ route('payments.create.from.contract', [$client->id, $contract->id]) }}"
                                class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

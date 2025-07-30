@@ -83,12 +83,22 @@ class PaymentController extends Controller
 
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
-            'payment_date' => 'required|date|before_or_equal:due_date',
-            'due_date' => 'required|date|after_or_equal:payment_date',
+            'payment_date' => 'required|date_format:d m Y',
+            'due_date' => 'required|date_format:d m Y',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
             'status' => 'required|in:Unpaid,Paid',
         ]);
+
+        // Custom validation for payment_date >= due_date
+        $paymentDate = \Carbon\Carbon::createFromFormat('d m Y', $validated['payment_date']);
+        $dueDate = \Carbon\Carbon::createFromFormat('d m Y', $validated['due_date']);
+        
+        if ($paymentDate->lt($dueDate)) {
+            return redirect()->back()
+                ->withErrors(['payment_date' => 'Payment date must be on or after the due date.'])
+                ->withInput();
+        }
 
         $contractId = $request->input('contract_id');
         $contract = \App\Models\Contract::with('payments')->findOrFail($contractId);
@@ -134,12 +144,22 @@ class PaymentController extends Controller
 
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
-            'payment_date' => 'required|date|before_or_equal:due_date',
-            'due_date' => 'required|date|after_or_equal:payment_date',
+            'payment_date' => 'required|date',
+            'due_date' => 'required|date',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
             'status' => 'required|in:Unpaid,Paid',
         ]);
+
+        // Custom validation for payment_date >= due_date
+        $paymentDate = \Carbon\Carbon::parse($validated['payment_date']);
+        $dueDate = \Carbon\Carbon::parse($validated['due_date']);
+        
+        if ($paymentDate->lt($dueDate)) {
+            return redirect()->back()
+                ->withErrors(['payment_date' => 'Payment date must be on or after the due date.'])
+                ->withInput();
+        }
 
         // Calculate total paid so far
         $totalPaid = $contract->payments->sum('amount');

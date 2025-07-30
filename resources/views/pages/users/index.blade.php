@@ -22,6 +22,7 @@
         <div class="bg-white rounded-lg shadow border border-gray-200 p-4 mb-6">
             <form method="GET" action="{{ route('users.index') }}" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                    <!-- Name Search -->
                     <div class="md:col-span-2">
                         <div class="flex items-center w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors {{ app()->getLocale() === 'ar' ? 'flex-row-reverse' : 'flex-row' }} h-11">
                             <span class="flex items-center px-2">
@@ -39,6 +40,7 @@
                         </div>
                     </div>
                     
+                    <!-- Email Search -->
                     <div class="md:col-span-1">
                         <div class="flex items-center w-full border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors {{ app()->getLocale() === 'ar' ? 'flex-row-reverse' : 'flex-row' }} h-11">
                             <span class="flex items-center px-2">
@@ -56,6 +58,7 @@
                         </div>
                     </div>
                     
+                    <!-- Role Search -->
                     <div class="md:col-span-1">
                         <select name="role" class="block w-full h-11 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                             <option value="all" {{ request('role', 'all') == 'all' ? 'selected' : '' }}>{{ __('All Roles') }}</option>
@@ -67,6 +70,7 @@
                         </select>
                     </div>
                     
+                    <!-- Status Search -->
                     <div class="md:col-span-1">
                         <select name="is_active" class="block w-full h-11 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                             <option value="all" {{ request('is_active', 'all') == 'all' ? 'selected' : '' }}>{{ __('All Users') }}</option>
@@ -75,7 +79,8 @@
                         </select>
                     </div>
                     
-                    <div class="flex gap-2 items-center md:col-span-1">
+                    <!-- Search Buttons -->
+                    <div class="flex gap-2 items-center justify-center md:col-span-1">
                         <button
                             type="submit"
                             class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"

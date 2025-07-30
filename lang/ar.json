@@ -91,7 +91,6 @@
     "Mobile Number": "رقم الجوال",
     "Alternative Mobile Number": "رقم الجوال البديل",
     "Client Type": "نوع العميل",
-    "Client": "عميل",
     "Company": "شركة",
     "Contractor": "مقاول",
     "other": "أخرى",
@@ -378,7 +377,7 @@
     "Incentive Bonus":"عمولة تسويق لموظف",
     "Referral Commission":"عمولة ترشيح لشخص خارجي",
     "Machine Details":"تفاصيل الآلة",
-    "Features":"الميزات",
+    "Features":"الصلاحيات",
     "Roles":"الأدوار",
     "Financial & Payments Overview":"نظرة عامة على المالية والدفعات",
     "Expected Next Month":"المتوقع الشهر القادم",
@@ -406,5 +405,13 @@
     "Financial Alerts":"تنبيهات المالية",
     "Recent Activities":"الأنشطة الحديثة",
     "No financial alerts":"لا توجد تنبيهات مالية",
-    "No recent activities":"لا توجد أنشطة حديثة"
+    "No recent activities":"لا توجد أنشطة حديثة",
+    "Back to Users":"العودة إلى المستخدمين",
+    "Member Since":"عضو منذ",
+    "No Role Assigned":"لا يوجد دور معين",
+    "Permissions Overview":"نظرة عامة على الصلاحيات",
+    "Inherited Permissions":"الصلاحيات الموروثة",
+    "Permissions":"الصلاحيات",
+    "Granted Permissions":"الصلاحيات المعطاة",
+    "Revoked Permissions":"الصلاحيات الملغاة"
 }

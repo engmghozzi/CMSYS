@@ -144,7 +144,7 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
             <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h2 class="text-xl font-semibold text-gray-900">{{ __('Contracts') }}</h2>
-                @if(auth()->user()->hasPermission('addresses.edit'))
+                @if(auth()->user()->hasPermission('contracts.create'))
                     <a href="{{ route('contracts.create', $client->id) }}"
                     class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

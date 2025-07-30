@@ -35,40 +35,40 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     
     
-    Route::get('clients', [ClientController::class, 'index'])->name('clients.index')->middleware('permission:clients.read');
-    Route::get('clients/create', [ClientController::class, 'create'])->name('clients.create')->middleware('permission:clients.create');
-    Route::post('clients', [ClientController::class, 'store'])->name('clients.store')->middleware('permission:clients.create');
-    Route::get('clients/{client}', [ClientController::class, 'show'])->name('clients.show')->middleware('permission:clients.read');
-    Route::get('clients/{client}/edit', [ClientController::class, 'edit'])->name('clients.edit')->middleware('permission:clients.update');
-    Route::put('clients/{client}', [ClientController::class, 'update'])->name('clients.update')->middleware('permission:clients.update');
-    Route::delete('clients/{client}', [ClientController::class, 'destroy'])->name('clients.destroy')->middleware('permission:clients.delete');
+    Route::get('clients', [ClientController::class, 'index'])->name('clients.index');
+    Route::get('clients/create', [ClientController::class, 'create'])->name('clients.create');
+    Route::post('clients', [ClientController::class, 'store'])->name('clients.store');
+    Route::get('clients/{client}', [ClientController::class, 'show'])->name('clients.show');
+    Route::get('clients/{client}/edit', [ClientController::class, 'edit'])->name('clients.edit');
+    Route::put('clients/{client}', [ClientController::class, 'update'])->name('clients.update');
+    Route::delete('clients/{client}', [ClientController::class, 'destroy'])->name('clients.destroy');
     
     
-    Route::get('clients/{client}/addresses', [AddressController::class, 'index'])->name('addresses.index')->middleware('permission:clients.read');
-    Route::get('clients/{client}/addresses/create', [AddressController::class, 'create'])->name('addresses.create')->middleware('permission:clients.create');
-    Route::post('clients/{client}/addresses', [AddressController::class, 'store'])->name('addresses.store')->middleware('permission:clients.create');
-    Route::get('clients/{client}/addresses/{address}', [AddressController::class, 'show'])->name('addresses.show')->middleware('permission:clients.read');
-    Route::get('clients/{client}/addresses/{address}/edit', [AddressController::class, 'edit'])->name('addresses.edit')->middleware('permission:clients.update');
-    Route::put('clients/{client}/addresses/{address}', [AddressController::class, 'update'])->name('addresses.update')->middleware('permission:clients.update');
-    Route::delete('clients/{client}/addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy')->middleware('permission:clients.delete');
+    Route::get('clients/{client}/addresses', [AddressController::class, 'index'])->name('addresses.index');
+    Route::get('clients/{client}/addresses/create', [AddressController::class, 'create'])->name('addresses.create');
+    Route::post('clients/{client}/addresses', [AddressController::class, 'store'])->name('addresses.store');
+    Route::get('clients/{client}/addresses/{address}', [AddressController::class, 'show'])->name('addresses.show');
+    Route::get('clients/{client}/addresses/{address}/edit', [AddressController::class, 'edit'])->name('addresses.edit');
+    Route::put('clients/{client}/addresses/{address}', [AddressController::class, 'update'])->name('addresses.update');
+    Route::delete('clients/{client}/addresses/{address}', [AddressController::class, 'destroy'])->name('addresses.destroy');
    
    
-    Route::get('clients/{client}/contracts', [ContractController::class, 'globalindex'])->name('contracts.globalindex')->middleware('permission:contracts.read');
-    Route::get('clients/{client}/contracts/create', [ContractController::class, 'create'])->name('contracts.create')->middleware('permission:contracts.create');
-    Route::post('clients/{client}/contracts', [ContractController::class, 'store'])->name('contracts.store')->middleware('permission:contracts.create');
-    Route::get('clients/{client}/contracts/{contract}', [ContractController::class, 'show'])->name('contracts.show')->middleware('permission:contracts.read');
-    Route::get('clients/{client}/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit')->middleware('permission:contracts.update');
-    Route::put('clients/{client}/contracts/{contract}', [ContractController::class, 'update'])->name('contracts.update')->middleware('permission:contracts.update');
-    Route::delete('clients/{client}/contracts/{contract}', [ContractController::class, 'destroy'])->name('contracts.destroy')->middleware('permission:contracts.delete');
+    Route::get('clients/{client}/contracts', [ContractController::class, 'globalindex'])->name('contracts.globalindex');
+    Route::get('clients/{client}/contracts/create', [ContractController::class, 'create'])->name('contracts.create');
+    Route::post('clients/{client}/contracts', [ContractController::class, 'store'])->name('contracts.store');
+    Route::get('clients/{client}/contracts/{contract}', [ContractController::class, 'show'])->name('contracts.show');
+    Route::get('clients/{client}/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
+    Route::put('clients/{client}/contracts/{contract}', [ContractController::class, 'update'])->name('contracts.update');
+    Route::delete('clients/{client}/contracts/{contract}', [ContractController::class, 'destroy'])->name('contracts.destroy');
    
    
-    Route::get('clients/{client}/payments', [PaymentController::class, 'index'])->name('payments.index')->middleware('permission:payments.read');
-    Route::get('clients/{client}/payments/create', [PaymentController::class, 'create'])->name('payments.create')->middleware('permission:payments.create');
-    Route::post('clients/{client}/payments', [PaymentController::class, 'store'])->name('payments.store')->middleware('permission:payments.create');
-    Route::get('clients/{client}/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show')->middleware('permission:payments.read');
-    Route::get('clients/{client}/payments/{payment}/edit', [PaymentController::class, 'edit'])->name('payments.edit')->middleware('permission:payments.update');
-    Route::put('clients/{client}/payments/{payment}', [PaymentController::class, 'update'])->name('payments.update')->middleware('permission:payments.update');
-    Route::delete('clients/{client}/payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy')->middleware('permission:payments.delete');
+    Route::get('clients/{client}/payments', [PaymentController::class, 'index'])->name('payments.index');
+    Route::get('clients/{client}/payments/create', [PaymentController::class, 'create'])->name('payments.create');
+    Route::post('clients/{client}/payments', [PaymentController::class, 'store'])->name('payments.store');
+    Route::get('clients/{client}/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
+    Route::get('clients/{client}/payments/{payment}/edit', [PaymentController::class, 'edit'])->name('payments.edit');
+    Route::put('clients/{client}/payments/{payment}', [PaymentController::class, 'update'])->name('payments.update');
+    Route::delete('clients/{client}/payments/{payment}', [PaymentController::class, 'destroy'])->name('payments.destroy');
     
     
     // Contract-specific payment creation
@@ -78,13 +78,13 @@ Route::middleware(['auth'])->group(function () {
 
 
 // Machine routes with permissions
-    Route::get('clients/{client}/machines', [MachineController::class, 'index'])->name('machines.index')->middleware('permission:machines.read');
-    Route::get('clients/{client}/machines/create', [MachineController::class, 'create'])->name('machines.create')->middleware('permission:machines.create');
-    Route::post('clients/{client}/machines', [MachineController::class, 'store'])->name('machines.store')->middleware('permission:machines.create');
-    Route::get('clients/{client}/machines/{machine}', [MachineController::class, 'show'])->name('machines.show')->middleware('permission:machines.read');
-    Route::get('clients/{client}/machines/{machine}/edit', [MachineController::class, 'edit'])->name('machines.edit')->middleware('permission:machines.update');
-    Route::put('clients/{client}/machines/{machine}', [MachineController::class, 'update'])->name('machines.update')->middleware('permission:machines.update');
-    Route::delete('clients/{client}/machines/{machine}', [MachineController::class, 'destroy'])->name('machines.destroy')->middleware('permission:machines.delete');
+    Route::get('clients/{client}/machines', [MachineController::class, 'index'])->name('machines.index');
+    Route::get('clients/{client}/machines/create', [MachineController::class, 'create'])->name('machines.create');
+    Route::post('clients/{client}/machines', [MachineController::class, 'store'])->name('machines.store');
+    Route::get('clients/{client}/machines/{machine}', [MachineController::class, 'show'])->name('machines.show');
+    Route::get('clients/{client}/machines/{machine}/edit', [MachineController::class, 'edit'])->name('machines.edit');
+    Route::put('clients/{client}/machines/{machine}', [MachineController::class, 'update'])->name('machines.update');
+    Route::delete('clients/{client}/machines/{machine}', [MachineController::class, 'destroy'])->name('machines.destroy');
 
 // Contract-specific machine creation
     Route::get('clients/{client}/contracts/{contract}/machines/create', [MachineController::class, 'createFromContract'])->name('machines.create.from.contract');
@@ -95,23 +95,23 @@ Route::middleware(['auth'])->group(function () {
     Route::get('payments', [PaymentController::class, 'globalindex'])->name('payments.globalindex');
 
 // Role Management routes with permissions
-    Route::resource('roles', RoleController::class)->middleware('permission:roles.manage');
-    Route::get('roles/{role}/permissions', [RoleController::class, 'permissions'])->name('roles.permissions')->middleware('permission:roles.manage');
-    Route::put('roles/{role}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.permissions.update')->middleware('permission:roles.manage');
-    Route::get('roles/{role}/users', [RoleController::class, 'users'])->name('roles.users')->middleware('permission:roles.manage');
+    Route::resource('roles', RoleController::class);
+    Route::get('roles/{role}/permissions', [RoleController::class, 'permissions'])->name('roles.permissions');
+    Route::put('roles/{role}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.permissions.update');
+    Route::get('roles/{role}/users', [RoleController::class, 'users'])->name('roles.users');
 
 
 // Feature Management routes with permissions
-    Route::resource('features', FeatureController::class)->middleware('permission:features.manage');
-    Route::get('features/{feature}/usage', [FeatureController::class, 'usage'])->name('features.usage')->middleware('permission:features.manage');
-    Route::post('features/bulk-update', [FeatureController::class, 'bulkUpdate'])->name('features.bulk-update')->middleware('permission:features.manage');
-    Route::get('features/categories', [FeatureController::class, 'categories'])->name('features.categories')->middleware('permission:features.manage');
-    Route::post('features/generate', [FeatureController::class, 'generateFromResources'])->name('features.generate')->middleware('permission:features.manage');
+    Route::resource('features', FeatureController::class);
+    Route::get('features/{feature}/usage', [FeatureController::class, 'usage'])->name('features.usage');
+    Route::post('features/bulk-update', [FeatureController::class, 'bulkUpdate'])->name('features.bulk-update');
+    Route::get('features/categories', [FeatureController::class, 'categories'])->name('features.categories');
+    Route::post('features/generate', [FeatureController::class, 'generateFromResources'])->name('features.generate');
 
 // User Permission Management routes
-    Route::get('users/{user}/permissions', [UserController::class, 'permissions'])->name('users.permissions')->middleware('permission:users.manage');
-    Route::put('users/{user}/permissions', [UserController::class, 'updatePermissions'])->name('users.permissions.update')->middleware('permission:users.manage');
-    Route::delete('users/{user}/permissions', [UserController::class, 'clearOverrides'])->name('users.permissions.clear')->middleware('permission:users.manage');
+    Route::get('users/{user}/permissions', [UserController::class, 'permissions'])->name('users.permissions');
+    Route::put('users/{user}/permissions', [UserController::class, 'updatePermissions'])->name('users.permissions.update');
+    Route::delete('users/{user}/permissions', [UserController::class, 'clearOverrides'])->name('users.permissions.clear');
 
 
     // Test route for role deletion debugging
