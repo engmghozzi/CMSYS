@@ -22,7 +22,7 @@ Route::get('/', function () {
 // Language routes
 Route::get('lang/{lang}', [LanguageController::class, 'saveLanguage'])->name('settings.language');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:dashboard.read');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 // User routes with permissions
 Route::middleware(['auth'])->group(function () {
