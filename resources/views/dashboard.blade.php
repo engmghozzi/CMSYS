@@ -3,7 +3,7 @@
         <!-- Financial & Payments Overview -->
         @if(auth()->user()?->hasPermission('reports.financial'))
         <div class="mb-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">{{ __('Financial & Payments Overview') }}</h2>
+            <h2 class="text-xl font-bold text-orange-300 mb-4">{{ __('Financial & Payments Overview') }}</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <!-- Total Revenue -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 hover:shadow transition duration-200">
