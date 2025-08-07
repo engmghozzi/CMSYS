@@ -176,6 +176,14 @@
                                             </svg>
                                         </a>
                                     @endif
+                                    @if(auth()->user()->hasPermission('clients.update'))
+                                        <a href="{{ route('clients.edit', $client) }}"
+                                            class="inline-flex items-center justify-center w-8 h-8 text-green-600 hover:bg-green-50 rounded-full transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                                            </svg>
+                                        </a>
+                                    @endif
                                     @if(auth()->user()->hasPermission('clients.delete'))
                                     <form method="POST" 
                                         action="{{ route('clients.destroy', $client) }}"

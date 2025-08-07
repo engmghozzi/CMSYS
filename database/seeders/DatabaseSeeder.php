@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ContractSeeder::class,
             PaymentSeeder::class,
             MachineSeeder::class,
+            VisitSeeder::class,
         ]);
     }
 }

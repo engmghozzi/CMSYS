@@ -25,6 +25,7 @@ class RoleSeeder extends Seeder
                     'contracts.create', 'contracts.read', 'contracts.update', 'contracts.delete',
                     'payments.create', 'payments.read', 'payments.update', 'payments.delete',
                     'machines.create', 'machines.read', 'machines.update', 'machines.delete',
+                    'visits.create', 'visits.read', 'visits.update', 'visits.delete',
                     'roles.manage', 'features.manage', 'logs.read',
                     'reports.financial', 'reports.contracts', 'reports.clients'
                 ],
@@ -42,6 +43,22 @@ class RoleSeeder extends Seeder
                     'contracts.create', 'contracts.read', 'contracts.update', 'contracts.delete',
                     'payments.create', 'payments.read', 'payments.update', 'payments.delete',
                     'machines.create', 'machines.read', 'machines.update', 'machines.delete',
+                    'visits.create', 'visits.read', 'visits.update', 'visits.delete',
+                    'reports.financial', 'reports.contracts', 'reports.clients'
+                ],
+                'is_active' => true
+            ],
+            [
+                'name' => 'supervisor',
+                'display_name' => 'Supervisor',
+                'description' => 'Supervisor access with most permissions',
+                'permissions' => [
+                    'clients.read', 'clients.create', 'clients.update', 'clients.delete',
+                    'addresses.read', 'addresses.create', 'addresses.update', 'addresses.delete',
+                    'contracts.read', 'contracts.create', 'contracts.update', 'contracts.delete',
+                    'payments.read', 'payments.create', 'payments.update', 'payments.delete',
+                    'machines.read', 'machines.create', 'machines.update', 'machines.delete',
+                    'visits.read', 'visits.create', 'visits.update', 'visits.delete',
                     'reports.financial', 'reports.contracts', 'reports.clients'
                 ],
                 'is_active' => true
@@ -54,9 +71,9 @@ class RoleSeeder extends Seeder
                     'clients.read', 'clients.create', 'clients.update',
                     'addresses.read', 'addresses.create', 'addresses.update',
                     'contracts.read', 'contracts.create', 'contracts.update',
-                    'payments.read',
+                    'payments.read', 'payments.create', 'payments.update',
                     'machines.read', 'machines.create', 'machines.update',
-                    'reports.financial'
+                    'visits.read', 'visits.create', 'visits.update',
                 ],
                 'is_active' => true
             ],
@@ -70,6 +87,8 @@ class RoleSeeder extends Seeder
                     'addresses.read',
                     'contracts.read',
                     'payments.create', 'payments.read', 'payments.update',
+                    'machines.read', 
+                    'visits.read', 
                     'reports.financial'
                 ],
                 'is_active' => true
@@ -82,10 +101,14 @@ class RoleSeeder extends Seeder
                     'clients.read',
                     'addresses.read',
                     'contracts.read',
-                    'payments.read'
+                    'payments.read',
+                    'machines.read',
+                    'visits.read',
+                    'reports.financial'
                 ],
                 'is_active' => true
             ]
+        
         ];
 
         foreach ($roles as $role) {

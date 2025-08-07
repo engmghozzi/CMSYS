@@ -45,10 +45,8 @@
                     <h2 class="text-base font-semibold text-gray-900">{{ __('Contract') }}# {{ $contract->contract_num }}</h2>
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
                         @if($contract->status === 'active') bg-green-100 text-green-800 border border-green-300
-                        @elseif($contract->status === 'signed') bg-blue-100 text-blue-800 border border-blue-300
                         @elseif($contract->status === 'expired') bg-red-100 text-red-800 border border-red-300
                         @elseif($contract->status === 'cancelled') bg-orange-100 text-orange-800 border border-orange-300
-                        @elseif($contract->status === 'draft') bg-gray-100 text-gray-800 border border-gray-300
                         @endif">
                         {{ __($contract->status) }}
                     </span>
@@ -59,7 +57,7 @@
                     @endif
                 </div>
                 @if($contract->attachment_url)
-                    <a href="{{ asset('storage/' . $contract->attachment_url) }}" 
+                    <a href="{{ $contract->attachment_url }}" 
                        target="_blank"
                        class="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 px-3 py-1 rounded-full transition-colors">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -221,20 +219,17 @@
                                                 <div class="flex gap-1">
                                                     @if(auth()->user()->hasPermission('machines.read'))
                                                         <a href="{{ route('machines.show', [$client->id, $machine->id]) }}"
-                                                           class="p-1 text-gray-500 hover:text-gray-700 transition-colors"
-                                                           title="{{__('View')}}">
-                                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                            class="inline-flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                                             </svg>
                                                         </a>
                                                     @endif
                                                     @if(auth()->user()->hasPermission('machines.update'))
                                                         <a href="{{ route('machines.edit', [$client->id, $machine->id]) }}"
-                                                           class="p-1 text-gray-500 hover:text-gray-700 transition-colors"
-                                                           title="{{__('Edit')}}">
-                                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                                                            class="inline-flex items-center justify-center w-8 h-8 text-green-600 hover:bg-green-50 rounded-full transition-colors">
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
                                                             </svg>
                                                         </a>
                                                     @endif
@@ -245,10 +240,9 @@
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit"
-                                                                    class="p-1 text-red-500 hover:text-red-700 transition-colors"
-                                                                    title="{{__('Delete')}}">
-                                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H8V5a1 1 0 011-1z" />
+                                                                class="inline-flex items-center justify-center w-8 h-8 text-red-600 hover:bg-red-50 rounded-full transition-colors">
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m4-12v1H6V5a1 1 0 011-1h10a1 1 0 011 1z"/>
                                                                 </svg>
                                                             </button>
                                                         </form>
@@ -346,12 +340,12 @@
                                                 </div>
                                                 <div>
                                                     <p class="text-sm text-gray-500">{{__('Due Date')}}</p>
-                                                    <p class="text-sm font-medium">{{ \Carbon\Carbon::parse($payment->due_date)->format('M d, Y') }}</p>
+                                                    <p class="text-sm font-medium">{{ $payment->due_date->format('M d, Y') }}</p>
                                                 </div>
 
                                                 <div>
                                                     <p class="text-sm text-gray-500">{{__('Payment Date')}}</p>
-                                                    <p class="text-sm font-medium">{{ \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') }}</p>
+                                                    <p class="text-sm font-medium">{{ $payment->payment_date->format('M d, Y') }}</p>
                                                 </div>
                                                 
                                                 @if($payment->notes)
@@ -364,35 +358,38 @@
                                         </div>
 
                                         <!-- Actions -->
-                                        @if(auth()->user()->hasAnyOfPermissions(['payments.update', 'payments.delete', 'payments.read']))
-                                            <div class="flex gap-2 shrink-0">
-
-                                                @if(auth()->user()->hasPermission('payments.update'))
-                                                    <a href="{{ route('payments.edit', [$client->id, $payment->id]) }}"
-                                                       class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-3 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors">
-                                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                                        <div class="flex gap-1 shrink-0">
+                                            @if(auth()->user()->hasPermission('payments.read'))
+                                                <a href="{{ route('payments.show', [$client->id, $payment->id]) }}"
+                                                    class="inline-flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                    </svg>
+                                                </a>        
+                                            @endif
+                                            @if(auth()->user()->hasPermission('payments.update'))
+                                                <a href="{{ route('payments.edit', [$client->id, $payment->id]) }}"
+                                                    class="inline-flex items-center justify-center w-8 h-8 text-green-600 hover:bg-green-50 rounded-full transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                                                    </svg>
+                                                </a>
+                                            @endif
+                                            @if(auth()->user()->hasPermission('payments.delete'))
+                                                <form method="POST" action="{{ route('payments.destroy', [$client->id, $payment->id]) }}"
+                                                    onsubmit="return confirm('{{ __('Are you sure you want to delete this payment?') }}');"
+                                                    class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="inline-flex items-center justify-center w-8 h-8 text-red-600 hover:bg-red-50 rounded-full transition-colors">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m4-12v1H6V5a1 1 0 011-1h10a1 1 0 011 1z"/>
                                                         </svg>
-                                                        {{__('Edit')}}
-                                                    </a>
-                                                @endif
-                                                @if(auth()->user()->hasPermission('payments.delete'))
-                                                    <form method="POST" action="{{ route('payments.destroy', [$client->id, $payment->id]) }}"
-                                                          onsubmit="return confirm('Are you sure you want to delete this payment?');"
-                                                          class="inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                                class="inline-flex items-center gap-1 rounded-md bg-red-100 px-3 py-2 text-sm text-red-700 hover:bg-red-200 transition-colors">
-                                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H8V5a1 1 0 011-1z" />
-                                                            </svg>
-                                                            {{__('Delete')}}
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            </div>
-                                        @endif
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
@@ -402,21 +399,89 @@
                 <!-- Visits Tab -->
                 <div x-show="tab === 'visits'">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold text-gray-900">Visits</h2>
-                        <button class="inline-flex items-center gap-2 rounded-lg bg-gray-300 px-4 py-2 text-gray-500 cursor-not-allowed" disabled>
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        <h2 class="text-xl font-semibold text-gray-900">{{__('Visits')}}</h2>
+                        @if(auth()->user()->hasPermission('visits.create'))
+                            <a href="{{ route('pages.visits.create', [$client->id, $contract->id]) }}"
+                               class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                                </svg>
+                                {{__('Add Visit')}}
+                            </a>
+                        @endif
+                    </div>
+                    @if ($contract->visits->isEmpty())
+                        <div class="text-center py-8">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
                             </svg>
-                            Add Visit (Coming Soon)
-                        </button>
-                    </div>
-                    <div class="text-center py-8">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
-                        </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">No visits yet</h3>
-                        <p class="mt-1 text-sm text-gray-500">This section will display all visits related to this contract in the future.</p>
-                    </div>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">{{__('No visits yet')}}</h3>
+                            <p class="mt-1 text-sm text-gray-500">{{__('Get started by scheduling a visit for this contract.')}}</p>
+                        </div>
+                    @else
+                        <div class="space-y-4">
+                            @foreach($contract->visits as $visit)
+                                <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-lg font-medium text-gray-900">{{__($visit->visit_type)}}</span>
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                                    @if($visit->status === 'completed') bg-green-100 text-green-800
+                                                    @elseif($visit->status === 'scheduled') bg-blue-100 text-blue-800
+                                                    @elseif($visit->status === 'in progress') bg-yellow-100 text-yellow-800
+                                                    @else bg-gray-100 text-gray-800
+                                                    @endif">
+                                                    {{__($visit->visit_status)}}
+                                                </span>
+                                            </div>
+                                            <div class="mt-2 space-y-1">
+                                                <p class="text-sm text-gray-600">{{__('Scheduled Date')}}: {{ $visit->visit_scheduled_date->format('M d, Y') }}</p>
+                                                @if($visit->visit_actual_date)
+                                                    <p class="text-sm text-gray-600">{{__('Actual Date')}}: {{ $visit->visit_actual_date->format('M d, Y') }}</p>
+                                                @endif
+                                                @if($visit->technician)
+                                                    <p class="text-sm text-gray-600">{{__('Technician')}}: {{ $visit->technician->name }}</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-1">
+                                            @if(auth()->user()->hasPermission('visits.read'))
+                                                <a href="{{ route('pages.visits.show', [$client, $contract, $visit]) }}"
+                                                    class="inline-flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                    </svg>
+                                                </a>
+                                            @endif
+                                            @if(auth()->user()->hasPermission('visits.update'))
+                                                <a href="{{ route('pages.visits.edit', [$client, $contract, $visit]) }}"
+                                                    class="inline-flex items-center justify-center w-8 h-8 text-green-600 hover:bg-green-50 rounded-full transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                                                    </svg>
+                                                </a>
+                                            @endif
+                                            @if(auth()->user()->hasPermission('visits.delete'))
+                                                <form method="POST" action="{{ route('pages.visits.destroy', [$client, $contract, $visit]) }}"
+                                                    onsubmit="return confirm('{{ __('Are you sure you want to delete this visit?') }}');"
+                                                    class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="inline-flex items-center justify-center w-8 h-8 text-red-600 hover:bg-red-50 rounded-full transition-colors">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m4-12v1H6V5a1 1 0 011-1h10a1 1 0 011 1z"/>
+                                                        </svg>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

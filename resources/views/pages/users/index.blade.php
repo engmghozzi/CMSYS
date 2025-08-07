@@ -162,6 +162,17 @@
                                             </svg>
                                         </a>
                                     @endif
+
+                                    @if(auth()->user()->hasPermission('users.update'))
+                                        <a href="{{ route('users.edit', $user) }}"
+                                            class="inline-flex items-center justify-center w-8 h-8 text-green-600 hover:bg-green-50 rounded-full transition-colors"
+                                            title="{{ __('Edit') }}">
+                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                                            </svg>
+                                        </a>
+                                    @endif
+
                                     @if(auth()->user()->hasPermission('users.delete'))
                                         <form method="POST" action="{{ route('users.destroy', $user) }}"
                                             onsubmit="return confirm('{{ __('Are you sure you want to delete this user?') }}');"

@@ -44,4 +44,9 @@ class Address extends Model
     {
         return $this->hasManyThrough(Machine::class, Contract::class);
     }
+
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
 }

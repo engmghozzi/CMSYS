@@ -30,14 +30,14 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <span class="block text-sm font-medium text-gray-600">{{ __('Contract No.') }}</span>
-                            <span class="text-gray-900">{{ $payment->contract->contract_num }}</span>
+                            <span class="text-gray-900">{{ old('contract_num', $payment->contract->contract_num) }}</span>
                         </div>
                         <div>
                             <span class="block text-sm font-medium text-gray-600">{{ __('Contract Type') }}</span>
-                            <span class="text-gray-900">{{ $payment->contract->type }}</span>
+                            <span class="text-gray-900">{{ old('type', $payment->contract->type) }}</span>
                         </div>
                     </div>
-                    <input type="hidden" name="contract_id" value="{{ $payment->contract_id }}">
+                    <input type="hidden" name="contract_id" value="{{ old('contract_id', $payment->contract_id) }}">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -57,7 +57,7 @@
                         <label class="block text-sm font-medium text-gray-700">{{ __('Due Date') }}</label>
                         <input type="date" 
                                name="due_date" 
-                               value="{{ old('due_date', $payment->due_date) }}"
+                               value="{{ old('due_date', $payment->due_date->format('Y-m-d')) }}"
                                class="form-input w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 px-3 py-2">
                     </div>
 
@@ -66,12 +66,10 @@
                         <label class="block text-sm font-medium text-gray-700">{{ __('Payment Date') }}</label>
                         <input type="date" 
                                name="payment_date" 
-                               value="{{ old('payment_date', $payment->payment_date) }}" 
+                               value="{{ old('payment_date', $payment->payment_date->format('Y-m-d')) }}" 
                                required
                                class="form-input w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 px-3 py-2">
                     </div>
-
-                    
 
                     {{-- Payment Method --}}
                     <div class="space-y-2">
@@ -79,7 +77,7 @@
                         <select name="method" 
                                 class="form-select w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 px-3 py-2">
                             @foreach(['Cash', 'KNET', 'Cheque', 'Wamd', 'other'] as $method)
-                                <option value="{{ $method }}" {{ $payment->method === $method ? 'selected' : '' }}>
+                                <option value="{{ $method }}" {{ old('method', $payment->method) === $method ? 'selected' : '' }}>
                                     {{ __($method) }}
                                 </option>
                             @endforeach
@@ -93,7 +91,7 @@
                                 class="form-select w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 px-3 py-2" 
                                 required>
                             @foreach(['Unpaid', 'Paid'] as $status)
-                                <option value="{{ $status }}" {{ $payment->status === $status ? 'selected' : '' }}>
+                                <option value="{{ $status }}" {{ old('status', $payment->status) === $status ? 'selected' : '' }}>
                                     {{ __($status) }}
                                 </option>
                             @endforeach

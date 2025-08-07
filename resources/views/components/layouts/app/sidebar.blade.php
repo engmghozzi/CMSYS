@@ -29,6 +29,9 @@
                     @if(auth()->user()?->hasPermission('payments.read'))
                         <flux:navlist.item icon="credit-card" :href="route('payments.globalindex')" :current="request()->routeIs('payments.globalindex')" wire:navigate>{{ __('Payments') }}</flux:navlist.item>
                     @endif
+                    @if(auth()->user()?->hasPermission('visits.read'))
+                        <flux:navlist.item icon="calendar" :href="route('pages.visits.globalindex')" :current="request()->routeIs('pages.visits.globalindex')" wire:navigate>{{ __('Visits') }}</flux:navlist.item>
+                    @endif
                     @if(auth()->user()?->hasPermission('roles.manage'))
                         <flux:navlist.item icon="user-group" :href="route('roles.index')" :current="request()->routeIs('roles.index')" wire:navigate>{{ __('Roles') }}</flux:navlist.item>
                     @endif

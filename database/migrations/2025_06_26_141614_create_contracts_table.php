@@ -37,9 +37,9 @@ return new class extends Migration
             $table->string('commission_recipient')->nullable();
             $table->timestamp('commission_date')->nullable();
 
-            $table->enum('status', ['draft', 'signed', 'active', 'expired', 'cancelled'])->default('draft');
+            $table->enum('status', ['active', 'expired', 'cancelled'])->default('active');
 
-            $table->text('details');
+            $table->text('details')->nullable();
             $table->string('attachment_url')->nullable();
 
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');

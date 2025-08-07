@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\UserController;
@@ -13,6 +16,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\FeatureController;
+use App\Http\Controllers\VisitController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -89,6 +93,16 @@ Route::middleware(['auth'])->group(function () {
 // Contract-specific machine creation
     Route::get('clients/{client}/contracts/{contract}/machines/create', [MachineController::class, 'createFromContract'])->name('machines.create.from.contract');
     Route::post('clients/{client}/contracts/{contract}/machines', [MachineController::class, 'storeFromContract'])->name('machines.store.from.contract');
+
+
+// Visit routes with permissions
+    Route::get('visits', [VisitController::class, 'globalIndex'])->name('pages.visits.globalindex');
+    Route::get('clients/{client}/contracts/{contract}/visits/create', [VisitController::class, 'create'])->name('pages.visits.create');
+    Route::post('clients/{client}/contracts/{contract}/visits', [VisitController::class, 'store'])->name('pages.visits.store');
+    Route::get('clients/{client}/contracts/{contract}/visits/{visit}', [VisitController::class, 'show'])->name('pages.visits.show'); 
+    Route::get('clients/{client}/contracts/{contract}/visits/{visit}/edit', [VisitController::class, 'edit'])->name('pages.visits.edit');
+    Route::put('clients/{client}/contracts/{contract}/visits/{visit}', [VisitController::class, 'update'])->name('pages.visits.update');
+    Route::delete('clients/{client}/contracts/{contract}/visits/{visit}', [VisitController::class, 'destroy'])->name('pages.visits.destroy');
 
 // Global routes with permissions
     Route::get('contracts', [ContractController::class, 'globalindex'])->name('contracts.globalindex');
@@ -204,6 +218,8 @@ Route::middleware(['auth'])->group(function () {
         return $result;
     })->name('debug.roles');
 
+
+
 // Logs routes (superadmin only)
     Route::get('logs', [LogController::class, 'index'])->name('logs.index');
 
@@ -212,6 +228,177 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/password', 'settings.password')->name('settings.password');
     Volt::route('settings/appearance', 'settings.appearance')->name('settings.appearance');
     Volt::route('settings/language', 'settings.language')->name('settings.language');
+
+    // Debug route for testing contract update
+    Route::post('/debug/contract-update', function (Request $request) {
+        Log::info('Debug contract update', $request->all());
+        return response()->json(['message' => 'Debug logged', 'data' => $request->all()]);
+    });
+
+    // Test route for contract update
+    Route::post('/test/contract-update/{client}/{contract}', function (Request $request, $client, $contract) {
+        Log::info('Test contract update', [
+            'client_id' => $client,
+            'contract_id' => $contract,
+            'all_data' => $request->all(),
+            'delete_attachment' => $request->input('delete_attachment'),
+            'has_file' => $request->hasFile('attachment_url')
+        ]);
+        
+        return response()->json([
+            'message' => 'Test successful',
+            'client_id' => $client,
+            'contract_id' => $contract,
+            'delete_attachment' => $request->input('delete_attachment'),
+            'has_file' => $request->hasFile('attachment_url')
+        ]);
+    });
+
+    // S3 Bucket inspection route
+    Route::get('/debug/s3-bucket', function () {
+        try {
+            $disk = Storage::disk('s3_contracts');
+            $files = $disk->allFiles('contracts');
+            
+            $fileDetails = [];
+            foreach ($files as $file) {
+                $fileDetails[] = [
+                    'path' => $file,
+                    'size' => $disk->size($file),
+                    'last_modified' => $disk->lastModified($file),
+                    'url' => $disk->url($file)
+                ];
+            }
+            
+            return response()->json([
+                'bucket_name' => config('filesystems.disks.s3_contracts.bucket'),
+                'total_files' => count($files),
+                'files' => $fileDetails
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    });
+
+    // Check specific file in S3
+    Route::get('/debug/s3-file/{filePath}', function ($filePath) {
+        try {
+            $disk = Storage::disk('s3_contracts');
+            $fullPath = 'contracts/' . $filePath;
+            
+            $exists = $disk->exists($fullPath);
+            $size = $exists ? $disk->size($fullPath) : null;
+            $lastModified = $exists ? $disk->lastModified($fullPath) : null;
+            
+            return response()->json([
+                'file_path' => $fullPath,
+                'exists' => $exists,
+                'size' => $size,
+                'last_modified' => $lastModified,
+                'url' => $exists ? $disk->url($fullPath) : null
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    });
+
+    // Manual file deletion test
+    Route::delete('/debug/s3-delete/{filePath}', function ($filePath) {
+        try {
+            $disk = Storage::disk('s3_contracts');
+            $fullPath = 'contracts/' . $filePath;
+            
+            // Check if file exists
+            $exists = $disk->exists($fullPath);
+            
+            if (!$exists) {
+                return response()->json([
+                    'message' => 'File does not exist',
+                    'file_path' => $fullPath
+                ]);
+            }
+            
+            // Delete the file
+            $deleted = $disk->delete($fullPath);
+            
+            return response()->json([
+                'message' => $deleted ? 'File deleted successfully' : 'Failed to delete file',
+                'file_path' => $fullPath,
+                'deleted' => $deleted
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    });
+
+    // Check all contracts and their attachments
+    Route::get('/debug/contracts-attachments', function () {
+        $contracts = \App\Models\Contract::select('id', 'contract_num', 'attachment_url')
+            ->whereNotNull('attachment_url')
+            ->get();
+        
+        $result = [];
+        foreach ($contracts as $contract) {
+            $result[] = [
+                'contract_id' => $contract->id,
+                'contract_num' => $contract->contract_num,
+                'attachment_url' => $contract->attachment_url,
+                'raw_attachment' => $contract->getRawOriginal('attachment_url')
+            ];
+        }
+        
+        return response()->json([
+            'total_contracts_with_attachments' => count($result),
+            'contracts' => $result
+        ]);
+    });
+
+    // Direct S3 deletion test (no auth required)
+    Route::get('/test/s3-delete-test', function () {
+        try {
+            $disk = Storage::disk('s3_contracts');
+            $testFile = 'contracts/3LWGXJBR3ArxapsHYHki16O9Q4GWm3efAyP23Eqo.pdf';
+            
+            // Check if file exists
+            $exists = $disk->exists($testFile);
+            
+            if (!$exists) {
+                return response()->json([
+                    'message' => 'Test file does not exist',
+                    'file' => $testFile,
+                    'exists' => false
+                ]);
+            }
+            
+            // Try to delete
+            $deleted = $disk->delete($testFile);
+            
+            // Check if it still exists after deletion
+            $stillExists = $disk->exists($testFile);
+            
+            return response()->json([
+                'message' => 'S3 deletion test completed',
+                'file' => $testFile,
+                'existed_before' => $exists,
+                'delete_returned' => $deleted,
+                'exists_after' => $stillExists,
+                'actually_deleted' => $exists && !$stillExists
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    });
 });
 
 require __DIR__.'/auth.php';

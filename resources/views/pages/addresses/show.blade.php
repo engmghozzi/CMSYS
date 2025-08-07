@@ -175,10 +175,8 @@
                                                 <h3 class="text-base font-semibold text-gray-900">{{ $contract->contract_num }}</h3>
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
                                                     @if($contract->status === 'active') bg-green-100 text-green-800
-                                                    @elseif($contract->status === 'signed') bg-blue-100 text-blue-800
                                                     @elseif($contract->status === 'expired') bg-red-100 text-red-800
                                                     @elseif($contract->status === 'cancelled') bg-brown-100 text-brown-800
-                                                    @elseif($contract->status === 'draft') bg-gray-100 text-gray-800
                                                     @else bg-orange-100 text-orange-800
                                                     @endif">
                                                     {{ __($contract->status) }}

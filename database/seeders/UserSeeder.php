@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
 
         // Create Default Super Admin (Mahmoud Yossry)
         $defaultSuperAdmin = User::updateOrCreate(
-            ['email' => 'mahmoud@aliandothman.com.kw'],
+            ['email' => 'eng.m.yossry@gmail.com'],
             [
                 'name' => 'Eng. Mahmoud Yossry',
                 'email' => 'eng.m.yossry@gmail.com',

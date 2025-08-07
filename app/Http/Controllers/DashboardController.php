@@ -7,6 +7,7 @@ use App\Models\Contract;
 use App\Models\Payment;
 use App\Models\Machine;
 use App\Models\User;
+use App\Models\Visit;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -32,8 +33,8 @@ class DashboardController extends Controller
         // Contract Statistics
         $totalContracts = Contract::count();
         $activeContracts = Contract::where('status', 'active')->count();
-        $completedContracts = Contract::where('status', 'completed')->count();
-        $pendingContracts = Contract::where('status', 'pending')->count();
+        $expiredContracts = Contract::where('status', 'expired')->count();
+        $cancelledContracts = Contract::where('status', 'cancelled')->count();
         $totalContractsAmount = Contract::sum('total_amount');
         
         // Contract Types Statistics - Always show all types even if count is 0
@@ -43,8 +44,6 @@ class DashboardController extends Controller
         $contractTypeOther = Contract::where('type', 'Other')->count();
         
         // Contract Status Statistics - Always show all statuses even if count is 0
-        $contractStatusDraft = Contract::where('status', 'draft')->count();
-        $contractStatusSigned = Contract::where('status', 'signed')->count();
         $contractStatusActive = Contract::where('status', 'active')->count();
         $contractStatusExpired = Contract::where('status', 'expired')->count();
         $contractStatusCancelled = Contract::where('status', 'cancelled')->count();
@@ -116,7 +115,7 @@ class DashboardController extends Controller
             ->where('status', 'Paid')
             ->sum('amount');
         
-        $nextMonthExpectedPayments = Payment::whereMonth('due_date', now()->addMonth()->month)
+        $expectedNextMonth = Payment::whereMonth('due_date', now()->addMonth()->month)
             ->whereYear('due_date', now()->addMonth()->year)
             ->where('status', '!=', 'Paid')
             ->sum('amount');
@@ -175,7 +174,7 @@ class DashboardController extends Controller
             ->map(function($contract) {
                 return [
                     'type' => 'contract',
-                    'title' => __('New contract signed'),
+                    'title' => __('New contract created'),
                     'description' => __('Contract :type for :amount KWD with :client', [
                         'type' => $contract->type,
                         'amount' => number_format($contract->total_amount, 3),
@@ -296,6 +295,61 @@ class DashboardController extends Controller
         // High efficiency machines (efficiency > 80%)
         $highEfficiencyMachines = Machine::where('efficiency', '>', 80)->count();
 
+        // Payment Transaction Statistics
+        $totalPaymentTransactions = Payment::count();
+        $paidTransactions = Payment::where('status', 'Paid')->count();
+        $unpaidTransactions = Payment::where('status', 'Unpaid')->count();
+        $overdueTransactions = Payment::where('due_date', '<', now())->where('status', '!=', 'Paid')->count();
+        
+        // Payment Amount Statistics
+        $totalPaymentAmount = Payment::sum('amount');
+        $averagePaymentAmount = $totalPaymentTransactions > 0 ? round($totalPaymentAmount / $totalPaymentTransactions, 3) : 0;
+        $largestPayment = Payment::max('amount') ?? 0;
+        $smallestPayment = Payment::min('amount') ?? 0;
+        
+        // Payment Timing Statistics
+        $onTimePayments = Payment::where('status', 'Paid')
+            ->where('paid_date', '<=', DB::raw('due_date'))
+            ->count();
+        $latePayments = Payment::where('status', 'Paid')
+            ->where('paid_date', '>', DB::raw('due_date'))
+            ->count();
+        
+        // Payment Method Statistics
+        $paymentsByMethod = Payment::select('method', DB::raw('COUNT(*) as count'), DB::raw('SUM(amount) as total_amount'))
+            ->groupBy('method')
+            ->orderBy('count', 'desc')
+            ->get();
+            
+        // Visit Statistics
+        $totalVisits = Visit::count();
+        $completedVisits = Visit::where('status', 'completed')->count();
+        $scheduledVisits = Visit::where('status', 'scheduled')->count();
+        $cancelledVisits = Visit::where('status', 'cancelled')->count();
+        
+
+        // Contract Visit Frequency Statistics
+        $contractsWithLowVisits = Visit::select('contract_id', DB::raw('COUNT(*) as visit_count'))
+            ->groupBy('contract_id')
+            ->having('visit_count', '<=', 10)
+            ->count();
+        $contractsWithMediumVisits = Visit::select('contract_id', DB::raw('COUNT(*) as visit_count'))
+            ->groupBy('contract_id')
+            ->having('visit_count', '>', 10)
+            ->having('visit_count', '<=', 20)
+            ->count();
+        $contractsWithHighVisits = Visit::select('contract_id', DB::raw('COUNT(*) as visit_count'))
+            ->groupBy('contract_id')
+            ->having('visit_count', '>', 20)
+            ->count();
+            
+
+        $proactiveVisits = Visit::where('visit_type', 'proactive')->count();
+        $maintenanceVisits = Visit::where('visit_type', 'maintenance')->count();
+        $repairVisits = Visit::where('visit_type', 'repair')->count();
+        $installationVisits = Visit::where('visit_type', 'installation')->count();
+        $otherVisits = Visit::where('visit_type', 'other')->count();
+        
         // Recent Activity
         $recentContracts = Contract::with('client')->latest()->take(5)->get();
         $recentPayments = Payment::with('contract.client')->latest()->take(5)->get();
@@ -315,15 +369,13 @@ class DashboardController extends Controller
         return view('dashboard', compact(
             'totalContracts',
             'activeContracts',
-            'completedContracts',
-            'pendingContracts',
+            'expiredContracts',
+            'cancelledContracts',
             'totalContractsAmount',
             'contractTypeL',
             'contractTypeLS',
             'contractTypeC',
             'contractTypeOther',
-            'contractStatusDraft',
-            'contractStatusSigned',
             'contractStatusActive',
             'contractStatusExpired',
             'contractStatusCancelled',
@@ -358,12 +410,38 @@ class DashboardController extends Controller
             'revenueByContractType',
             'paymentPerformance',
             'currentMonthPayments',
-            'nextMonthExpectedPayments',
+            'expectedNextMonth',
             'outstandingPaymentsByAge',
             'recentFinancialActivities',
             'financialAlerts',
             'financialHealthScore',
-            'financialHealthStatus'
+            'financialHealthStatus',
+            // Payment Transaction Statistics
+            'totalPaymentTransactions',
+            'paidTransactions',
+            'unpaidTransactions',
+            'overdueTransactions',
+            'totalPaymentAmount',
+            'averagePaymentAmount',
+            'largestPayment',
+            'smallestPayment',
+            'onTimePayments',
+            'latePayments',
+            'paymentsByMethod',
+            // Visit Statistics
+            'totalVisits',
+            'completedVisits',
+            'scheduledVisits',
+            'cancelledVisits',
+            'contractsWithLowVisits',
+            'contractsWithMediumVisits',
+            'contractsWithHighVisits',
+            // Visit Type Statistics
+            'proactiveVisits',
+            'maintenanceVisits',
+            'repairVisits',
+            'installationVisits',
+            'otherVisits'
         ));
     }
-} 
+}

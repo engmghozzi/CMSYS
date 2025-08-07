@@ -48,11 +48,10 @@
                         <div>
                             <span class="font-medium text-blue-800">{{ __('Status:') }}</span>
                             <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium 
-                                @if($contract->status === 'active') bg-green-100 text-green-800
-                                @elseif($contract->status === 'signed') bg-blue-100 text-blue-800
-                                @elseif($contract->status === 'cancelled') bg-red-100 text-red-800
-                                @elseif($contract->status === 'expired') bg-orange-100 text-orange-800
-                                @else bg-gray-100 text-gray-800 @endif">
+                                                        @if($contract->status === 'active') bg-green-100 text-green-800
+                        @elseif($contract->status === 'cancelled') bg-red-100 text-red-800
+                        @elseif($contract->status === 'expired') bg-orange-100 text-orange-800
+                        @else bg-gray-100 text-gray-800 @endif">
                                 {{ ucfirst($contract->status) }}
                             </span>
                         </div>

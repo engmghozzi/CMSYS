@@ -79,7 +79,7 @@
                 <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Status') }}</label>
                         <select name="status" class="w-full border rounded px-4 py-2 bg-white shadow-sm">
-                            @foreach (['draft', 'signed', 'active', 'expired', 'cancelled'] as $status)
+                            @foreach (['active', 'expired', 'cancelled'] as $status)
                                 <option value="{{ $status }}" {{ old('status', $contract->status) === $status ? 'selected' : '' }}>
                                     {{ ucfirst($status) }}
                                 </option>
@@ -131,11 +131,32 @@
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Attachment') }} ({{ __('Upload to replace') }})</label>
                     <input type="file" name="attachment_url" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
-                @if($contract->attachment_url)
-                    <p class="mt-1 text-sm text-gray-500">
-                            <a href="{{ asset('storage/' . $contract->attachment_url) }}" class="text-blue-500 underline" target="_blank">{{ __('View Document') }}</a>
-                    </p>
-                @endif
+                    
+                    <!-- Always include the hidden field -->
+                    <input type="hidden" name="delete_attachment" id="delete_attachment" value="0">
+                    
+                    @if($contract->attachment_url)
+                        <div class="mt-2 p-3 bg-gray-50 rounded-lg border" id="attachment-display">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2">
+                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span class="text-sm text-gray-700">{{ $contract->attachment_file_name ?? 'Document' }}</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <a href="{{ $contract->attachment_url }}" class="text-blue-500 hover:text-blue-700 text-sm underline" target="_blank">
+                                        {{ __('View') }}
+                                    </a>
+                                    <button type="button" 
+                                            onclick="deleteAttachment()" 
+                                            class="text-red-500 hover:text-red-700 text-sm underline">
+                                        {{ __('Delete') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -151,4 +172,17 @@
             </div>
         </form>
     </div>
+
+    <script>
+        function deleteAttachment() {
+            if (confirm('{{ __("Are you sure you want to delete this attachment?") }}')) {
+                document.getElementById('delete_attachment').value = '1';
+                // Hide the attachment display
+                const attachmentDisplay = document.getElementById('attachment-display');
+                if (attachmentDisplay) {
+                    attachmentDisplay.style.display = 'none';
+                }
+            }
+        }
+    </script>
 </x-layouts.app>

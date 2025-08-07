@@ -83,21 +83,23 @@ class PaymentController extends Controller
 
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
-            'payment_date' => 'required|date_format:d m Y',
+            'payment_date' => 'nullable|date_format:d m Y',
             'due_date' => 'required|date_format:d m Y',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
             'status' => 'required|in:Unpaid,Paid',
         ]);
 
-        // Custom validation for payment_date >= due_date
-        $paymentDate = \Carbon\Carbon::createFromFormat('d m Y', $validated['payment_date']);
-        $dueDate = \Carbon\Carbon::createFromFormat('d m Y', $validated['due_date']);
-        
-        if ($paymentDate->lt($dueDate)) {
-            return redirect()->back()
-                ->withErrors(['payment_date' => 'Payment date must be on or after the due date.'])
-                ->withInput();
+        // Only validate payment date if it's provided
+        if (!empty($validated['payment_date'])) {
+            $paymentDate = \Carbon\Carbon::createFromFormat('d m Y', $validated['payment_date']);
+            $dueDate = \Carbon\Carbon::createFromFormat('d m Y', $validated['due_date']);
+            
+            if ($paymentDate->lt($dueDate)) {
+                return redirect()->back()
+                    ->withErrors(['payment_date' => 'Payment date must be on or after the due date.'])
+                    ->withInput();
+            }
         }
 
         $contractId = $request->input('contract_id');
@@ -144,21 +146,23 @@ class PaymentController extends Controller
 
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
-            'payment_date' => 'required|date',
+            'payment_date' => 'nullable|date',
             'due_date' => 'required|date',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
             'status' => 'required|in:Unpaid,Paid',
         ]);
 
-        // Custom validation for payment_date >= due_date
-        $paymentDate = \Carbon\Carbon::parse($validated['payment_date']);
-        $dueDate = \Carbon\Carbon::parse($validated['due_date']);
-        
-        if ($paymentDate->lt($dueDate)) {
-            return redirect()->back()
-                ->withErrors(['payment_date' => 'Payment date must be on or after the due date.'])
-                ->withInput();
+        // Only validate payment date if it's provided
+        if (!empty($validated['payment_date'])) {
+            $paymentDate = \Carbon\Carbon::parse($validated['payment_date']);
+            $dueDate = \Carbon\Carbon::parse($validated['due_date']);
+            
+            if ($paymentDate->lt($dueDate)) {
+                return redirect()->back()
+                    ->withErrors(['payment_date' => 'Payment date must be on or after the due date.'])
+                    ->withInput();
+            }
         }
 
         // Calculate total paid so far
@@ -191,6 +195,17 @@ class PaymentController extends Controller
             ->with('success', 'Payment created successfully.');
     }
 
+    public function show(Client $client, Payment $payment)
+    {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot view payments for a blocked client.');
+        }
+
+        return view('pages.payments.show', compact('payment', 'client'));
+    }
+
     public function edit(Request $request, Client $client, Payment $payment)
     {
         // Check if client is blocked
@@ -214,8 +229,8 @@ class PaymentController extends Controller
 
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
-            'payment_date' => 'required|date|before_or_equal:due_date',
-            'due_date' => 'required|date|after_or_equal:payment_date',
+            'payment_date' => 'nullable|date',
+            'due_date' => 'required|date',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
             'status' => 'required|in:Unpaid,Paid',

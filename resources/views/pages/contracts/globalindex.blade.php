@@ -42,8 +42,7 @@
                     <div class="md:col-span-1">
                         <select name="status" class="block w-full h-11 px-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                             <option value="all" {{ request('status', 'all') == 'all' ? 'selected' : '' }}>{{ __('All Status') }}</option>
-                            <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>{{ __('Draft') }}</option>
-                            <option value="signed" {{ request('status') === 'signed' ? 'selected' : '' }}>{{ __('Signed') }}</option>
+                            
                             <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
                             <option value="expired" {{ request('status') === 'expired' ? 'selected' : '' }}>{{ __('Expired') }}</option>
                             <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>{{ __('Cancelled') }}</option>
@@ -127,7 +126,7 @@
                                     </h3>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="px-2 py-0.5 rounded text-xs font-medium @if($contract->status === 'active') bg-green-100 text-green-800 @elseif($contract->status === 'signed') bg-blue-100 text-blue-800 @elseif($contract->status === 'cancelled') bg-red-100 text-red-800 @elseif($contract->status === 'expired') bg-orange-100 text-orange-800 @else bg-gray-100 text-gray-800 @endif">
+                                    <span class="px-2 py-0.5 rounded text-xs font-medium @if($contract->status === 'active') bg-green-100 text-green-800 @elseif($contract->status === 'cancelled') bg-red-100 text-red-800 @elseif($contract->status === 'expired') bg-orange-100 text-orange-800 @else bg-gray-100 text-gray-800 @endif">
                                         {{ __(ucfirst($contract->status)) }}
                                     </span>
                                     <span class="px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">

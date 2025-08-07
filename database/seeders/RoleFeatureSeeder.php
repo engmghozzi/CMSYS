@@ -27,6 +27,7 @@ class RoleFeatureSeeder extends Seeder
                 'contracts.create', 'contracts.read', 'contracts.update', 'contracts.delete',
                 'payments.create', 'payments.read', 'payments.update', 'payments.delete',
                 'machines.create', 'machines.read', 'machines.update', 'machines.delete',
+                'visits.create', 'visits.read', 'visits.update', 'visits.delete',
                 'roles.manage', 'features.manage', 'system.settings', 'logs.read',
                 'reports.financial', 'reports.contracts', 'reports.clients'
             ],
@@ -38,15 +39,25 @@ class RoleFeatureSeeder extends Seeder
                 'contracts.create', 'contracts.read', 'contracts.update', 'contracts.delete',
                 'payments.create', 'payments.read', 'payments.update', 'payments.delete',
                 'machines.create', 'machines.read', 'machines.update', 'machines.delete',
+                'visits.create', 'visits.read', 'visits.update', 'visits.delete',
+                'reports.financial', 'reports.contracts', 'reports.clients'
+            ],
+            'supervisor' => [
+                'clients.read', 'clients.create', 'clients.update', 'clients.delete',
+                'addresses.read', 'addresses.create', 'addresses.update', 'addresses.delete',
+                'contracts.read', 'contracts.create', 'contracts.update', 'contracts.delete',
+                'payments.read', 'payments.create', 'payments.update', 'payments.delete',
+                'machines.read', 'machines.create', 'machines.update', 'machines.delete',
+                'visits.read', 'visits.create', 'visits.update', 'visits.delete',
                 'reports.financial', 'reports.contracts', 'reports.clients'
             ],
             'employee' => [
                 'clients.read', 'clients.create', 'clients.update',
                 'addresses.read', 'addresses.create', 'addresses.update',
                 'contracts.read', 'contracts.create', 'contracts.update',
-                'payments.read',
-                'machines.read',
-                'reports.financial'
+                'payments.read', 'payments.create', 'payments.update', 
+                'machines.read', 'machines.create', 'machines.update', 
+                'visits.read', 'visits.create', 'visits.update',
             ],
             'accountant' => [
                 'dashboard.read',
@@ -54,13 +65,18 @@ class RoleFeatureSeeder extends Seeder
                 'addresses.read',
                 'contracts.read',
                 'payments.create', 'payments.read', 'payments.update',
+                'machines.read',
+                'visits.read',
                 'reports.financial'
             ],
             'viewer' => [
                 'clients.read',
                 'addresses.read',
                 'contracts.read',
-                'payments.read'
+                'payments.read',
+                'machines.read',
+                'visits.read',
+                'reports.financial'
             ]
         ];
 

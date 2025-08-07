@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Loggable;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class Contract extends Model
 {
@@ -54,6 +56,11 @@ class Contract extends Model
         return $this->hasMany(Machine::class);
     }
 
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
+
     /**
      * Determine if the contract is expired (end_date in the past).
      */
@@ -70,5 +77,73 @@ class Contract extends Model
         return $this->is_expired ? 'expired' : $this->status;
     }
 
+    /**
+     * Get the S3 URL for the contract attachment
+     */
+    public function getAttachmentUrlAttribute($value)
+    {
+        if (!$value) {
+            return null;
+        }
+
+        // If it's already a full URL, return it
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            return $value;
+        }
+
+        try {
+            // Generate pre-signed URL for secure access
+            $disk = Storage::disk('s3_contracts');
+            $s3Client = $disk->getClient();
+            
+            $command = $s3Client->getCommand('GetObject', [
+                'Bucket' => config('filesystems.disks.s3_contracts.bucket'),
+                'Key'    => $value
+            ]);
+            
+            $request = $s3Client->createPresignedRequest($command, '+20 minutes');
+            
+            return (string) $request->getUri();
+        } catch (\Exception $e) {
+            Log::error('Failed to generate pre-signed URL', [
+                'file_path' => $value,
+                'error' => $e->getMessage()
+            ]);
+            
+            // Fallback to direct URL if pre-signed fails
+            return Storage::disk('s3_contracts')->url($value);
+        }
+    }
+
+    /**
+     * Get the file name from the attachment URL
+     */
+    public function getAttachmentFileNameAttribute()
+    {
+        if (!$this->attachment_url) {
+            return null;
+        }
+
+        // Extract filename from the full path
+        $path = $this->attachment_url;
+        
+        // If it's a pre-signed URL, extract the key from the URL
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            $parsedUrl = parse_url($path);
+            if (isset($parsedUrl['path'])) {
+                $path = ltrim($parsedUrl['path'], '/');
+            }
+        }
+        
+        return basename($path);
+    }
+
+    /**
+     * Get the original attachment path (not the pre-signed URL)
+     */
+    public function getOriginalAttachmentPathAttribute()
+    {
+        return $this->getRawOriginal('attachment_url');
+    }
 
 }

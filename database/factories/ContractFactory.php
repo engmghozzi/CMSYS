@@ -42,7 +42,7 @@ class ContractFactory extends Factory
             'commission_type' => $this->faker->optional()->randomElement(['Incentive Bonus', 'Referral Commission', 'Other']),
             'commission_recipient' => $this->faker->optional()->name(),
             'commission_date' => $this->faker->optional()->date(),
-            'status' => $this->faker->randomElement(['draft', 'signed', 'active', 'expired', 'cancelled']),
+            'status' => $this->faker->randomElement(['active', 'expired', 'cancelled']),
             'details' => $this->faker->paragraphs(2, true),
             'attachment_url' => $this->faker->optional(0.7)->randomElement([
                 'contracts/contract_' . $this->faker->numberBetween(1, 100) . '.pdf',

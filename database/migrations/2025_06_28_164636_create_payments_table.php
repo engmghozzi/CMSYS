@@ -23,7 +23,7 @@ return new class extends Migration
                 'Paid',
             ])->default('Unpaid');
             $table->date('due_date');
-            $table->date('payment_date');
+            $table->date('payment_date')->nullable();
             $table->enum('method', [
                 'Cash',
                 'KNET',

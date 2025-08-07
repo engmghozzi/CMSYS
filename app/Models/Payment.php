@@ -11,6 +11,13 @@ class Payment extends Model
     /** @use HasFactory<\Database\Factories\PaymentFactory> */
     use HasFactory, Loggable;
     protected $guarded = ['id'];
+    
+    protected $casts = [
+        'payment_date' => 'date',
+        'due_date' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
     public function client()
     {
         return $this->belongsTo(Client::class);

@@ -16,14 +16,17 @@ class RoleController extends Controller
         $search = $request->get('search');
         $category = $request->get('category');
         $isActive = $request->get('is_active');
+        $sort = $request->get('sort', 'name');
+        $order = $request->get('order', 'asc');
 
         $query = Role::with(['users', 'features']);
 
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('display_name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+        if (!empty($search)) {
+            $searchTerm = '%' . $search . '%';
+            $query->where(function ($q) use ($searchTerm) {
+                $q->whereRaw('LOWER(name) LIKE ?', [strtolower($searchTerm)])
+                  ->orWhereRaw('LOWER(display_name) LIKE ?', [strtolower($searchTerm)])
+                  ->orWhereRaw('LOWER(description) LIKE ?', [strtolower($searchTerm)]);
             });
         }
 
@@ -37,7 +40,33 @@ class RoleController extends Controller
             $query->where('is_active', $isActive);
         }
 
-        $roles = $query->withCount('users')->latest()->paginate(10)->withQueryString();
+        // Handle sorting
+        switch ($sort) {
+            case 'name':
+                $query->orderBy('name', $order);
+                break;
+            case 'display_name':
+                $query->orderBy('display_name', $order);
+                break;
+            case 'created_at':
+                $query->orderBy('created_at', $order);
+                break;
+            case 'users_count':
+                $query->withCount('users')->orderBy('users_count', $order);
+                break;
+            case 'features_count':
+                $query->withCount('features')->orderBy('features_count', $order);
+                break;
+            default:
+                $query->orderBy('name', $order);
+        }
+
+        // If not sorting by counts, add the counts for display
+        if (!in_array($sort, ['users_count', 'features_count'])) {
+            $query->withCount(['users', 'features']);
+        }
+
+        $roles = $query->paginate(10)->withQueryString();
         $categories = Feature::distinct()->pluck('category')->sort();
 
         return view('pages.roles.index', compact('roles', 'categories'));

@@ -49,6 +49,10 @@ class Client extends Model
     {
         return $this->hasMany(Machine::class);
     }
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
 
     public function getStatusBadgeClasses()
     {
