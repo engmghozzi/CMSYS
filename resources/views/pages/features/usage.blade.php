@@ -72,63 +72,16 @@
                 </div>
             </div>
 
-            <!-- Assigned Users -->
+            <!-- Note: User assignments removed - features are now role-based only -->
             <div class="bg-white rounded-lg shadow border border-gray-200 mb-6">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900">{{ __('Assigned Users') }}</h3>
-                    <p class="mt-1 text-sm text-gray-600">{{ __('Users who have this feature directly assigned') }}</p>
+                    <h3 class="text-lg font-medium text-gray-900">{{ __('Feature Assignment Note') }}</h3>
+                    <p class="mt-1 text-sm text-gray-600">{{ __('This feature is now managed through roles only. Users inherit permissions from their assigned role.') }}</p>
                 </div>
-
                 <div class="p-6">
-                    @if($assignedUsers->count() > 0)
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('User') }}</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Role') }}</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Status') }}</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Actions') }}</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200">
-                                    @foreach($assignedUsers as $user)
-                                        <tr>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="flex items-center">
-                                                    <div class="flex-shrink-0 h-10 w-10">
-                                                        <div class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                                                            <span class="text-sm font-medium text-gray-700">{{ $user['name'][0] ?? 'U' }}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="ml-4">
-                                                        <div class="text-sm font-medium text-gray-900">{{ $user['name'] }}</div>
-                                                        <div class="text-sm text-gray-500">{{ $user['email'] }}</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {{ $user['role'] ?? __('No Role') }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $user['is_granted'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                    {{ $user['is_granted'] ? __('Granted') : __('Revoked') }}
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                <a href="{{ route('users.show', $user['id']) }}" 
-                                                   class="text-blue-600 hover:text-blue-900">{{ __('View User') }}</a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @else
-                        <div class="text-center py-8">
-                            <div class="text-gray-500">{{ __('No users have this feature directly assigned') }}</div>
-                        </div>
-                    @endif
+                    <div class="text-center py-4">
+                        <div class="text-gray-500">{{ __('To manage user permissions, assign users to appropriate roles and manage role features.') }}</div>
+                    </div>
                 </div>
             </div>
 

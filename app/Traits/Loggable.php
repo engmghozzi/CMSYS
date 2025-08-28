@@ -31,22 +31,26 @@ trait Loggable
 
         $description = self::getActionDescription($action, $model);
         
-        // Only record essential fields instead of all model data
         $oldValues = null;
         $newValues = null;
         
         if ($action === 'update' && $model) {
-            // Get only the basic database attributes, exclude all relationships
+            // Get the original values before changes
             $oldValues = self::getEssentialFields($model->getRawOriginal());
-            $newValues = self::getEssentialFields($model->getRawOriginal());
             
-            // Only include the changed attributes
+            // Get the new values after changes
+            $newValues = self::getEssentialFields($model->getAttributes());
+            
+            // Only include changed fields for better readability
             $changedAttributes = $model->getDirty();
             if (!empty($changedAttributes)) {
-                $newValues = self::getEssentialFields(array_merge($model->getRawOriginal(), $changedAttributes));
+                $oldValues = array_intersect_key($oldValues, $changedAttributes);
+                $newValues = array_intersect_key($newValues, $changedAttributes);
             }
         } elseif ($action === 'create' && $model) {
-            $newValues = self::getEssentialFields($model->getRawOriginal());
+            $newValues = self::getEssentialFields($model->getAttributes());
+        } elseif ($action === 'delete' && $model) {
+            $oldValues = self::getEssentialFields($model->getAttributes());
         }
         
         Log::create([
@@ -68,15 +72,18 @@ trait Loggable
             return null;
         }
 
-        // Only include essential scalar fields, exclude ALL relationships and complex data
-        $essentialFields = ['id'];
-        
         // Define which fields to include based on model type
         $allowedFields = [
             'name', 'email', 'mobile_number', 'alternate_mobile_number',
             'title', 'amount', 'status', 'client_type', 'type',
-            'serial_number', 'brand', 'capacity', 'cost'
+            'serial_number', 'brand', 'capacity', 'cost', 'description',
+            'address', 'city', 'state', 'postal_code', 'country',
+            'start_date', 'end_date', 'payment_frequency', 'total_amount',
+            'machine_type', 'efficiency_rating', 'installation_date',
+            'warranty_expiry', 'maintenance_schedule', 'notes'
         ];
+        
+        $essentialFields = [];
         
         foreach ($data as $key => $value) {
             // Skip if it's not a scalar value
@@ -89,19 +96,19 @@ trait Loggable
                 continue;
             }
             
-            // Skip foreign key fields
-            if (str_contains($key, '_by') || str_contains($key, '_id')) {
+            // Skip foreign key fields (but keep some important ones)
+            if (str_contains($key, '_by') || 
+                (str_contains($key, '_id') && !in_array($key, ['id', 'client_id', 'contract_id', 'machine_id']))) {
                 continue;
             }
             
             // Only include allowed essential fields
             if (in_array($key, $allowedFields)) {
-                $essentialFields[] = $key;
+                $essentialFields[$key] = $value;
             }
         }
         
-        // Return only the essential fields
-        return array_intersect_key($data, array_flip($essentialFields));
+        return $essentialFields;
     }
 
     protected static function getActionDescription($action, $model = null)
@@ -114,18 +121,39 @@ trait Loggable
         
         switch ($action) {
             case 'create':
-                return "Created new {$modelName}";
+                $identifier = self::getModelIdentifier($model);
+                return "Created new {$modelName}" . ($identifier ? ": {$identifier}" : "");
             case 'update':
-                return "Updated {$modelName} #{$model->id}";
+                $identifier = self::getModelIdentifier($model);
+                return "Updated {$modelName}" . ($identifier ? " {$identifier}" : " #{$model->id}");
             case 'delete':
-                return "Deleted {$modelName} #{$model->id}";
+                $identifier = self::getModelIdentifier($model);
+                return "Deleted {$modelName}" . ($identifier ? " {$identifier}" : " #{$model->id}");
             default:
                 return ucfirst($action) . " {$modelName} #{$model->id}";
         }
     }
 
+    protected static function getModelIdentifier($model)
+    {
+        // Try to get a meaningful identifier for the model
+        if (isset($model->name)) {
+            return $model->name;
+        }
+        if (isset($model->title)) {
+            return $model->title;
+        }
+        if (isset($model->serial_number)) {
+            return "SN: {$model->serial_number}";
+        }
+        if (isset($model->email)) {
+            return $model->email;
+        }
+        return null;
+    }
+
     // Manual logging method for custom actions
-    public static function logCustomAction($action, $description, $model = null)
+    public static function logCustomAction($action, $description, $model = null, $additionalData = [])
     {
         if (!Auth::check()) {
             return;
@@ -137,6 +165,30 @@ trait Loggable
             'model_type' => $model ? get_class($model) : null,
             'model_id' => $model ? $model->id : null,
             'description' => $description,
+            'old_values' => $additionalData['old_values'] ?? null,
+            'new_values' => $additionalData['new_values'] ?? null,
+            'ip_address' => Request::ip(),
+            'user_agent' => Request::userAgent(),
+        ]);
+    }
+
+    // Method to log specific field changes
+    public static function logFieldChange($model, $field, $oldValue, $newValue, $description = null)
+    {
+        if (!Auth::check()) {
+            return;
+        }
+
+        $desc = $description ?: "Changed {$field} from '{$oldValue}' to '{$newValue}'";
+        
+        Log::create([
+            'user_id' => Auth::id(),
+            'action_type' => 'update',
+            'model_type' => get_class($model),
+            'model_id' => $model->id,
+            'description' => $desc,
+            'old_values' => [$field => $oldValue],
+            'new_values' => [$field => $newValue],
             'ip_address' => Request::ip(),
             'user_agent' => Request::userAgent(),
         ]);

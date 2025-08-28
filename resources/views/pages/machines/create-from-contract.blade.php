@@ -1,21 +1,17 @@
 <x-layouts.app :title="__('New Machine')">
-    <div class="container mx-auto px-4 py-2 max-w">
+    <x-ui.form-layout
+        :title="__('Create Machine')"
+        :subtitle="__('Contract') . ': ' . $contract->contract_num . ' — ' . __('Client') . ': ' . $client->name"
+        :back-url="route('contracts.show', [$client, $contract])"
+        :back-label="__('Back to Contract')"
+    >
         {{-- Success Message --}}
         @if (session('success'))
             <div class="mb-4 p-4 bg-green-100 text-green-700 rounded">
                 {{ session('success') }}
             </div>
         @endif
-        {{-- Validation Errors --}}
-        @if ($errors->any())
-            <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
-                <ul class="list-disc pl-5 text-sm">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+        {{-- Validation errors handled by layout --}}
 
         {{-- Contract Info --}}
         <div class="bg-blue-50 rounded-lg shadow-md p-4 border border-blue-200 mb-6">
@@ -44,7 +40,7 @@
                     @endif
                 </div>
                 <div class="text-right">
-                    <a href="{{ route('contracts.show', [$client->id, $contract->id]) }}"
+                    <a href="{{ route('contracts.show', [$client, $contract]) }}"
                        class="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -56,8 +52,7 @@
         </div>
 
         {{-- Form --}}
-        <div class="bg-white rounded-lg shadow-md p-6 border">
-            <form method="POST" action="{{ route('machines.store.from.contract', [$client->id, $contract->id]) }}">
+            <form method="POST" action="{{ route('machines.store.from.contract', [$client->id, $contract->id]) }}" class="space-y-6">
                 @csrf
                 <input type="hidden" name="contract_id" value="{{ $contract->id }}">
 
@@ -141,16 +136,16 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end gap-3 mt-6">
-                    <a href="{{ route('contracts.show', [$client->id, $contract->id]) }}"
-                       class="inline-flex items-center gap-2 px-4 py-2 bg-gray-500 text-white font-medium rounded-lg hover:bg-gray-600 transition-colors">
+                <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200">
+                    <a href="{{ route('contracts.show', [$client, $contract]) }}"
+                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18L6 6l12 12" />
                         </svg>
                         {{ __('Cancel') }}
                     </a>
                     <button type="submit" 
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
@@ -158,6 +153,5 @@
                     </button>
                 </div>
             </form>
-        </div>
-    </div>
+    </x-ui.form-layout>
 </x-layouts.app> 

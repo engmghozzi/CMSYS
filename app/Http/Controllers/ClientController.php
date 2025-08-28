@@ -73,8 +73,11 @@ class ClientController extends Controller
     {
         // Check if client is blocked
         if ($client->status === 'blocked') {
-            return redirect()->route('clients.show', $client)
-                ->with('error', 'Cannot edit a blocked client.');
+            // Allow admin and superadmin to edit blocked clients
+            if (!request()->user()->hasPermission('clients.manage')) {
+                return redirect()->route('clients.show', $client)
+                    ->with('error', 'Cannot edit a blocked client. Only administrators can edit blocked clients.');
+            }
         }
 
         return view('pages.clients.edit', [
@@ -90,8 +93,11 @@ class ClientController extends Controller
 
         // Check if client is blocked
         if ($client->status === 'blocked') {
-            return redirect()->route('clients.show', $client)
-                ->with('error', 'Cannot update a blocked client.');
+            // Allow admin and superadmin to update blocked clients
+            if (!request()->user()->hasPermission('clients.manage')) {
+                return redirect()->route('clients.show', $client)
+                    ->with('error', 'Cannot update a blocked client. Only administrators can update blocked clients.');
+            }
         }
 
         $validated = $request->validate([

@@ -50,23 +50,28 @@ class LogViewActions
                 // Extract model info from route parameters
                 if ($request->route()->hasParameter('client')) {
                     $modelType = 'Client';
-                    $modelId = $request->route()->parameter('client');
+                    $client = $request->route()->parameter('client');
+                    $modelId = is_object($client) ? $client->getKey() : (is_array($client) ? $client['id'] ?? null : $client);
                     $description = "Viewed Client #{$modelId}";
                 } elseif ($request->route()->hasParameter('user')) {
                     $modelType = 'User';
-                    $modelId = $request->route()->parameter('user');
+                    $user = $request->route()->parameter('user');
+                    $modelId = is_object($user) ? $user->getKey() : (is_array($user) ? $user['id'] ?? null : $user);
                     $description = "Viewed User #{$modelId}";
                 } elseif ($request->route()->hasParameter('contract')) {
                     $modelType = 'Contract';
-                    $modelId = $request->route()->parameter('contract');
+                    $contract = $request->route()->parameter('contract');
+                    $modelId = is_object($contract) ? $contract->getKey() : (is_array($contract) ? $contract['id'] ?? null : $contract);
                     $description = "Viewed Contract #{$modelId}";
                 } elseif ($request->route()->hasParameter('payment')) {
                     $modelType = 'Payment';
-                    $modelId = $request->route()->parameter('payment');
+                    $payment = $request->route()->parameter('payment');
+                    $modelId = is_object($payment) ? $payment->getKey() : (is_array($payment) ? $payment['id'] ?? null : $payment);
                     $description = "Viewed Payment #{$modelId}";
                 } elseif ($request->route()->hasParameter('machine')) {
                     $modelType = 'Machine';
-                    $modelId = $request->route()->parameter('machine');
+                    $machine = $request->route()->parameter('machine');
+                    $modelId = is_object($machine) ? $machine->getKey() : (is_array($machine) ? $machine['id'] ?? null : $machine);
                     $description = "Viewed Machine #{$modelId}";
                 }
 

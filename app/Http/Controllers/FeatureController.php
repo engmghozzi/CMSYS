@@ -6,6 +6,7 @@ use App\Models\Feature;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class FeatureController extends Controller
@@ -17,7 +18,7 @@ class FeatureController extends Controller
         $resource = $request->get('resource');
         $isActive = $request->get('is_active');
 
-        $query = Feature::with(['users', 'roles']);
+        $query = Feature::with(['roles']);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -77,12 +78,11 @@ class FeatureController extends Controller
 
     public function show(Feature $feature)
     {
-        $feature->load(['users', 'roles']);
+        $feature->load(['roles']);
         $usageStats = $feature->getUsageStats();
-        $assignedUsers = $feature->getAssignedUsers();
         $assignedRoles = $feature->getAssignedRoles();
         
-        return view('pages.features.show', compact('feature', 'usageStats', 'assignedUsers', 'assignedRoles'));
+        return view('pages.features.show', compact('feature', 'usageStats', 'assignedRoles'));
     }
 
     public function edit(Feature $feature)
@@ -132,10 +132,9 @@ class FeatureController extends Controller
     public function usage(Feature $feature)
     {
         $usageStats = $feature->getUsageStats();
-        $assignedUsers = $feature->getAssignedUsers();
         $assignedRoles = $feature->getAssignedRoles();
         
-        return view('pages.features.usage', compact('feature', 'usageStats', 'assignedUsers', 'assignedRoles'));
+        return view('pages.features.usage', compact('feature', 'usageStats', 'assignedRoles'));
     }
 
     public function bulkUpdate(Request $request)

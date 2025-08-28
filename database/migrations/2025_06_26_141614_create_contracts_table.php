@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('contract_num')->unique(); // Auto-generated like CONT/24/001
 
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade');
-            $table->foreignId('address_id')->unique()->constrained('addresses')->onDelete('cascade'); // One-to-one with address
+            $table->foreignId('address_id')->constrained('addresses')->onDelete('cascade'); // One-to-one with address
 
             $table->enum('type', ['L', 'LS', 'C', 'Other'])->default('L');
 

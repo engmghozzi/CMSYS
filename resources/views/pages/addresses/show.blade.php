@@ -1,30 +1,25 @@
 <x-layouts.app :title="__('Address Details')">
-    <div class="min-h-screen">
-        <!-- Page Header -->
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900">{{ __('Address Details') }}</h1>
-                <p class="text-gray-600 mt-1">{{ $client->name }} - {{ $address->area }}, {{ $address->block }}</p>
-            </div>
-            <div class="flex gap-3">
-                <a href="{{ route('clients.show', $client->id) }}"
-                   class="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+
+    <x-ui.form-layout
+        :title="__('Address Details')"
+        :description="$client->name . ' - ' . $address->area . ', ' . $address->block"
+        :back-url="route('clients.show', $client->id)"
+        :back-label="__('Back to Client')"
+    >
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-3 mb-6">
+            @if(auth()->user()->hasPermission('addresses.update'))
+                <a href="{{ route('addresses.edit', [$client->id, $address->id]) }}"
+                   class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 sm:px-4 py-2 text-sm text-white hover:bg-blue-700 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
                     </svg>
-                    {{ __('Back to Client') }}
+                    {{ __('Edit Address') }}
                 </a>
-                @if(auth()->user()->hasPermission('addresses.update'))
-                    <a href="{{ route('addresses.edit', [$client->id, $address->id]) }}"
-                    class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
-                        </svg>
-                        {{ __('Edit Address') }}
-                    </a>
-                @endif
-            </div>
+            @endif
         </div>
+
+
 
         @if(session('success'))
             <div class="mb-6 rounded-lg bg-green-50 border border-green-200 p-4">
@@ -38,8 +33,8 @@
         @endif
 
         <!-- Address Information Card -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-            <div class="px-6 py-3 border-b border-gray-200">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+            <div class="px-4 sm:px-6 py-3 border-b border-gray-200">
                 <h2 class="text-lg font-semibold text-gray-900">{{ __('Address Information') }}</h2>
             </div>
             <div class="p-4">
@@ -95,57 +90,60 @@
         </div>
 
         <!-- Quick Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <svg class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="h-6 w-6 sm:h-8 sm:w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-500">{{ __('Contracts') }}</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $address->contracts->count() }}</p>
+                        <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ $address->contracts->count() }}</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <svg class="h-8 w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="h-6 w-6 sm:h-8 sm:w-8 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
                         </svg>
                     </div>
                     <div class="ml-4">
-                    <p class="text-sm font-medium text-gray-500">{{ __('Total Payments') }}</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $address->payments->count() }}</p>
+                        <p class="text-sm font-medium text-gray-500">{{ __('Total Payments') }}</p>
+                        <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ $address->payments->count() }}</p>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <svg class="h-8 w-8 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="h-6 w-6 sm:h-8 sm:w-8 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-500">{{ __('Machines') }}</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $address->machines->count() }}</p>
+                        <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ $address->machines->count() }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Contracts Section -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
-            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                <h2 class="text-xl font-semibold text-gray-900">{{ __('Contracts') }}</h2>
-                @if(auth()->user()->hasPermission('contracts.create'))
-                    <a href="{{ route('contracts.create', $client->id) }}"
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+            <div class="px-4 sm:px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-900">{{ __('Contracts') }}</h2>
+                    <p class="text-sm text-gray-600 mt-1">{{ __('All contracts for this address') }} ({{ $address->contracts->count() }} {{ __('total') }})</p>
+                </div>
+                @if(auth()->user()->hasPermission('contracts.create') && !$address->getActiveContract())
+                    <a href="{{ route('contracts.create.from-address', [$client->id, $address->id]) }}"
                     class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
@@ -154,7 +152,7 @@
                     </a>
                 @endif
             </div>
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
                 @if ($address->contracts->isEmpty())
                     <div class="text-center py-8">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -164,9 +162,75 @@
                         <p class="mt-1 text-sm text-gray-500">{{ __('Get started by creating a contract for this address.') }}</p>
                     </div>
                 @else
-                    <div class="grid grid-cols-1 gap-4">
-                        @foreach ($address->contracts as $contract)
-                            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                    <!-- Contract Status Summary (time-aware) -->
+                    <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        @php
+                            $now = now();
+                            $activeContracts = $address->contracts->filter(function($contract) use ($now) {
+                                return $contract->status === 'active' && $contract->end_date > $now;
+                            })->count();
+                            $expiredContracts = $address->contracts->filter(function($contract) use ($now) {
+                                return $contract->status === 'expired' || ($contract->status === 'active' && $contract->end_date <= $now);
+                            })->count();
+                            $cancelledContracts = $address->contracts->where('status', 'cancelled')->count();
+                            $pastDueContracts = $address->contracts->filter(function($contract) use ($now) {
+                                return $contract->status === 'active' && $contract->end_date <= $now;
+                            })->count();
+                        @endphp
+                        
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-green-800">{{ __('Active Contracts') }}</p>
+                                    <p class="text-2xl font-bold text-green-900">{{ $activeContracts }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-red-800">{{ __('Expired Contracts') }}</p>
+                                    <p class="text-2xl font-bold text-red-900">{{ $expiredContracts }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-gray-800">{{ __('Cancelled Contracts') }}</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ $cancelledContracts }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+
+                    <!-- Contracts List -->
+                    <div class="space-y-4">
+                        @foreach ($address->contracts->sortByDesc('created_at') as $contract)
+                            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors
+                                @if($contract->dynamic_status === 'active') border-l-4 border-l-green-500
+                                @elseif($contract->dynamic_status === 'expired') border-l-4 border-l-red-500
+                                @elseif($contract->dynamic_status === 'cancelled') border-l-4 border-l-gray-500
+                                @endif">
                                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                                     <!-- Contract Basic Info -->
                                     <div class="flex items-center gap-4">
@@ -174,16 +238,21 @@
                                             <div class="flex flex-wrap items-center gap-2">
                                                 <h3 class="text-base font-semibold text-gray-900">{{ $contract->contract_num }}</h3>
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                                                    @if($contract->status === 'active') bg-green-100 text-green-800
-                                                    @elseif($contract->status === 'expired') bg-red-100 text-red-800
-                                                    @elseif($contract->status === 'cancelled') bg-brown-100 text-brown-800
+                                                    @if($contract->dynamic_status === 'active') bg-green-100 text-green-800
+                                                    @elseif($contract->dynamic_status === 'expired') bg-red-100 text-red-800
+                                                    @elseif($contract->dynamic_status === 'cancelled') bg-gray-100 text-gray-800
                                                     @else bg-orange-100 text-orange-800
                                                     @endif">
-                                                    {{ __($contract->status) }}
+                                                    {{ __($contract->dynamic_status) }}
                                                 </span>
                                                 @if ($contract->is_fully_collected)
                                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                         {{ __('Fully Collected') }}
+                                                    </span>
+                                                @endif
+                                                @if($contract->is_expired && $contract->status === 'active')
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                                        {{ __('Past Due') }}
                                                     </span>
                                                 @endif
                                             </div>
@@ -199,18 +268,24 @@
                                         </div>
                                         <div class="flex items-center gap-3">
                                             <span class="text-sm text-gray-500">{{ __('Paid') }}:</span>
-                                            <span class="text-sm font-medium">{{ number_format($contract->paid_amount, 3) }} {{ __('KWD') }}</span>
+                                            <span class="text-sm font-medium 
+                                                @if($contract->is_fully_collected) text-green-600 font-semibold @endif">
+                                                {{ number_format($contract->paid_amount, 3) }} {{ __('KWD') }}
+                                            </span>
                                         </div>
                                         <div class="flex items-center gap-3">
                                             <span class="text-sm text-gray-500">{{ __('Remaining') }}:</span>
-                                            <span class="text-sm font-medium">{{ number_format($contract->remaining_amount, 3) }} {{ __('KWD') }}</span>
+                                            <span class="text-sm font-medium 
+                                                @if($contract->remaining_amount > 0) text-red-600 font-semibold @else text-green-600 @endif">
+                                                {{ number_format($contract->remaining_amount, 3) }} {{ __('KWD') }}
+                                            </span>
                                         </div>
                                     </div>
 
                                     <!-- Actions -->
                                     <div class="flex flex-wrap items-center gap-2">
                                         @if(auth()->user()->hasPermission('contracts.read'))
-                                            <a href="{{ route('contracts.show', [$client->id, $contract->id]) }}"
+                                            <a href="{{ route('contracts.show', [$client, $contract]) }}"
                                             class="inline-flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 transition-colors">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -219,7 +294,7 @@
                                                 {{ __('View') }}
                                             </a>
                                         @endif
-                                        @if(auth()->user()->hasPermission('contracts.update'))
+                                        @if(auth()->user()->hasPermission('contracts.update') && $contract->status === 'active' && !$contract->is_expired)
                                             <a href="{{ route('contracts.edit', [$client->id, $contract->id]) }}"
                                             class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-200 transition-colors">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -227,8 +302,16 @@
                                                 </svg>
                                                 {{ __('Edit') }}
                                             </a>
+                                        @elseif(auth()->user()->hasPermission('contracts.update') && ($contract->status !== 'active' || $contract->is_expired))
+                                            <span class="inline-flex items-center gap-1 rounded-md bg-gray-50 px-3 py-1.5 text-sm text-gray-400 cursor-not-allowed" 
+                                                  title="{{ __('Cannot edit') }} {{ $contract->is_expired ? __('expired') : __($contract->status) }} {{ __('contracts') }}">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                                                </svg>
+                                                {{ __('Edit') }}
+                                            </span>
                                         @endif
-                                        @if(auth()->user()->hasPermission('contracts.destroy'))
+                                        @if(auth()->user()->hasPermission('contracts.destroy') && $contract->status === 'active' && !$contract->is_expired)
                                             <form method="POST" action="{{ route('contracts.destroy', [$client->id, $contract->id]) }}"
                                                 onsubmit="return confirm('Are you sure you want to delete this contract?');"
                                                 class="inline">
@@ -242,7 +325,36 @@
                                                     {{ __('Delete') }}
                                                 </button>                        
                                             </form> 
-                                        @endif        
+                                        @elseif(auth()->user()->hasPermission('contracts.destroy') && ($contract->status !== 'active' || $contract->is_expired))
+                                            <span class="inline-flex items-center gap-1 rounded-md bg-gray-50 px-3 py-1.5 text-sm text-gray-400 cursor-not-allowed" 
+                                                  title="{{ __('Cannot delete') }} {{ $contract->is_expired ? __('expired') : __($contract->status) }} {{ __('contracts') }}">
+                                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m2 0H7m3-3h4a1 1 0 011 1v1H8V5a1 1 0 011-1z" />
+                                                </svg>
+                                                    {{ __('Delete') }}
+                                                </span>
+                                        @endif
+
+                                        <!-- Renew Button for Expired Contracts -->
+                                        @if(in_array($contract->status, ['expired', 'cancelled']) && auth()->user()->hasPermission('contracts.create'))
+                                            @if($contract->canRenew)
+                                                <a href="{{ route('contracts.renew', [$client->id, $contract->id]) }}"
+                                                class="inline-flex items-center gap-1 rounded-md bg-green-100 px-3 py-1.5 text-sm text-green-700 hover:bg-green-200 transition-colors">
+                                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                    </svg>
+                                                    {{ __('Renew') }}
+                                                </a>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 rounded-md bg-gray-50 px-3 py-1.5 text-sm text-gray-400 cursor-not-allowed" 
+                                                      title="{{ __('Cannot renew - Address has active contract') }}">
+                                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                    </svg>
+                                                    {{ __('Renew') }}
+                                                </span>
+                                            @endif
+                                        @endif
                                     </div>
                                 </div>
 
@@ -270,7 +382,7 @@
                                     
                                     <div class="flex flex-col gap-2">
                                         @if($contract->attachment_url)
-                                            <a href="{{ asset('storage/' . $contract->attachment_url) }}" 
+                                            <a href="{{ $contract->attachment_url }}" 
                                                target="_blank"
                                                class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -290,5 +402,6 @@
                 @endif
             </div>
         </div>
-    </div>
-</x-layouts.app> 
+    </x-ui.form-layout>
+
+</x-layouts.app>

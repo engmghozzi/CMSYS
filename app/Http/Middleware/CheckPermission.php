@@ -27,7 +27,7 @@ class CheckPermission
         }
 
         // Check if user has the required permission
-        if (!$user->hasPermission($permission)) {
+        if (!$user->hasFeature($permission)) {
             // Return 403 Forbidden or redirect to dashboard with error
             if ($request->expectsJson()) {
                 return response()->json(['error' => 'Access denied'], 403);

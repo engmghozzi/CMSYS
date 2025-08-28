@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Traits\Loggable;
 
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, Loggable;
 
     protected $fillable = [
         'name',
@@ -40,12 +42,8 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-    public function features()
-    {
-        return $this->belongsToMany(Feature::class, 'user_features')
-                    ->withPivot('is_granted')
-                    ->withTimestamps();
-    }
+    // Features are now inherited from role only - no per-user customization
+    // public function features() - REMOVED
 
     // Scopes
     public function scopeActive($query)
@@ -64,46 +62,79 @@ class User extends Authenticatable
         return $this->role && in_array($this->role->name, $roleNames);
     }
 
-    public function hasFeature($featureName)
+    public function hasFeature($featureCode)
     {
-        return $this->features()->where('features.name', $featureName)->wherePivot('is_granted', true)->exists();
+        // Super admin has all features
+        if ($this->role && $this->role->name === 'super_admin') {
+            return true;
+        }
+
+        // Check if user's role has the feature
+        if ($this->role) {
+            return $this->role
+                ->features
+                ->where('name', $featureCode)
+                ->where('pivot.is_granted', true)
+                ->isNotEmpty();
+        }
+
+        return false;
     }
 
     public function hasAnyFeature($featureNames)
     {
-        return $this->features()->whereIn('features.name', $featureNames)->wherePivot('is_granted', true)->exists();
+        // Super admin has all features
+        if ($this->role && $this->role->name === 'super_admin') {
+            return true;
+        }
+
+        // Check if user's role has any of the features
+        if ($this->role) {
+            return $this->role
+                ->features
+                ->whereIn('name', $featureNames)
+                ->where('pivot.is_granted', true)
+                ->isNotEmpty();
+        }
+
+        return false;
     }
 
     public function hasPermission($permission)
     {
-        // First check if user has this specific feature granted
-        $userFeature = $this->features()->where('features.name', $permission)->first();
+        // Cache key for this permission check
+        $cacheKey = "user_permission_{$this->id}_{$permission}";
         
-        // If user has this feature explicitly granted, return true
-        if ($userFeature && $userFeature->pivot->is_granted) {
+        // Try to get from cache first
+        if (Cache::has($cacheKey)) {
+            return Cache::get($cacheKey);
+        }
+
+        // Super admin has all permissions
+        if ($this->role && $this->role->name === 'super_admin') {
+            Cache::put($cacheKey, true, now()->addMinutes(30));
             return true;
         }
-        
-        // If user has this feature explicitly revoked (is_granted = false), return false
-        if ($userFeature && !$userFeature->pivot->is_granted) {
-            return false;
-        }
-        
-        // If user doesn't have this feature explicitly set, check role permissions
+
+        // Check if user's role has the permission
+        $hasPermission = false;
         if ($this->role) {
             // Check if role has this feature granted
             $roleFeature = $this->role->features()->where('features.name', $permission)->first();
             if ($roleFeature && $roleFeature->pivot->is_granted) {
-            return true;
+                $hasPermission = true;
             }
             
             // Also check the legacy permissions array for backward compatibility
-            if ($this->role->hasPermission($permission)) {
-                return true;
+            if (!$hasPermission && $this->role->hasPermission($permission)) {
+                $hasPermission = true;
             }
         }
 
-        return false;
+        // Cache the result for 30 minutes
+        Cache::put($cacheKey, $hasPermission, now()->addMinutes(30));
+        
+        return $hasPermission;
     }
 
     public function hasAnyPermission($permissions)
@@ -121,22 +152,16 @@ class User extends Authenticatable
         return $this->hasAnyPermission($permissions);
     }
 
-    public function grantFeature($featureId)
-    {
-        $this->features()->syncWithoutDetaching([$featureId => ['is_granted' => true]]);
-    }
-
-    public function revokeFeature($featureId)
-    {
-        $this->features()->updateExistingPivot($featureId, ['is_granted' => false]);
-    }
+    // User-specific feature management removed - features come only from roles
+    // public function grantFeature() - REMOVED
+    // public function revokeFeature() - REMOVED
 
     // Enhanced permission management methods
     public function getAllPermissions()
     {
         $permissions = collect();
         
-        // Get role permissions
+        // Get role permissions only
         if ($this->role) {
             $rolePermissions = $this->role->features()->wherePivot('is_granted', true)->get();
             foreach ($rolePermissions as $permission) {
@@ -148,18 +173,6 @@ class User extends Authenticatable
                     'role_name' => $this->role->name
                 ]);
             }
-        }
-        
-        // Get user-specific permissions (overrides)
-        $userPermissions = $this->features()->get();
-        foreach ($userPermissions as $permission) {
-            $permissions->push([
-                'name' => $permission->name,
-                'display_name' => $permission->display_name,
-                'category' => $permission->category,
-                'source' => 'user',
-                'is_granted' => $permission->pivot->is_granted
-            ]);
         }
         
         return $permissions->unique('name');
@@ -186,12 +199,6 @@ class User extends Authenticatable
 
     private function getPermissionSource($permissionName)
     {
-        // Check if user has explicit override
-        $userFeature = $this->features()->where('features.name', $permissionName)->first();
-        if ($userFeature) {
-            return $userFeature->pivot->is_granted ? 'user_granted' : 'user_revoked';
-        }
-        
         // Check if role has permission
         if ($this->role) {
             $roleFeature = $this->role->features()->where('features.name', $permissionName)->first();
@@ -203,23 +210,9 @@ class User extends Authenticatable
         return 'none';
     }
 
-    public function syncPermissions($permissions)
-    {
-        $allFeatures = Feature::all();
-        
-        foreach ($allFeatures as $feature) {
-            if (in_array($feature->id, $permissions)) {
-                $this->grantFeature($feature->id);
-            } else {
-                $this->revokeFeature($feature->id);
-            }
-        }
-    }
-
-    public function clearPermissionOverrides()
-    {
-        $this->features()->detach();
-    }
+    // User-specific permission management removed - permissions come only from roles
+    // public function syncPermissions() - REMOVED
+    // public function clearPermissionOverrides() - REMOVED
 
     /**
      * Get the user's initials

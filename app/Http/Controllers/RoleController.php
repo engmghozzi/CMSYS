@@ -6,6 +6,7 @@ use App\Models\Role;
 use App\Models\Feature;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -126,6 +127,14 @@ class RoleController extends Controller
 
     public function edit(Role $role)
     {
+        $user = Auth::user();
+        
+        // Admin cannot edit super_admin role
+        if ($user->role->name === 'admin' && $role->name === 'super_admin') {
+            return redirect()->route('roles.index')
+                ->with('error', 'Administrators cannot modify the super_admin role.');
+        }
+        
         $features = Feature::active()->orderBy('category')->orderBy('display_name')->get();
         $roleFeatures = $role->features()->wherePivot('is_granted', true)->get()->pluck('id')->toArray();
         $effectivePermissions = $role->getEffectivePermissions();
@@ -135,6 +144,14 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role)
     {
+        $user = Auth::user();
+        
+        // Admin cannot update super_admin role
+        if ($user->role->name === 'admin' && $role->name === 'super_admin') {
+            return redirect()->route('roles.index')
+                ->with('error', 'Administrators cannot modify the super_admin role.');
+        }
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
             'display_name' => 'required|string|max:255',
@@ -170,13 +187,13 @@ class RoleController extends Controller
 
     public function destroy(Role $role)
     {
-        // Log the deletion attempt for debugging
-        \Log::info('Role deletion attempted', [
-            'role_id' => $role->id,
-            'role_name' => $role->name,
-            'user_count' => $role->users()->count(),
-            'can_be_deleted' => $role->canBeDeleted()
-        ]);
+        $user = Auth::user();
+        
+        // Admin cannot delete super_admin role
+        if ($user->role->name === 'admin' && $role->name === 'super_admin') {
+            return redirect()->route('roles.index')
+                ->with('error', 'Administrators cannot delete the super_admin role.');
+        }
 
         // Check if role has users
         if ($role->users()->count() > 0) {
@@ -197,22 +214,11 @@ class RoleController extends Controller
             // Delete the role
             $role->delete();
 
-            \Log::info('Role deleted successfully', [
-                'role_id' => $role->id,
-                'role_name' => $role->name
-            ]);
-
             return redirect()->route('roles.index')
                 ->with('success', 'Role deleted successfully');
         } catch (\Exception $e) {
-            \Log::error('Error deleting role', [
-                'role_id' => $role->id,
-                'role_name' => $role->name,
-                'error' => $e->getMessage()
-            ]);
-
             return redirect()->route('roles.index')
-                ->with('error', 'Error deleting role: ' . $e->getMessage());
+                ->with('error', 'Failed to delete role. Please try again.');
         }
     }
 
@@ -228,6 +234,14 @@ class RoleController extends Controller
 
     public function updatePermissions(Request $request, Role $role)
     {
+        $user = Auth::user();
+        
+        // Admin cannot update super_admin role permissions
+        if ($user->role->name === 'admin' && $role->name === 'super_admin') {
+            return redirect()->route('roles.index')
+                ->with('error', 'Administrators cannot modify the super_admin role permissions.');
+        }
+        
         $validated = $request->validate([
             'permissions' => 'sometimes|array',
             'permissions.*' => 'exists:features,id',
@@ -236,7 +250,7 @@ class RoleController extends Controller
         $selectedPermissions = $request->get('permissions', []);
         $role->syncPermissions($selectedPermissions);
 
-        return redirect()->route('roles.permissions', $role)
+        return redirect()->route('roles.index')
             ->with('success', 'Role permissions updated successfully');
     }
 

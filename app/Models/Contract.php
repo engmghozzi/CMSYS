@@ -13,6 +13,13 @@ class Contract extends Model
     /** @use HasFactory<\Database\Factories\ContractFactory> */
     use HasFactory, Loggable;
     protected $guarded = ['id'];
+    
+    protected $casts = [
+        'start_date' => 'date',
+        'end_date' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
     public function address()
     {
@@ -144,6 +151,55 @@ class Contract extends Model
     public function getOriginalAttachmentPathAttribute()
     {
         return $this->getRawOriginal('attachment_url');
+    }
+
+    /**
+     * Check if this contract can be renewed
+     * A contract can be renewed if it's expired or cancelled and there are no active contracts for the same address
+     */
+    public function canBeRenewed()
+    {
+        // Only expired or cancelled contracts can be renewed
+        if (!in_array($this->status, ['expired', 'cancelled'])) {
+            return false;
+        }
+
+        // Check if there's already an active contract for this address
+        $activeContract = Contract::where('address_id', $this->address_id)
+            ->where('status', 'active')
+            ->where('id', '!=', $this->id)
+            ->first();
+
+        return !$activeContract;
+    }
+
+    /**
+     * Accessor to check if this contract can be renewed
+     * This provides a cleaner way to check renewal eligibility in views
+     */
+    public function getCanRenewAttribute()
+    {
+        return $this->canBeRenewed();
+    }
+
+    /**
+     * Get the renewal status message
+     */
+    public function getRenewalStatusMessage()
+    {
+        if ($this->status === 'active') {
+            return 'Contract is active and cannot be renewed';
+        }
+        
+        if (in_array($this->status, ['expired', 'cancelled'])) {
+            if ($this->canBeRenewed()) {
+                return 'Contract can be renewed';
+            } else {
+                return 'Contract cannot be renewed - address has active contract';
+            }
+        }
+        
+        return 'Contract status unknown';
     }
 
 }

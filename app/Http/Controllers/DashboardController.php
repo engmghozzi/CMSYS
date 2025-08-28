@@ -11,6 +11,7 @@ use App\Models\Visit;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
@@ -186,7 +187,7 @@ class DashboardController extends Controller
                 ];
             });
         
-        $recentFinancialActivities = $recentPayments->merge($recentContracts)
+        $recentFinancialActivities = $recentPayments->toBase()->merge($recentContracts->toBase())
             ->sortByDesc('date')
             ->take(10);
 
@@ -443,5 +444,59 @@ class DashboardController extends Controller
             'installationVisits',
             'otherVisits'
         ));
+    }
+
+    private function cacheStats($stats)
+    {
+        // Cache individual components for better granularity
+        Cache::put('dashboard.contract_stats', [
+            'total_contracts' => $stats['totalContracts'],
+            'active_contracts' => $stats['activeContracts'],
+            'expired_contracts' => $stats['expiredContracts'],
+            'cancelled_contracts' => $stats['cancelledContracts'],
+            'total_amount' => $stats['totalContractsAmount'],
+        ], now()->addHour());
+
+        Cache::put('dashboard.payment_stats', [
+            'total_revenue' => $stats['totalRevenue'],
+            'paid_amount' => $stats['paid'],
+            'unpaid_amount' => $stats['unpaid'],
+            'collection_rate' => $stats['collectionRate'],
+            'overdue_count' => $stats['overduePayments'],
+        ], now()->addHour());
+
+        Cache::put('dashboard.financial_stats', [
+            'monthly_revenue' => $stats['monthlyRevenue'],
+            'yearly_revenue' => $stats['yearlyRevenue'],
+            'revenue_growth' => $stats['revenueGrowth'],
+            'monthly_trends' => $stats['monthlyRevenueTrends'],
+            'top_revenue_clients' => $stats['topRevenueClients'],
+        ], now()->addHour());
+    }
+
+    private function formatStatsForView($contractStats, $paymentStats, $clientStats, $userStats, $machineStats, $visitStats, $financialStats)
+    {
+        // Format cached stats to match the view expectations
+        return [
+            'totalContracts' => $contractStats['total_contracts'],
+            'activeContracts' => $contractStats['active_contracts'],
+            'expiredContracts' => $contractStats['expired_contracts'],
+            'cancelledContracts' => $contractStats['cancelled_contracts'],
+            'totalContractsAmount' => $contractStats['total_amount'],
+            'totalRevenue' => $paymentStats['total_revenue'],
+            'paid' => $paymentStats['paid_amount'],
+            'unpaid' => $paymentStats['unpaid_amount'],
+            'collectionRate' => $paymentStats['collection_rate'],
+            'overduePayments' => $paymentStats['overdue_count'],
+            'monthlyRevenue' => $financialStats['monthly_revenue'],
+            'yearlyRevenue' => $financialStats['yearly_revenue'],
+            'revenueGrowth' => $financialStats['revenue_growth'],
+            'monthlyRevenueTrends' => $financialStats['monthly_trends'],
+            'topRevenueClients' => $financialStats['top_revenue_clients'],
+            // Add other required variables with default values
+            'totalClients' => $clientStats['total_clients'] ?? 0,
+            'totalMachines' => $machineStats['total_machines'] ?? 0,
+            'totalVisits' => $visitStats['total_visits'] ?? 0,
+        ];
     }
 }

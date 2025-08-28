@@ -70,7 +70,7 @@ class MachineController extends Controller
 
         Machine::create($data);
 
-        return redirect()->route('contracts.show', [$client->id, $contract->id])
+        return redirect()->route('contracts.show', [$client, $contract])
             ->with('success', 'Machine created successfully.');
     }
 
@@ -152,7 +152,7 @@ class MachineController extends Controller
         $machine->update($data);
 
         // Redirect to contract show page with machines tab active
-        return redirect()->route('contracts.show', [$client->id, $machine->contract_id])->with('success', 'Machine updated successfully.')->with('active_tab', 'machines');
+        return redirect()->route('contracts.show', [$client, $machine->contract])->with('success', 'Machine updated successfully.')->with('active_tab', 'machines');
     }
     public function show(Client $client, Machine $machine)
     {

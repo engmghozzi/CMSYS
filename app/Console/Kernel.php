@@ -12,8 +12,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Schedule the contract expiration command to run daily
-        $schedule->command('contracts:expire')->daily();
+        // Schedule the contract expiration command to run daily (non-interactive)
+        $schedule->command('contracts:expire --no-interaction --force')->daily();
+        
+        // Cache dashboard statistics every hour for better performance
+        $schedule->command('dashboard:cache')->hourly();
+        
+        // Clear expired cache entries daily
+        $schedule->command('cache:prune-stale-tags')->daily();
     }
 
     /**

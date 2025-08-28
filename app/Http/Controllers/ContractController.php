@@ -68,7 +68,7 @@ class ContractController extends Controller
     }
 
     //create
-    public function create(Request $request,Client $client)
+    public function create(Request $request, Client $client, Contract $contract = null)
     {
         // Check if client is blocked
         if ($client->status === 'blocked') {
@@ -76,7 +76,56 @@ class ContractController extends Controller
                 ->with('error', 'Cannot add contracts to a blocked client.');
         }
 
+        // If renewal_contract_id is provided via query, resolve it
+        if (!$contract && $request->filled('renewal_contract_id')) {
+            $contract = Contract::find($request->input('renewal_contract_id'));
+        }
+
+        // If contract is provided, it's a renewal scenario
+        if ($contract) {
+            // Check if contract can be renewed (expired or cancelled)
+            if (!in_array($contract->status, ['expired', 'cancelled']) && !$contract->is_expired) {
+                return redirect()->route('contracts.show', [$client, $contract])
+                    ->with('error', 'Only expired or cancelled contracts can be renewed.');
+            }
+
+            // Check if there's already an active contract for this address
+            $activeContract = Contract::where('address_id', $contract->address_id)
+                ->where('status', 'active')
+                ->where('end_date', '>', now())
+                ->first();
+
+            if ($activeContract) {
+                return redirect()->route('contracts.show', [$client, $contract])
+                    ->with('error', 'Cannot renew contract. There is already an active contract for this address.');
+            }
+
+            return view('pages.contracts.create', compact('client', 'contract'));
+        }
+
         return view('pages.contracts.create', compact('client'));
+    }
+
+    //createFromAddress
+    public function createFromAddress(Request $request, Client $client, $addressId)
+    {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot add contracts to a blocked client.');
+        }
+
+        // Find the address
+        $address = Address::where('id', $addressId)
+            ->where('client_id', $client->id)
+            ->first();
+
+        if (!$address) {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Invalid address for this client.');
+        }
+
+        return view('pages.contracts.create', compact('client', 'address'));
     }
     
     //show
@@ -94,8 +143,34 @@ class ContractController extends Controller
                 ->with('error', 'Cannot add contracts to a blocked client.');
         }
 
+        // Check if this is a renewal scenario
+        $isRenewal = $request->has('renewal_contract_id');
+        $oldContract = null;
+        
+        if ($isRenewal) {
+            $oldContract = Contract::find($request->input('renewal_contract_id'));
+            if (!$oldContract || $oldContract->client_id !== $client->id) {
+                return redirect()->back()->with('error', 'Invalid renewal contract.');
+            }
+            
+            // Check if old contract can be renewed (expired or cancelled)
+            if (!in_array($oldContract->status, ['expired', 'cancelled']) && !$oldContract->is_expired) {
+                return redirect()->back()->with('error', 'Only expired or cancelled contracts can be renewed.');
+            }
+            
+            // Check if there's already an active contract for this address
+            $activeContract = Contract::where('address_id', $oldContract->address_id)
+                ->where('status', 'active')
+                ->where('end_date', '>', now())
+                ->first();
+
+            if ($activeContract) {
+                return redirect()->back()->with('error', 'Cannot renew contract. There is already an active contract for this address.');
+            }
+        }
+
         $validated = $request->validate([
-            'address_id' => 'required|exists:addresses,id|unique:contracts,address_id',
+            'address_id' => 'required|exists:addresses,id',
             'type' => 'required|in:L,LS,C,Other',
             'centeral_machines' => 'required|numeric|min:0',
             'unit_machines' => 'required|numeric|min:0',
@@ -111,14 +186,55 @@ class ContractController extends Controller
             'attachment_url' => 'nullable|file|mimes:pdf|max:2048',
         ]);
 
+        // Check if address already has an active contract (only for new contracts, not renewals)
+        if (!$isRenewal) {
+            $address = Address::find($validated['address_id']);
+            if (!$address) {
+                return redirect()->back()
+                    ->withErrors(['address_id' => 'Address not found.'])
+                    ->withInput();
+            }
+
+            if (!$address->canHaveNewContract()) {
+                return redirect()->back()
+                    ->withErrors(['address_id' => 'This address already has an active contract. Only expired contracts can be renewed.'])
+                    ->withInput();
+            }
+        } else {
+            // For renewals, use the address from the old contract
+            $validated['address_id'] = $oldContract->address_id;
+        }
+
         // Generate start & end date
         $startDate = Carbon::parse($validated['start_date']);
         $endDate = (clone $startDate)->addMonths((int) $validated['duration_months']);
 
         // Generate contract number: CONT/YY/XYZ
         $year = $startDate->format('y');
-        $randomNumber = str_pad(mt_rand(1, 999), 3, '0', STR_PAD_LEFT);
-        $contractNum = "CONT/{$year}/{$randomNumber}";
+        
+        // Check if contract number already exists
+        do {
+            $lastContract = Contract::where('contract_num', 'like', "CONT/{$year}/%")
+                ->orderBy('contract_num', 'desc')
+                ->first();
+                
+            if ($lastContract) {
+                $lastNumber = (int) substr($lastContract->contract_num, -3);
+                $nextNumber = $lastNumber + 1;
+                if ($nextNumber > 999) {
+                    throw new \Exception('Contract number limit reached for this year');
+                }
+            } else {
+                $nextNumber = 1;
+            }
+            
+            $serialNumber = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+            $contractNum = "CONT/{$year}/{$serialNumber}";
+            
+            // Check if this contract number already exists
+            $exists = Contract::where('contract_num', $contractNum)->exists();
+            
+        } while($exists); // Keep trying until we get a unique number
 
         // Handle file upload to S3 (optional)
         $filePath = null;
@@ -127,7 +243,7 @@ class ContractController extends Controller
         }
 
         // Save the contract
-        Contract::create([
+        $newContract = Contract::create([
             'contract_num' => $contractNum,
             'client_id' => $client->id,
             'address_id' => $validated['address_id'],
@@ -149,6 +265,12 @@ class ContractController extends Controller
             'updated_by' => Auth::id(),
         ]);
 
+        if ($isRenewal) {
+            return redirect()
+                ->route('contracts.show', [$client, $newContract])
+                ->with('success', 'Contract renewed successfully.');
+        }
+
         return redirect()
             ->route('addresses.show', [$client->id, $validated['address_id']])
             ->with('success', 'Contract created successfully.');
@@ -163,6 +285,12 @@ class ContractController extends Controller
                 ->with('error', 'Cannot edit contracts for a blocked client.');
         }
 
+        // Check if contract is expired
+        if ($contract->status === 'expired') {
+            return redirect()->route('contracts.show', [$client, $contract])
+                ->with('error', 'Cannot edit expired contracts.');
+        }
+
         return view('pages.contracts.edit', compact('contract','client'));
     }
 
@@ -175,12 +303,18 @@ class ContractController extends Controller
                 ->with('error', 'Cannot update contracts for a blocked client.');
         }
 
+        // Check if contract is expired
+        if ($contract->status === 'expired') {
+            return redirect()->route('contracts.show', [$client, $contract])
+                ->with('error', 'Cannot update expired contracts.');
+        }
+
 
 
 
 
         $validated = $request->validate([
-            'address_id' => 'required|exists:addresses,id|unique:contracts,address_id,' . $contract->id,
+            'address_id' => 'required|exists:addresses,id',
             'type' => 'required|in:L,LS,C,Other',
             'centeral_machines' => 'required|numeric|min:0',
             'unit_machines' => 'required|numeric|min:0',
@@ -195,6 +329,20 @@ class ContractController extends Controller
             'details' => 'nullable|string',
             'attachment_url' => 'nullable|file|mimes:pdf|max:2048',
         ]);
+
+        // Enforce only one truly active contract per address when saving an active contract
+        if ($validated['status'] === 'active') {
+            $hasOtherActive = Contract::where('address_id', $validated['address_id'])
+                ->where('status', 'active')
+                ->where('end_date', '>', now())
+                ->where('id', '!=', $contract->id)
+                ->exists();
+            if ($hasOtherActive) {
+                return redirect()->back()
+                    ->withErrors(['address_id' => 'This address already has an active contract.'])
+                    ->withInput();
+            }
+        }
 
         // Recalculate end date based on new start and duration
         $startDate = Carbon::parse($validated['start_date']);
@@ -245,6 +393,19 @@ class ContractController extends Controller
                             'contract_id' => $contract->id,
                             'file_path' => $originalPath
                         ]);
+                        
+                        // Try to list files in the contracts directory to debug
+                        try {
+                            $files = Storage::disk('s3_contracts')->files('contracts');
+                            Log::info('Files in contracts directory', [
+                                'total_files' => count($files),
+                                'files' => array_slice($files, 0, 10) // Log first 10 files
+                            ]);
+                        } catch (\Exception $e) {
+                            Log::error('Failed to list files in contracts directory', [
+                                'error' => $e->getMessage()
+                            ]);
+                        }
                     }
                 } catch (\Exception $e) {
                     Log::error('Failed to delete attachment from S3', [
@@ -342,7 +503,7 @@ class ContractController extends Controller
             ]);
 
             return redirect()
-                ->route('contracts.show', [$client->id, $contract->id])
+                ->route('contracts.show', [$client, $contract])
                 ->with('success', 'Contract updated successfully.');
         } catch (\Exception $e) {
             Log::error('Contract update failed', [
@@ -367,10 +528,79 @@ class ContractController extends Controller
                 ->with('error', 'Cannot delete contracts for a blocked client.');
         }
 
+        // Check if contract is expired
+        if ($contract->status === 'expired') {
+            return redirect()->route('contracts.show', [$client, $contract])
+                ->with('error', 'Cannot delete expired contracts.');
+        }
+
         $contract->delete();
 
         return redirect()
             ->route('clients.show', $client->id)
             ->with('success', 'Contract deleted successfully.');
+    }
+    
+    /**
+     * Test S3 connectivity and file operations
+     */
+    public function testS3Operations(Contract $contract)
+    {
+        try {
+            $disk = Storage::disk('s3_contracts');
+            $originalPath = $contract->getRawOriginal('attachment_url');
+            
+            $result = [
+                'contract_id' => $contract->id,
+                'original_path' => $originalPath,
+                'attachment_url' => $contract->attachment_url,
+                'disk_exists' => $disk->exists($originalPath),
+                'disk_size' => $disk->exists($originalPath) ? $disk->size($originalPath) : null,
+                'bucket_name' => config('filesystems.disks.s3_contracts.bucket'),
+                'region' => config('filesystems.disks.s3_contracts.region'),
+            ];
+            
+            return response()->json($result);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
+        }
+    }
+
+    /**
+     * Renew an expired or cancelled contract by redirecting to the create form
+     */
+    public function renew(Client $client, Contract $contract)
+    {
+        // Check if client is blocked
+        if ($client->status === 'blocked') {
+            return redirect()->route('clients.show', $client)
+                ->with('error', 'Cannot renew contracts for a blocked client.');
+        }
+
+        // Check if contract can be renewed (expired or cancelled)
+        if (!in_array($contract->status, ['expired', 'cancelled']) && !$contract->is_expired) {
+            return redirect()->route('contracts.show', [$client, $contract])
+                ->with('error', 'Only expired or cancelled contracts can be renewed.');
+        }
+
+        // Check if there's already an active contract for this address
+        $activeContract = Contract::where('address_id', $contract->address_id)
+            ->where('status', 'active')
+            ->where('end_date', '>', now())
+            ->first();
+
+        if ($activeContract) {
+            return redirect()->route('contracts.show', [$client, $contract])
+                ->with('error', 'Cannot renew contract. There is already an active contract for this address.');
+        }
+
+        // Redirect to create form with renewal flag via query parameter
+        return redirect()->route('contracts.create', [
+            'client' => $client->id,
+            'renewal_contract_id' => $contract->id,
+        ]);
     }
 }

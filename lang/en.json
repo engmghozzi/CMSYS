@@ -98,6 +98,7 @@
     "Client Details": "Client Details",
     "Personal Information": "Personal Information",
     "Search": "Search",
+    "This address has an active contract. Edit and delete operations are disabled.": "This address has an active contract. Edit and delete operations are disabled.",
     "Clear": "Clear",
     "Search by customer Number": "Search by customer Number",
     "All Payment Transactions": "All Payment Transactions",
@@ -436,5 +437,16 @@
     "Manage system roles and permissions":"Manage system roles and permissions",
     "Edit Payment":"Edit Payment",
     "Payment Details":"Payment Details",
-    "Payment Status":"Payment Status"
+    "Payment Status":"Payment Status",
+    "Other":"Other",
+    "All contracts for this address":"All contracts for this address",
+    "total":"total",
+    "Active Contracts":"Active Contracts",
+    "Expired Contracts":"Expired Contracts",
+    "Cancelled Contracts":"Cancelled Contracts",
+    "Past Due":"Past Due",
+    "Cannot edit":"Cannot edit",
+    "contracts":"contracts",
+    "Cannot delete":"Cannot delete",
+    "expired":"expired"
 }

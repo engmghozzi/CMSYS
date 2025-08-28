@@ -23,6 +23,17 @@ class AddressController extends Controller
     //show
     public function show(Client $client, Address $address)
     {
+        // Eager load contracts with all related data
+        $address->load([
+            'contracts' => function($query) {
+                $query->orderBy('created_at', 'desc');
+            },
+            'contracts.payments',
+            'contracts.machines',
+            'contracts.creator',
+            'contracts.updater'
+        ]);
+        
         return view('pages.addresses.show', compact('client', 'address'));
     }
     
@@ -65,6 +76,12 @@ class AddressController extends Controller
                 ->with('error', 'Cannot edit addresses for a blocked client.');
         }
 
+        // Check if address has active contract
+        if (!$address->canHaveNewContract()) {
+            return redirect()->route('addresses.show', [$client->id, $address->id])
+                ->with('error', 'Cannot edit address with an active contract.');
+        }
+
         return view('pages.addresses.edit', compact('address','client'));
     }
 
@@ -75,6 +92,12 @@ class AddressController extends Controller
         if ($client->status === 'blocked') {
             return redirect()->route('clients.show', $client)
                 ->with('error', 'Cannot update addresses for a blocked client.');
+        }
+
+        // Check if address has active contract
+        if (!$address->canHaveNewContract()) {
+            return redirect()->route('addresses.show', [$client->id, $address->id])
+                ->with('error', 'Cannot update address with an active contract.');
         }
 
         $validated = $request->validate([
@@ -104,6 +127,12 @@ class AddressController extends Controller
         if ($client->status === 'blocked') {
             return redirect()->route('clients.show', $client)
                 ->with('error', 'Cannot delete addresses for a blocked client.');
+        }
+
+        // Check if address has active contract
+        if (!$address->canHaveNewContract()) {
+            return redirect()->route('addresses.show', [$client->id, $address->id])
+                ->with('error', 'Cannot delete address with an active contract.');
         }
 
         $address->delete();

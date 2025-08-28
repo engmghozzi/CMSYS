@@ -87,7 +87,7 @@ class PaymentController extends Controller
             'due_date' => 'required|date_format:d m Y',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
-            'status' => 'required|in:Unpaid,Paid',
+            'status' => 'required|in:Unpaid,Paid,Other',
         ]);
 
         // Only validate payment date if it's provided
@@ -150,7 +150,7 @@ class PaymentController extends Controller
             'due_date' => 'required|date',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
-            'status' => 'required|in:Unpaid,Paid',
+            'status' => 'required|in:Unpaid,Paid,Other',
         ]);
 
         // Only validate payment date if it's provided
@@ -191,7 +191,7 @@ class PaymentController extends Controller
         Payment::create($validated);
 
         return redirect()
-            ->route('contracts.show', [$client->id, $contract->id])
+            ->route('contracts.show', [$client, $contract])
             ->with('success', 'Payment created successfully.');
     }
 
@@ -233,7 +233,7 @@ class PaymentController extends Controller
             'due_date' => 'required|date',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
-            'status' => 'required|in:Unpaid,Paid',
+            'status' => 'required|in:Unpaid,Paid,Other',
         ]);
 
         $validated['updated_by'] = Auth::id();
@@ -242,7 +242,7 @@ class PaymentController extends Controller
         $payment->update($validated);
 
         // Redirect to contract show page with payments tab active
-        return redirect()->route('contracts.show', [$client->id, $payment->contract_id])->with('success', 'Payment updated successfully.')->with('active_tab', 'payments');
+        return redirect()->route('contracts.show', [$client, $payment->contract])->with('success', 'Payment updated successfully.')->with('active_tab', 'payments');
     }
 
     public function destroy(Client $client, Payment $payment)

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Loggable;
 
 class Feature extends Model
 {
-    use HasFactory;
+    use HasFactory, Loggable;
 
     protected $fillable = [
         'name',
@@ -23,13 +24,8 @@ class Feature extends Model
         'is_active' => 'boolean'
     ];
 
-    // Relationships
-    public function users()
-    {
-        return $this->belongsToMany(User::class, 'user_features')
-                    ->withPivot('is_granted')
-                    ->withTimestamps();
-    }
+    // Relationships - users removed since features are now role-based only
+    // public function users() - REMOVED
 
     public function roles()
     {
@@ -65,33 +61,46 @@ class Feature extends Model
     // Enhanced feature management methods
     public function getUsageStats()
     {
-        $userCount = $this->users()->count();
         $roleCount = $this->roles()->count();
-        $grantedUserCount = $this->users()->wherePivot('is_granted', true)->count();
         $grantedRoleCount = $this->roles()->wherePivot('is_granted', true)->count();
         
+        // Calculate user statistics based on roles
+        $totalUsers = 0;
+        $grantedUsers = 0;
+        $revokedUsers = 0;
+        
+        if ($roleCount > 0) {
+            // Get all users who have roles that include this feature
+            $usersWithFeature = \App\Models\User::whereHas('role', function($query) {
+                $query->whereHas('features', function($subQuery) {
+                    $subQuery->where('features.id', $this->id);
+                });
+            })->count();
+            
+            $usersWithGrantedFeature = \App\Models\User::whereHas('role', function($query) {
+                $query->whereHas('features', function($subQuery) {
+                    $subQuery->where('features.id', $this->id)
+                             ->where('role_features.is_granted', true);
+                });
+            })->count();
+            
+            $totalUsers = $usersWithFeature;
+            $grantedUsers = $usersWithGrantedFeature;
+            $revokedUsers = $totalUsers - $grantedUsers;
+        }
+        
         return [
-            'total_users' => $userCount,
+            'total_users' => $totalUsers,
+            'granted_users' => $grantedUsers,
+            'revoked_users' => $revokedUsers,
             'total_roles' => $roleCount,
-            'granted_users' => $grantedUserCount,
             'granted_roles' => $grantedRoleCount,
-            'revoked_users' => $userCount - $grantedUserCount,
             'revoked_roles' => $roleCount - $grantedRoleCount
         ];
     }
 
-    public function getAssignedUsers()
-    {
-        return $this->users()->with('role')->get()->map(function ($user) {
-            return [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'role' => $user->role ? $user->role->name : null,
-                'is_granted' => $user->pivot->is_granted
-            ];
-        });
-    }
+    // User assignment methods removed since features are now role-based only
+    // public function getAssignedUsers() - REMOVED
 
     public function getAssignedRoles()
     {
@@ -107,7 +116,7 @@ class Feature extends Model
 
     public function canBeDeleted()
     {
-        return $this->users()->count() === 0 && $this->roles()->count() === 0;
+        return $this->roles()->count() === 0;
     }
 
     public function getCategoryDisplayName()

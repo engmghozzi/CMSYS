@@ -65,7 +65,7 @@ class VisitController extends Controller
         $validated['updated_by'] = Auth::id();
 
         $visit = Visit::create($validated);
-        return redirect()->route('contracts.show', [$client->id, $contract->id])
+        return redirect()->route('contracts.show', [$client, $contract])
             ->with('success', 'Visit created successfully.');
     }
 

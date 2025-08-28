@@ -1,21 +1,27 @@
 <x-layouts.app :title="__('Client Details')">
-    <div class="min-h-screen">
-        <!-- Page Header -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-            <div>
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">{{ __('Client Details') }}</h1>
-                <p class="text-sm sm:text-base text-gray-600 mt-1">{{__('Client')}} #{{ $client->id }} - {{ $client->name }}</p>
-            </div>
-            <div class="flex flex-wrap gap-3">
-                <a href="{{ route('clients.index') }}"
-                   class="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-3 sm:px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                    {{ __('Back') }}
-                </a>
-                @if(auth()->user()->hasPermission('clients.update'))
-                    @if($client->isBlocked())
+
+    <x-ui.form-layout
+        :title="__('Client Details')"
+        :description="__('Client') . ' #' . $client->id . ' - ' . $client->name"
+        :back-url="route('clients.index')"
+        :back-label="__('Back')"
+    >
+        <!-- Action Buttons -->
+        <div class="flex flex-wrap gap-3 mb-6">
+            @if(auth()->user()->hasPermission('clients.update'))
+                @if($client->isBlocked())
+                    @if(auth()->user()->hasPermission('clients.manage'))
+                        <!-- Admin/Superadmin can edit blocked clients -->
+                        <a href="{{ route('clients.edit', $client->id) }}"
+                           class="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-3 sm:px-4 py-2 text-sm text-white hover:bg-orange-700 transition-colors"
+                           title="Edit blocked client (Admin access)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                            </svg>
+                            {{__('Edit Blocked Client')}}
+                        </a>
+                    @else
+                        <!-- Regular users cannot edit blocked clients -->
                         <button disabled
                                class="inline-flex items-center gap-2 rounded-lg bg-gray-400 px-3 sm:px-4 py-2 text-sm text-white cursor-not-allowed"
                                title="Cannot edit blocked client">
@@ -24,21 +30,21 @@
                             </svg>
                             {{__('Edit Client')}}
                         </button>
-                    @else
-                        <a href="{{ route('clients.edit', $client->id) }}"
-                           class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 sm:px-4 py-2 text-sm text-white hover:bg-blue-700 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
-                            </svg>
-                            {{__('Edit Client')}}
-                        </a>
                     @endif
+                @else
+                    <a href="{{ route('clients.edit', $client->id) }}"
+                       class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 sm:px-4 py-2 text-sm text-white hover:bg-blue-700 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
+                        </svg>
+                        {{__('Edit Client')}}
+                    </a>
                 @endif
-            </div>
+            @endif
         </div>
 
         @if(session('success'))
-            <div class="mb-6 rounded-lg bg-green-50 border border-green-200 p-4">
+            <div class="mb-4 rounded-lg bg-green-50 border border-green-200 p-4">
                 <div class="flex items-center">
                     <svg class="h-5 w-5 text-green-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
@@ -49,7 +55,7 @@
         @endif
 
         @if(session('error'))
-            <div class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
+            <div class="mb-4 rounded-lg bg-red-50 border border-red-200 p-4">
                 <div class="flex items-center">
                     <svg class="h-5 w-5 text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -60,7 +66,7 @@
         @endif
 
         @if($client->isBlocked())
-            <div class="mb-6 rounded-lg bg-red-50 border border-red-200 p-4">
+            <div class="mb-4 rounded-lg bg-red-50 border border-red-200 p-4">
                 <div class="flex items-center">
                     <svg class="h-5 w-5 text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -73,7 +79,7 @@
         @endif
 
         <!-- Client Information Card -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
             <div class="px-4 sm:px-6 py-3 border-b border-gray-200">
                 <h2 class="text-lg font-semibold text-gray-900">{{__('Personal Information')}}</h2>
             </div>
@@ -121,7 +127,7 @@
         </div>
 
         <!-- Quick Stats -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -181,7 +187,7 @@
         </div>
 
         <!-- Addresses Section -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
             <div class="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h2 class="text-lg sm:text-xl font-semibold text-gray-900">{{__('Addresses')}}</h2>
                 @if(auth()->user()->hasPermission('clients.create'))
@@ -241,7 +247,7 @@
                                 <!-- Action Buttons -->
                                 <div class="flex gap-2 pt-2 border-t border-gray-100">
                                     @if(auth()->user()->hasPermission('clients.read'))
-                                        <a href="{{ route('addresses.show', [$client->id, $address->id]) }}"
+                                        <a href="{{ route('addresses.show', [$client, $address]) }}"
                                            class="flex-1 inline-flex items-center justify-center gap-1 rounded-md bg-blue-600 px-2 py-1.5 text-xs text-white hover:bg-blue-700 transition-colors">
                                             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -303,5 +309,6 @@
                 @endif
             </div>
         </div>
-    </div>
+    </x-ui.form-layout>
+
 </x-layouts.app>

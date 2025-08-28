@@ -53,7 +53,7 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::active()->with('features')->get();
-        $features = Feature::active()->orderBy('category')->orderBy('display_name')->get();
+        $features = Feature::all();
         
         return view('pages.users.create', compact('roles', 'features'));
     }
@@ -66,38 +66,14 @@ class UserController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'role_id' => 'required|exists:roles,id',
             'is_active' => 'sometimes|boolean',
-            'features' => 'sometimes|array',
-            'features.*' => 'exists:features,id',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
         $validated['is_active'] = $request->has('is_active');
 
-        DB::transaction(function () use ($validated, $request) {
+        DB::transaction(function () use ($validated) {
             $user = User::create($validated);
-
-            // Get the selected role and its granted features
-            $role = Role::with('features')->find($validated['role_id']);
-            $roleGrantedFeatures = $role->features()->wherePivot('is_granted', true)->pluck('features.id')->toArray();
-            
-            // Get additional features selected by user
-            $additionalFeatures = $request->get('features', []);
-            
-            // Get all features to handle the complete permission set
-            $allFeatures = Feature::all();
-            
-            foreach ($allFeatures as $feature) {
-                $isRoleGranted = in_array($feature->id, $roleGrantedFeatures);
-                $isUserGranted = in_array($feature->id, $additionalFeatures);
-                
-                if ($isRoleGranted || $isUserGranted) {
-                    // Grant feature if it's part of role OR user explicitly selected it
-                    $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => true]]);
-                } else {
-                    // Explicitly revoke feature if it's not granted by role and not selected by user
-                    $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => false]]);
-                }
-            }
+            // User permissions now come only from their assigned role
         });
 
         return redirect()->route('users.index')
@@ -116,17 +92,14 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $roles = Role::active()->with('features')->get();
-        $features = Feature::active()->orderBy('category')->orderBy('display_name')->get();
-        $userFeatures = $user->features()->wherePivot('is_granted', true)->get()->pluck('id')->toArray();
-        $userGrantedFeatures = $user->features()->wherePivot('is_granted', true)->get();
-        $userRevokedFeatures = $user->features()->wherePivot('is_granted', false)->get();
+        $features = Feature::all();
         $effectivePermissions = $user->getEffectivePermissions();
         
         // Get current role's granted features for comparison
         $currentRole = $user->role;
         $roleGrantedFeatures = $currentRole ? $currentRole->features()->wherePivot('is_granted', true)->get() : collect();
         
-        return view('pages.users.edit', compact('user', 'roles', 'features', 'userFeatures', 'userGrantedFeatures', 'userRevokedFeatures', 'effectivePermissions', 'roleGrantedFeatures'));
+        return view('pages.users.edit', compact('user', 'roles', 'features', 'effectivePermissions', 'roleGrantedFeatures'));
     }
 
     public function update(Request $request, $id)
@@ -139,8 +112,6 @@ class UserController extends Controller
             'password' => 'nullable|string|min:8|confirmed',
             'role_id' => 'required|exists:roles,id',
             'is_active' => 'sometimes|boolean',
-            'features' => 'sometimes|array',
-            'features.*' => 'exists:features,id',
         ]);
 
         if ($request->filled('password')) {
@@ -151,31 +122,9 @@ class UserController extends Controller
 
         $validated['is_active'] = $request->has('is_active');
 
-        DB::transaction(function () use ($user, $validated, $request) {
+        DB::transaction(function () use ($user, $validated) {
             $user->update($validated);
-
-            // Get the selected role and its granted features
-            $role = Role::with('features')->find($validated['role_id']);
-            $roleGrantedFeatures = $role->features()->wherePivot('is_granted', true)->pluck('features.id')->toArray();
-            
-            // Get additional features selected by user
-            $additionalFeatures = $request->get('features', []);
-            
-            // Get all features to handle the complete permission set
-            $allFeatures = Feature::all();
-            
-            foreach ($allFeatures as $feature) {
-                $isRoleGranted = in_array($feature->id, $roleGrantedFeatures);
-                $isUserGranted = in_array($feature->id, $additionalFeatures);
-                
-                if ($isRoleGranted || $isUserGranted) {
-                    // Grant feature if it's part of role OR user explicitly selected it
-                    $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => true]]);
-                } else {
-                    // Explicitly revoke feature if it's not granted by role and not selected by user
-                    $user->features()->syncWithoutDetaching([$feature->id => ['is_granted' => false]]);
-                }
-            }
+            // User permissions now come only from their assigned role
         });
 
         return redirect()->route('users.show', $user->id)
@@ -191,37 +140,7 @@ class UserController extends Controller
             ->with('success', 'User deleted successfully');
     }
 
-    // Additional methods for permission management
-    public function permissions(User $user)
-    {
-        $effectivePermissions = $user->getEffectivePermissions();
-        $allPermissions = $user->getAllPermissions();
-        $features = Feature::active()->orderBy('category')->orderBy('display_name')->get();
-        
-        return view('pages.users.permissions', compact('user', 'effectivePermissions', 'allPermissions', 'features'));
-    }
-
-    public function updatePermissions(Request $request, User $user)
-    {
-        $validated = $request->validate([
-            'permissions' => 'sometimes|array',
-            'permissions.*' => 'exists:features,id',
-        ]);
-
-        $selectedPermissions = $request->get('permissions', []);
-        $user->syncPermissions($selectedPermissions);
-
-        return redirect()->route('users.permissions', $user)
-            ->with('success', 'User permissions updated successfully');
-    }
-
-    public function clearOverrides(User $user)
-    {
-        $user->clearPermissionOverrides();
-
-        return redirect()->route('users.permissions', $user)
-            ->with('success', 'User permission overrides cleared successfully');
-    }
+    // User-specific permission management removed - permissions come only from roles
 
 
 }

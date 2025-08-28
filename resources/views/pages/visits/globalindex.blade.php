@@ -76,11 +76,11 @@
                             <!-- Top Row -->
                             <div class="flex items-center justify-between mb-2">
                                 <div class="flex items-center gap-3">
-                                    <a href="{{ route('pages.visits.show', [$visit->client, $visit->contract, $visit]) }}" class="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200">
+                                    <a href="{{ route('pages.visits.show', [$visit->client->id, $visit->contract->id, $visit->id]) }}" class="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 hover:bg-blue-200">
                                         #{{ $visit->id }}
                                     </a>
                                     <h3 class="font-medium text-gray-900">
-                                        <a href="{{ route('pages.visits.show', [$visit->client, $visit->contract, $visit]) }}" class="hover:underline">
+                                        <a href="{{ route('pages.visits.show', [$visit->client->id, $visit->contract->id, $visit->id]) }}" class="hover:underline">
                                             {{ $visit->client->name }}
                                         </a>
                                     </h3>
@@ -122,7 +122,7 @@
                                 <!-- Actions -->
                                 <div class="flex items-center gap-2">
                                     @if(auth()->user()->hasPermission('visits.read'))
-                                        <a href="{{ route('pages.visits.show', [$visit->client, $visit->contract, $visit]) }}"
+                                        <a href="{{ route('pages.visits.show', [$visit->client->id, $visit->contract->id, $visit->id]) }}"
                                             class="inline-flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -130,7 +130,7 @@
                                         </a>
                                     @endif
                                     @if(auth()->user()->hasPermission('visits.update') && $visit->visit_status !== 'completed')
-                                        <a href="{{ route('pages.visits.edit', [$visit->client, $visit->contract, $visit]) }}"
+                                        <a href="{{ route('pages.visits.edit', [$visit->client->id, $visit->contract->id, $visit->id]) }}"
                                             class="inline-flex items-center justify-center w-8 h-8 text-green-600 hover:bg-green-50 rounded-full transition-colors">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
@@ -139,7 +139,7 @@
                                     @endif
                                     @if(auth()->user()->hasPermission('visits.delete') && $visit->visit_status !== 'completed')
                                         <form method="POST" 
-                                            action="{{ route('pages.visits.destroy', [$visit->client, $visit->contract, $visit]) }}"
+                                            action="{{ route('pages.visits.destroy', [$visit->client->id, $visit->contract->id, $visit->id]) }}"
                                             onsubmit="return confirm('{{ __('Are you sure you want to delete this visit?') }}');"
                                             class="inline">
                                             @csrf

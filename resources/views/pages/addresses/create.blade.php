@@ -1,33 +1,12 @@
 <x-layouts.app :title="'Add Address for ' . $client->name">
 
-    <div class="max-w-3xl mx-auto bg-white p-4 md:p-6 rounded shadow-md">
-
-        {{-- Client Info Header --}}
-        <div class="mb-6 border-b pb-4">
-            <h2 class="text-xl font-semibold text-gray-800">{{ __('Add Address to') }} </h2>
-            <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <span class="text-gray-600">{{ __('Client Name') }}:</span>
-                    <span class="font-medium">{{ $client->name }}</span>
-                </div>
-                <div>
-                    <span class="text-gray-600">{{ __('ID') }}:</span>
-                    <span class="font-medium">{{ $client->id }}</span>
-                </div>
-            </div>
-        </div>
-
-        @if ($errors->any())
-            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                <ul class="list-disc pl-5">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('addresses.store', $client->id) }}" class="space-y-4 md:space-y-6">
+    <x-ui.form-layout
+        :title="__('Add Address')"
+        :subtitle="$client->name"
+        :back-url="route('clients.show', $client)"
+        :back-label="__('Back')"
+    >
+        <form method="POST" action="{{ route('addresses.store', $client->id) }}" class="space-y-6">
             @csrf
 
             <input type="hidden" name="client_id" value="{{ $client->id }}">
@@ -86,17 +65,17 @@
                           class="mt-1 w-full border rounded px-3 py-2 focus:ring-blue-500 focus:border-blue-500">{{ old('address_notes') }}</textarea>
             </div>
 
-            <div class="flex justify-end space-x-3">
-                <a href="{{ route('clients.show', $client->id) }}"
-                   class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+            <div class="flex flex-col sm:flex-row justify-end gap-3 pt-6 border-t border-gray-200">
+                <a href="{{ route('clients.show', $client) }}"
+                   class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors">
                     {{ __('Back') }}
                 </a>
                 <button type="submit"
-                        class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
                     {{ __('Save') }}
                 </button>
             </div>
         </form>
-    </div>
+    </x-ui.form-layout>
 
 </x-layouts.app>

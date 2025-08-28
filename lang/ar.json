@@ -98,6 +98,7 @@
     "Client Details": "تفاصيل العميل",
     "Personal Information": "المعلومات الشخصية",
     "Search": "بحث",
+    "This address has an active contract. Edit and delete operations are disabled.": "هذا العنوان له عقد نشط. عمليات التعديل والحذف معطلة.",
     "Clear": "مسح",
     "Search by customer Number": "البحث برقم العميل",
     "All Payment Transactions": "جميع معاملات الدفع",
@@ -507,6 +508,26 @@
     "Sum of all paid amounts":"إجمالي المدفوع",
     "Sum of all remaining amounts":"إجمالي المتبقي",
     "Sum of all awaiting amounts for next month":"إجمالي المتوقع تحصيله الشهر القادم",
-    "Visits Statistics":"إحصائيات الزيارات"
-
+    "Visits Statistics":"إحصائيات الزيارات",
+    "All contracts for this address":"جميع العقود لهذا العنوان",
+    "total":"إجمالي",
+    "Active Contracts":"العقود النشطة",
+    "Expired Contracts":"العقود المنتهية",
+    "Cancelled Contracts":"العقود الملغاة",
+    "Past Due":"متأخر",
+    "Cannot edit":"لا يمكن التعديل",
+    "contracts":"العقود",
+    "Cannot delete":"لا يمكن الحذف",
+    "Renew Contract":"تجديد العقد",
+    "Machine for Contract":"ماكينة للعقد",
+    "Contract Number:":"رقم العقد:",
+    "Client:":"العميل:",
+    "Status:":"الحالة:",
+    "Efficiency (%)":"الكفاءة (%)",
+    "Estimated Cost (KWD)":"التكلفة التقديرية (د.ك)",
+    "Create Machine":"إنشاء ماكينة",
+    "Create Payment":"إنشاء دفعة",
+    "Enter any additional notes about this payment":"أدخل أي ملاحظات إضافية عن هذه الدفعة",
+    "Total Amount:":"إجمالي المبلغ:"
+    
 }

@@ -41,6 +41,7 @@
                             <option value="" {{ request('status', '') == '' ? 'selected' : '' }}>{{ __('All Status') }}</option>
                             <option value="Paid" {{ request('status') === 'Paid' ? 'selected' : '' }}>{{ __('Paid') }}</option>
                             <option value="Unpaid" {{ request('status') === 'Unpaid' ? 'selected' : '' }}>{{ __('Unpaid') }}</option>
+                            <option value="Other" {{ request('status') === 'Other' ? 'selected' : '' }}>{{ __('Other') }}</option>
                         </select>
                     </div>
                     <div class="md:col-span-1">
@@ -103,15 +104,15 @@
                                 </span>
                                 <div class="min-w-0">
                                     <h3 class="font-medium text-gray-900 truncate">
-                                        <a href="{{ route('clients.show', $payment->client->id) }}" class="hover:underline">
+                                        <a href="{{ route('clients.show', $payment->client) }}" class="hover:underline">
                                             {{ $payment->client->name }}
                                         </a>
                                     </h3>
                                     <div class="flex items-center gap-2 mt-1">
-                                        <a href="{{ route('contracts.show', [$payment->client->id, $payment->contract->id]) }}" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200">
+                                        <a href="{{ route('contracts.show', [$payment->client, $payment->contract]) }}" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200">
                                             {{ $payment->contract->contract_num }}
                                         </a>
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium @if ($payment->status === 'Paid') bg-green-100 text-green-800 @elseif ($payment->status === 'Unpaid') bg-red-100 text-red-800 @else bg-gray-100 text-gray-800 @endif">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium @if ($payment->status === 'Paid') bg-green-100 text-green-800 @elseif ($payment->status === 'Unpaid') bg-red-100 text-red-800 @elseif ($payment->status === 'Other') bg-yellow-100 text-yellow-800 @else bg-gray-100 text-gray-800 @endif">
                                             {{ __($payment->status) }}
                                         </span>
                                         <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800">

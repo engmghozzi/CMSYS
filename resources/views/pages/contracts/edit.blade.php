@@ -1,27 +1,20 @@
 <x-layouts.app :title="'Edit Contract for ' . $client->name">
-    <div class="min-h-screen bg-gray-50 rounded-xl shadow-lg border border-gray-200 p-6 w-3/4 mx-auto">
-        <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ __('Edit Contract') }} # {{ $contract->contract_num }}</h1>
-        <p class="text-gray-600 mb-6">{{ __('Client') }}: <span class="font-semibold">{{ $client->name }}</span></p>
 
-        @if ($errors->any())
-            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                <ul class="list-disc pl-5">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('contracts.update', [$client->id, $contract->id]) }}" class="space-y-4" enctype="multipart/form-data">
+    <x-ui.form-layout
+        :title="__('Edit Contract') . ' # ' . $contract->contract_num"
+        :description="__('Client') . ': ' . $client->name"
+        :back-url="route('contracts.show', [$client, $contract])"
+        :back-label="__('Back to Contract')"
+    >
+        <form method="POST" action="{{ route('contracts.update', [$client->id, $contract->id]) }}" class="space-y-6" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
             <input type="hidden" name="address_id" value="{{ $contract->address_id }}">
 
             <!-- Basic Contract Information Section -->
-            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                <h2 class="text-lg font-semibold mb-4">{{ __('Contract Information') }}</h2>
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h2 class="text-lg font-semibold mb-4 text-gray-900">{{ __('Contract Information') }}</h2>
                 
                 <!-- Address (read-only) -->
                 <div class="mb-4">
@@ -32,53 +25,55 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Contract Type') }}</label>
-                        <select name="type" required class="w-full border rounded px-4 py-2 bg-white shadow-sm">
-                        @foreach (['L', 'LS', 'C', 'Other'] as $type)
-                            <option value="{{ $type }}" {{ old('type', $contract->type) === $type ? 'selected' : '' }}>{{ $type }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                        <select name="type" required class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            @foreach (['L', 'LS', 'C', 'Other'] as $type)
+                                <option value="{{ $type }}" {{ old('type', $contract->type) === $type ? 'selected' : '' }}>{{ $type }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Start Date') }}</label>
-                        <input type="date" name="start_date" value="{{ old('start_date', $contract->start_date) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
-                </div>
+                        <input type="date" name="start_date" value="{{ old('start_date', $contract->start_date) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
 
-                <div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Duration')}} ({{__('months')}})</label>
-                        <input type="number" step="0.01" name="duration_months" value="{{ old('duration_months', $contract->duration_months) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
+                        <input type="number" step="0.01" name="duration_months" value="{{ old('duration_months', $contract->duration_months) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                     </div>
                 </div>
             </div>
+
             <!-- Machines Section -->
-            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                <h2 class="text-lg font-semibold mb-4">{{ __('Machines') }}</h2>
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h2 class="text-lg font-semibold mb-4 text-gray-900">{{ __('Machines') }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Central Machines') }}</label>
-                        <input type="number" name="centeral_machines" value="{{ old('centeral_machines', $contract->centeral_machines) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
-                </div>
+                        <input type="number" name="centeral_machines" value="{{ old('centeral_machines', $contract->centeral_machines) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
 
-                <div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Unit Machines') }}</label>
-                        <input type="number" name="unit_machines" value="{{ old('unit_machines', $contract->unit_machines) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
+                        <input type="number" name="unit_machines" value="{{ old('unit_machines', $contract->unit_machines) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                     </div>
                 </div>
             </div>
-            <!-- Financial Information Section -->
-            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                <h2 class="text-lg font-semibold mb-4">{{ __('Financial Information') }}</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Total Amount') }}</label>
-                        <input type="number" step="0.001" name="total_amount" value="{{ old('total_amount', $contract->total_amount) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
-                </div>
 
-                <div>
+            <!-- Financial Information Section -->
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h2 class="text-lg font-semibold mb-4 text-gray-900">{{ __('Financial Information') }}</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Total Amount') }}</label>
+                        <input type="number" step="0.001" name="total_amount" value="{{ old('total_amount', $contract->total_amount) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Status') }}</label>
-                        <select name="status" class="w-full border rounded px-4 py-2 bg-white shadow-sm">
+                        <select name="status" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             @foreach (['active', 'expired', 'cancelled'] as $status)
                                 <option value="{{ $status }}" {{ old('status', $contract->status) === $status ? 'selected' : '' }}>
                                     {{ ucfirst($status) }}
@@ -88,45 +83,47 @@
                     </div>
                 </div>
             </div>
+
             <!-- Commission Section -->
-            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                <h2 class="text-lg font-semibold mb-4">{{ __('Commission') }}</h2>
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h2 class="text-lg font-semibold mb-4 text-gray-900">{{ __('Commission') }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Commission Amount') }}</label>
-                        <input type="number" step="0.001" name="commission_amount" value="{{ old('commission_amount', $contract->commission_amount) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
-                </div>
+                        <input type="number" step="0.001" name="commission_amount" value="{{ old('commission_amount', $contract->commission_amount) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
 
-                <div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Commission Type') }}</label>
-                        <select name="commission_type" class="w-full border rounded px-4 py-2 bg-white shadow-sm">
-                        <option value="">None</option>
-                        @foreach (['Incentive Bonus', 'Referral Commission', 'Other'] as $type)
-                            <option value="{{ $type }}" {{ old('commission_type', $contract->commission_type) === $type ? 'selected' : '' }}>
-                                {{ $type }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                        <select name="commission_type" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">None</option>
+                            @foreach (['Incentive Bonus', 'Referral Commission', 'Other'] as $type)
+                                <option value="{{ $type }}" {{ old('commission_type', $contract->commission_type) === $type ? 'selected' : '' }}>
+                                    {{ $type }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                <div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Commission Recipient') }}</label>
-                        <input type="text" name="commission_recipient" value="{{ old('commission_recipient', $contract->commission_recipient) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
-                </div>
+                        <input type="text" name="commission_recipient" value="{{ old('commission_recipient', $contract->commission_recipient) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
 
-                <div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Commission Date') }}</label>
-                        <input type="date" name="commission_date" value="{{ old('commission_date', $contract->commission_date) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
+                        <input type="date" name="commission_date" value="{{ old('commission_date', $contract->commission_date) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                     </div>
                 </div>
             </div>
+
             <!-- Additional Details Section -->
-            <div class="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                <h2 class="text-lg font-semibold mb-4">{{ __('Additional Details') }}</h2>
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <h2 class="text-lg font-semibold mb-4 text-gray-900">{{ __('Additional Details') }}</h2>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Details') }}</label>
-                    <textarea name="details" rows="4" class="w-full border rounded px-4 py-2 bg-white shadow-sm">{{ old('details', $contract->details) }}</textarea>
-            </div>
+                    <textarea name="details" rows="4" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">{{ old('details', $contract->details) }}</textarea>
+                </div>
 
                 <div class="mt-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Attachment') }} ({{ __('Upload to replace') }})</label>
@@ -160,18 +157,19 @@
                 </div>
             </div>
 
-            <div class="flex justify-end space-x-2 mt-6">
-                <a href="{{ route('contracts.show', [$client->id, $contract->id]) }}"
-                   class="inline-flex items-center gap-2 rounded bg-gray-500 px-3 py-2 text-white hover:bg-red-500 hover:text-white">
+            <!-- Form Actions -->
+            <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+                <a href="{{ route('contracts.show', [$client, $contract]) }}"
+                   class="px-6 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                     {{ __('Cancel') }}
                 </a>
                 <button type="submit"
-                        class="inline-flex items-center gap-2 rounded bg-blue-600 px-3 py-2 text-white hover:bg-blue-700">
+                        class="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     {{ __('Update') }}
                 </button>
             </div>
         </form>
-    </div>
+    </x-ui.form-layout>
 
     <script>
         function deleteAttachment() {
@@ -185,4 +183,5 @@
             }
         }
     </script>
+
 </x-layouts.app>

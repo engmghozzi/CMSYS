@@ -39,15 +39,6 @@ class LogController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        // Filter by time range
-        if ($request->filled('time_from')) {
-            $query->whereTime('created_at', '>=', $request->time_from);
-        }
-
-        if ($request->filled('time_to')) {
-            $query->whereTime('created_at', '<=', $request->time_to);
-        }
-
         // Get logs with pagination
         $logs = $query->orderBy('created_at', 'desc')->paginate(20);
 

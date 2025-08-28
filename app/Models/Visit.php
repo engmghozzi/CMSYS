@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Loggable;
 
 class Visit extends Model
 {
     /** @use HasFactory<\Database\Factories\VisitFactory> */
-    use HasFactory;
+    use HasFactory, Loggable;
     protected $guarded = ['id'];
     
     protected $casts = [

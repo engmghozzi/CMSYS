@@ -96,7 +96,7 @@
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('User') }}</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Email') }}</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Status') }}</th>
-                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Permission Overrides') }}</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Role Permissions') }}</th>
                                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Actions') }}</th>
                                     </tr>
                                 </thead>
@@ -126,11 +126,11 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 @php
-                                                    $overrides = $user->features()->count();
+                                                    $rolePermissions = $user->role ? $user->role->features()->wherePivot('is_granted', true)->count() : 0;
                                                 @endphp
-                                                @if($overrides > 0)
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                        {{ $overrides }} {{ __('overrides') }}
+                                                @if($rolePermissions > 0)
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        {{ $rolePermissions }} {{ __('permissions') }}
                                                     </span>
                                                 @else
                                                     <span class="text-gray-400">{{ __('None') }}</span>
@@ -142,8 +142,7 @@
                                                        class="text-blue-600 hover:text-blue-900">{{ __('View') }}</a>
                                                     <a href="{{ route('users.edit', $user) }}" 
                                                        class="text-indigo-600 hover:text-indigo-900">{{ __('Edit') }}</a>
-                                                    <a href="{{ route('users.permissions', $user) }}" 
-                                                       class="text-green-600 hover:text-green-900">{{ __('Permissions') }}</a>
+                                                    <!-- Permissions link removed - permissions now managed through roles only -->
                                                 </div>
                                             </td>
                                         </tr>
@@ -181,7 +180,7 @@
                     <div class="ml-3">
                         <h3 class="text-sm font-medium text-blue-800">{{ __('Role Management') }}</h3>
                         <div class="mt-2 text-sm text-blue-700">
-                            <p>{{ __('Users with this role will inherit all permissions assigned to the role. Individual users can have permission overrides that take precedence over role permissions.') }}</p>
+                            <p>{{ __('Users with this role will inherit all permissions assigned to the role. Permissions are now managed through roles only - no individual user overrides.') }}</p>
                         </div>
                     </div>
                 </div>
