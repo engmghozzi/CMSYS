@@ -120,7 +120,7 @@ class RoleController extends Controller
         $role->load(['users', 'features']);
         $effectivePermissions = $role->getEffectivePermissions();
         $allPermissions = $role->getAllPermissions();
-        $assignedUsers = $role->users()->with('features')->get();
+        $assignedUsers = $role->users()->with('role.features')->get();
         
         return view('pages.roles.show', compact('role', 'effectivePermissions', 'allPermissions', 'assignedUsers'));
     }
@@ -256,7 +256,7 @@ class RoleController extends Controller
 
     public function users(Role $role)
     {
-        $users = $role->users()->with('features')->paginate(10);
+        $users = $role->users()->with('role.features')->paginate(10);
         
         return view('pages.roles.users', compact('role', 'users'));
     }

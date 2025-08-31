@@ -69,6 +69,12 @@ class PaymentController extends Controller
                 ->with('error', 'Cannot add payments to a blocked client.');
         }
 
+        // Check if contract is fully collected
+        if ($contract->is_fully_collected) {
+            return redirect()->route('contracts.show', [$client, $contract])
+                ->with('error', 'This contract is already fully collected. You cannot add more payments.');
+        }
+
         return view('pages.payments.create-from-contract', compact('client', 'contract'));
     }
 
@@ -214,6 +220,12 @@ class PaymentController extends Controller
                 ->with('error', 'Cannot edit payments for a blocked client.');
         }
 
+        // Check if contract is fully collected
+        if ($payment->contract->is_fully_collected) {
+            return redirect()->route('contracts.show', [$client, $payment->contract])
+                ->with('error', 'This contract is already fully collected. You cannot edit payments.');
+        }
+
         $client = $payment->client;
         $contracts = $client->contracts; // fetch contracts related to this client
         return view('pages.payments.edit', compact('payment', 'client', 'contracts'));
@@ -225,6 +237,12 @@ class PaymentController extends Controller
         if ($client->status === 'blocked') {
             return redirect()->route('clients.show', $client)
                 ->with('error', 'Cannot update payments for a blocked client.');
+        }
+
+        // Check if contract is fully collected
+        if ($payment->contract->is_fully_collected) {
+            return redirect()->route('contracts.show', [$client, $payment->contract])
+                ->with('error', 'This contract is already fully collected. You cannot update payments.');
         }
 
         $validated = $request->validate([
@@ -251,6 +269,12 @@ class PaymentController extends Controller
         if ($client->status === 'blocked') {
             return redirect()->route('clients.show', $client)
                 ->with('error', 'Cannot delete payments for a blocked client.');
+        }
+
+        // Check if contract is fully collected
+        if ($payment->contract->is_fully_collected) {
+            return redirect()->route('contracts.show', [$client, $payment->contract])
+                ->with('error', 'This contract is already fully collected. You cannot delete payments.');
         }
 
         $payment->delete();

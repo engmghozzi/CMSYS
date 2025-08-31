@@ -78,7 +78,7 @@
                         <h2 class="text-lg font-semibold text-gray-900 mb-6">{{ __('Permissions') }}</h2>
                         
                         @php
-                            $grantedFeatures = $role->features->where('pivot.is_granted', true);
+                            $grantedFeatures = $role->features()->wherePivot('is_granted', true)->get();
                             $categories = $grantedFeatures->groupBy('category');
                         @endphp
 

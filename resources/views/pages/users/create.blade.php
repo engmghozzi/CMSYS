@@ -56,7 +56,7 @@
                             <option value="">{{ __('Select a role') }}</option>
                             @foreach($roles as $role)
                                 @php
-                                    $roleGrantedFeatures = $role->features->where('pivot.is_granted', true);
+                                    $roleGrantedFeatures = $role->features()->wherePivot('is_granted', true)->get();
                                     $featureIds = $roleGrantedFeatures->pluck('id')->toArray();
                                 @endphp
                                 <option value="{{ $role->id }}"

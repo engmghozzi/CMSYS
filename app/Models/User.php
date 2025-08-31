@@ -72,10 +72,10 @@ class User extends Authenticatable
         // Check if user's role has the feature
         if ($this->role) {
             return $this->role
-                ->features
+                ->features()
                 ->where('name', $featureCode)
-                ->where('pivot.is_granted', true)
-                ->isNotEmpty();
+                ->wherePivot('is_granted', true)
+                ->exists();
         }
 
         return false;
@@ -91,10 +91,10 @@ class User extends Authenticatable
         // Check if user's role has any of the features
         if ($this->role) {
             return $this->role
-                ->features
+                ->features()
                 ->whereIn('name', $featureNames)
-                ->where('pivot.is_granted', true)
-                ->isNotEmpty();
+                ->wherePivot('is_granted', true)
+                ->exists();
         }
 
         return false;

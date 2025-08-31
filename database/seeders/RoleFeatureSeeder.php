@@ -29,7 +29,8 @@ class RoleFeatureSeeder extends Seeder
                 'machines.create', 'machines.read', 'machines.update', 'machines.delete',
                 'visits.create', 'visits.read', 'visits.update', 'visits.delete',
                 'roles.manage', 'features.manage', 'system.settings', 'logs.read',
-                'reports.financial', 'reports.contracts', 'reports.clients'
+                'reports.financial', 'reports.contracts', 'reports.clients',
+                'contracts.export.excel', 'contracts.export.pdf'
             ],
             'admin' => [
                 'dashboard.read',

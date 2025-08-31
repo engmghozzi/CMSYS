@@ -107,6 +107,16 @@ class RoleSeeder extends Seeder
                     'reports.financial'
                 ],
                 'is_active' => true
+            ],
+            [
+                'name' => 'technician',
+                'display_name' => 'Technician',
+                'description' => 'Technician who can view and update only assigned visits',
+                'permissions' => [
+                    'visits.read',
+                    'visits.update'
+                ],
+                'is_active' => true
             ]
         
         ];

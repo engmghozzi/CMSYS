@@ -41,6 +41,12 @@ class FeatureSeeder extends Seeder
             ['name' => 'payments.update', 'display_name' => 'Edit Payments', 'category' => 'payments', 'action' => 'update', 'resource' => 'payments'],
             ['name' => 'payments.delete', 'display_name' => 'Delete Payments', 'category' => 'payments', 'action' => 'delete', 'resource' => 'payments'],
             
+            // Visit Management
+            ['name' => 'visits.create', 'display_name' => 'Create Visit', 'category' => 'visits', 'action' => 'create', 'resource' => 'visits'],
+            ['name' => 'visits.read', 'display_name' => 'View Visit', 'category' => 'visits', 'action' => 'read', 'resource' => 'visits'],
+            ['name' => 'visits.update', 'display_name' => 'Edit Visit', 'category' => 'visits', 'action' => 'update', 'resource' => 'visits'],
+            ['name' => 'visits.delete', 'display_name' => 'Delete Visit', 'category' => 'visits', 'action' => 'delete', 'resource' => 'visits'],
+            
             // Machine Management
             ['name' => 'machines.create', 'display_name' => 'Create Machines', 'category' => 'machines', 'action' => 'create', 'resource' => 'machines'],
             ['name' => 'machines.read', 'display_name' => 'View Machines', 'category' => 'machines', 'action' => 'read', 'resource' => 'machines'],
@@ -63,6 +69,10 @@ class FeatureSeeder extends Seeder
             ['name' => 'reports.financial', 'display_name' => 'Financial Reports', 'category' => 'reports', 'action' => 'view', 'resource' => 'financial_reports'],
             ['name' => 'reports.contracts', 'display_name' => 'Contract Reports', 'category' => 'reports', 'action' => 'view', 'resource' => 'contract_reports'],
             ['name' => 'reports.clients', 'display_name' => 'Client Reports', 'category' => 'reports', 'action' => 'view', 'resource' => 'client_reports'],
+            
+            // Export Features (Super Admin Only)
+            ['name' => 'contracts.export.excel', 'display_name' => 'Export Contracts to Excel', 'category' => 'exports', 'action' => 'export', 'resource' => 'contracts_excel'],
+            ['name' => 'contracts.export.pdf', 'display_name' => 'Export Contracts to PDF', 'category' => 'exports', 'action' => 'export', 'resource' => 'contracts_pdf'],
         ];
 
         foreach ($features as $feature) {

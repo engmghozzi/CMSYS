@@ -108,6 +108,8 @@ Route::middleware(['auth'])->group(function () {
 
 // Global routes with permissions
     Route::get('contracts', [ContractController::class, 'globalindex'])->name('contracts.globalindex');
+    Route::get('contracts/export', [ContractController::class, 'export'])->name('contracts.export')->middleware('permission:contracts.export.excel');
+    Route::get('contracts/print', [ContractController::class, 'print'])->name('contracts.print')->middleware('permission:contracts.export.pdf');
     Route::get('payments', [PaymentController::class, 'globalindex'])->name('payments.globalindex');
 
 // Role Management routes - only super_admin and admin can access

@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
+use App\Exports\ContractsExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ContractController extends Controller
 {
@@ -32,9 +35,38 @@ class ContractController extends Controller
             });
         }
 
-        // Filter by status
+        // Filter by status - use dynamic status logic
         if ($request->filled('status') && $request->status !== 'all') {
-            $query->where('status', $request->status);
+            if ($request->status === 'active') {
+                // For active status, we want contracts that are truly active (not expired and not superseded)
+                $query->where('status', 'active')
+                      ->where('end_date', '>', now())
+                      ->whereNotExists(function ($subQuery) {
+                          $subQuery->select(DB::raw(1))
+                              ->from('contracts as newer_contracts')
+                              ->whereColumn('newer_contracts.address_id', 'contracts.address_id')
+                              ->where('newer_contracts.status', 'active')
+                              ->whereColumn('newer_contracts.created_at', '>', 'contracts.created_at');
+                      });
+            } elseif ($request->status === 'expired') {
+                // For expired status, we want contracts that are expired OR superseded by newer contracts
+                $query->where(function ($q) {
+                    $q->where('end_date', '<=', now())
+                      ->orWhere(function ($subQ) {
+                          $subQ->where('status', 'active')
+                               ->whereExists(function ($existsQuery) {
+                                   $existsQuery->select(DB::raw(1))
+                                       ->from('contracts as newer_contracts')
+                                       ->whereColumn('newer_contracts.address_id', 'contracts.address_id')
+                                       ->where('newer_contracts.status', 'active')
+                                       ->whereColumn('newer_contracts.created_at', '>', 'contracts.created_at');
+                               });
+                      });
+                });
+            } else {
+                // For cancelled status, use the original logic
+                $query->where('status', $request->status);
+            }
         }
 
         // Filter by contract type
@@ -61,6 +93,8 @@ class ContractController extends Controller
             $query->where('end_date', '>=', $today)
                   ->where('end_date', '<=', $futureDate);
         }
+
+        // Note: Renewed contract logic is now handled within the status filtering above
 
         $contracts = $query->latest()->paginate(10)->withQueryString();
 
@@ -602,5 +636,96 @@ class ContractController extends Controller
             'client' => $client->id,
             'renewal_contract_id' => $contract->id,
         ]);
+    }
+
+    /**
+     * Export contracts to Excel
+     */
+    public function export(Request $request)
+    {
+        $filters = $request->all();
+        return Excel::download(new ContractsExport($filters), 'contracts-' . now()->format('Y-m-d-H-i-s') . '.xlsx');
+    }
+
+    /**
+     * Print contracts as PDF
+     */
+    public function print(Request $request)
+    {
+        $query = \App\Models\Contract::with(['client', 'address']);
+
+        // Apply the same filters as globalindex
+        if ($request->filled('search')) {
+            $query->where('contract_num', 'like', "%{$request->search}%");
+        }
+
+        if ($request->filled('mobile')) {
+            $query->whereHas('client', function ($q) use ($request) {
+                $q->where('mobile_number', 'like', "%{$request->mobile}%")
+                  ->orWhere('alternate_mobile_number', 'like', "%{$request->mobile}%");
+            });
+        }
+
+        if ($request->filled('status') && $request->status !== 'all') {
+            if ($request->status === 'active') {
+                // For active status, we want contracts that are truly active (not expired and not superseded)
+                $query->where('status', 'active')
+                      ->where('end_date', '>', now())
+                      ->whereNotExists(function ($subQuery) {
+                          $subQuery->select(DB::raw(1))
+                              ->from('contracts as newer_contracts')
+                              ->whereColumn('newer_contracts.address_id', 'contracts.address_id')
+                              ->where('newer_contracts.status', 'active')
+                              ->whereColumn('newer_contracts.created_at', '>', 'contracts.created_at');
+                      });
+            } elseif ($request->status === 'expired') {
+                // For expired status, we want contracts that are expired OR superseded by newer contracts
+                $query->where(function ($q) {
+                    $q->where('end_date', '<=', now())
+                      ->orWhere(function ($subQ) {
+                          $subQ->where('status', 'active')
+                               ->whereExists(function ($existsQuery) {
+                                   $existsQuery->select(DB::raw(1))
+                                       ->from('contracts as newer_contracts')
+                                       ->whereColumn('newer_contracts.address_id', 'contracts.address_id')
+                                       ->where('newer_contracts.status', 'active')
+                                       ->whereColumn('newer_contracts.created_at', '>', 'contracts.created_at');
+                               });
+                      });
+                });
+            } else {
+                // For cancelled status, use the original logic
+                $query->where('status', $request->status);
+            }
+        }
+
+        if ($request->filled('type') && $request->type !== 'all') {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('start_date')) {
+            $query->where('start_date', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->where('end_date', '<=', $request->end_date);
+        }
+
+        if ($request->filled('expiring_months')) {
+            $months = (int) $request->expiring_months;
+            $today = now()->startOfDay();
+            $futureDate = now()->addMonths($months)->endOfDay();
+            
+            $query->where('end_date', '>=', $today)
+                  ->where('end_date', '<=', $futureDate);
+        }
+
+        // Note: Renewed contract logic is now handled within the status filtering above
+
+        $contracts = $query->latest()->get();
+        $filters = $request->all();
+
+        $pdf = Pdf::loadView('pages.contracts.print', compact('contracts', 'filters'));
+        return $pdf->download('contracts-' . now()->format('Y-m-d-H-i-s') . '.pdf');
     }
 }

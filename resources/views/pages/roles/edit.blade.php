@@ -60,9 +60,9 @@
                         {{ __('This role currently has access to:') }}
                     </div>
                     <div class="bg-gray-50 rounded-lg p-4">
-                        @if($role->features->where('pivot.is_granted', true)->count() > 0)
+                        @if($role->features()->wherePivot('is_granted', true)->count() > 0)
                             <div class="grid grid-cols-1 gap-2">
-                                @foreach($role->features->where('pivot.is_granted', true) as $feature)
+                                @foreach($role->features()->wherePivot('is_granted', true)->get() as $feature)
                                     <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
                                         {{ __($feature->display_name) }}
                                     </span>

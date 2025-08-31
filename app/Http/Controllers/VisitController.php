@@ -15,6 +15,11 @@ class VisitController extends Controller
     {
         $query = Visit::with(['client', 'contract', 'technician', 'createdBy', 'updatedBy', 'address']);
 
+        // Technicians can only see their assigned visits
+        if (Auth::check() && Auth::user()->hasRole('technician')) {
+            $query->where('technician_id', Auth::id());
+        }
+
         // Search by contract number
         if ($request->filled('search')) {
             $searchTerm = '%' . $request->search . '%';
@@ -71,12 +76,24 @@ class VisitController extends Controller
 
     public function show(Client $client, Contract $contract, Visit $visit)
     {
+        // Technicians can only view their assigned visits
+        if (Auth::check() && Auth::user()->hasRole('technician') && $visit->technician_id !== Auth::id()) {
+            return redirect()->route('pages.visits.globalindex')
+                ->with('error', 'You are not authorized to view this visit.');
+        }
+
         $technicians = User::all();
         return view('pages.visits.show', compact('visit', 'client', 'contract', 'technicians'));
     }
 
     public function edit(Client $client, Contract $contract, Visit $visit)
     {
+        // Technicians can only edit their assigned visits
+        if (Auth::check() && Auth::user()->hasRole('technician') && $visit->technician_id !== Auth::id()) {
+            return redirect()->route('pages.visits.show', [$client, $contract, $visit])
+                ->with('error', 'You are not authorized to edit this visit.');
+        }
+
         if ($visit->visit_status === 'completed') {
             return redirect()->route('pages.visits.show', [$client, $contract, $visit])
                 ->with('error', 'Cannot edit a completed visit.');
@@ -88,6 +105,12 @@ class VisitController extends Controller
 
     public function update(Request $request, Client $client, Contract $contract, Visit $visit)
     {
+        // Technicians can only update their assigned visits
+        if (Auth::check() && Auth::user()->hasRole('technician') && $visit->technician_id !== Auth::id()) {
+            return redirect()->route('pages.visits.show', [$client, $contract, $visit])
+                ->with('error', 'You are not authorized to update this visit.');
+        }
+
         if ($visit->visit_status === 'completed') {
             return redirect()->route('pages.visits.show', [$client, $contract, $visit])
                 ->with('error', 'Cannot update a completed visit.');
@@ -117,6 +140,12 @@ class VisitController extends Controller
 
     public function destroy(Client $client, Contract $contract, Visit $visit)
     {
+        // Technicians cannot delete visits
+        if (Auth::check() && Auth::user()->hasRole('technician')) {
+            return redirect()->route('pages.visits.show', [$client, $contract, $visit])
+                ->with('error', 'You are not authorized to delete this visit.');
+        }
+
         if ($visit->visit_status === 'completed') {
             return redirect()->route('pages.visits.show', [$client, $contract, $visit])
                 ->with('error', 'Cannot delete a completed visit.');
