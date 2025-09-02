@@ -1,4 +1,5 @@
 {
+    "name": "cmsys",
     "private": true,
     "type": "module",
     "scripts": {

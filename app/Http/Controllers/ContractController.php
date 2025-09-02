@@ -206,8 +206,6 @@ class ContractController extends Controller
         $validated = $request->validate([
             'address_id' => 'required|exists:addresses,id',
             'type' => 'required|in:L,LS,C,Other',
-            'centeral_machines' => 'required|numeric|min:0',
-            'unit_machines' => 'required|numeric|min:0',
             'start_date' => 'required|date',
             'duration_months' => 'required|numeric|min:1',
             'total_amount' => 'required|numeric|min:0',
@@ -282,8 +280,7 @@ class ContractController extends Controller
             'client_id' => $client->id,
             'address_id' => $validated['address_id'],
             'type' => $validated['type'],
-            'centeral_machines' => $validated['centeral_machines'],
-            'unit_machines' => $validated['unit_machines'],
+
             'start_date' => $startDate->toDateString(),
             'duration_months' => $validated['duration_months'],
             'end_date' => $endDate->toDateString(),
@@ -350,8 +347,6 @@ class ContractController extends Controller
         $validated = $request->validate([
             'address_id' => 'required|exists:addresses,id',
             'type' => 'required|in:L,LS,C,Other',
-            'centeral_machines' => 'required|numeric|min:0',
-            'unit_machines' => 'required|numeric|min:0',
             'start_date' => 'required|date',
             'duration_months' => 'required|numeric|min:1',
             'total_amount' => 'required|numeric|min:0',
@@ -509,8 +504,7 @@ class ContractController extends Controller
             $updateData = [
                 'address_id' => $validated['address_id'],
                 'type' => $validated['type'],
-                'centeral_machines' => $validated['centeral_machines'],
-                'unit_machines' => $validated['unit_machines'],
+
                 'start_date' => $startDate->toDateString(),
                 'duration_months' => $validated['duration_months'],
                 'end_date' => $endDate->toDateString(),

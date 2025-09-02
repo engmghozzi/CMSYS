@@ -75,13 +75,13 @@ class Log extends Model
         return [
             'App\Models\Contract' => 'Contract',
             'App\Models\Payment' => 'Payment',
-            'App\Models\Machine' => 'Machine',
+
             'App\Models\Client' => 'Client',
             'App\Models\User' => 'User',
             'App\Models\Address' => 'Address',
             'App\Models\Role' => 'Role',
             'App\Models\Feature' => 'Feature',
-            'App\Models\Visit' => 'Visit',
+
         ];
     }
 

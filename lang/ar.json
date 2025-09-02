@@ -475,7 +475,7 @@
     "Actual Visit Date":"تاريخ الزيارة الفعلي",
     "Scheduled Visit Date":"تاريخ جدولة الزيارة",
     "Not scheduled":"لم يتم جدولة الزيارة",
-    "Technician":"الفني",
+
     "Back to Contract":"العودة إلى العقد",
     "completed":"مكتمل",
     "scheduled":"مجدول",
@@ -491,8 +491,8 @@
     "Back to Visit":"العودة إلى الزيارة",
     "Edit Visit Details":"تعديل تفاصيل الزيارة",
     "Visit Status":"حالة الزيارة",
-    "Assign Technician":"تعيين فني",
-    "Select Technician":"اختر فني",
+
+
     "Update Visit":"تحديث الزيارة",
     "Commission Details":"تفاصيل العمولة",
     "Save Contract":"حفظ العقد",

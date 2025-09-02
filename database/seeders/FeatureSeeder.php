@@ -41,17 +41,7 @@ class FeatureSeeder extends Seeder
             ['name' => 'payments.update', 'display_name' => 'Edit Payments', 'category' => 'payments', 'action' => 'update', 'resource' => 'payments'],
             ['name' => 'payments.delete', 'display_name' => 'Delete Payments', 'category' => 'payments', 'action' => 'delete', 'resource' => 'payments'],
             
-            // Visit Management
-            ['name' => 'visits.create', 'display_name' => 'Create Visit', 'category' => 'visits', 'action' => 'create', 'resource' => 'visits'],
-            ['name' => 'visits.read', 'display_name' => 'View Visit', 'category' => 'visits', 'action' => 'read', 'resource' => 'visits'],
-            ['name' => 'visits.update', 'display_name' => 'Edit Visit', 'category' => 'visits', 'action' => 'update', 'resource' => 'visits'],
-            ['name' => 'visits.delete', 'display_name' => 'Delete Visit', 'category' => 'visits', 'action' => 'delete', 'resource' => 'visits'],
-            
-            // Machine Management
-            ['name' => 'machines.create', 'display_name' => 'Create Machines', 'category' => 'machines', 'action' => 'create', 'resource' => 'machines'],
-            ['name' => 'machines.read', 'display_name' => 'View Machines', 'category' => 'machines', 'action' => 'read', 'resource' => 'machines'],
-            ['name' => 'machines.update', 'display_name' => 'Edit Machines', 'category' => 'machines', 'action' => 'update', 'resource' => 'machines'],
-            ['name' => 'machines.delete', 'display_name' => 'Delete Machines', 'category' => 'machines', 'action' => 'delete', 'resource' => 'machines'],
+
             
             // Address Management
             ['name' => 'addresses.create', 'display_name' => 'Create Addresses', 'category' => 'addresses', 'action' => 'create', 'resource' => 'addresses'],

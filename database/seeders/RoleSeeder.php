@@ -24,8 +24,6 @@ class RoleSeeder extends Seeder
                     'addresses.create', 'addresses.read', 'addresses.update', 'addresses.delete',
                     'contracts.create', 'contracts.read', 'contracts.update', 'contracts.delete',
                     'payments.create', 'payments.read', 'payments.update', 'payments.delete',
-                    'machines.create', 'machines.read', 'machines.update', 'machines.delete',
-                    'visits.create', 'visits.read', 'visits.update', 'visits.delete',
                     'roles.manage', 'features.manage', 'logs.read',
                     'reports.financial', 'reports.contracts', 'reports.clients'
                 ],
@@ -42,8 +40,6 @@ class RoleSeeder extends Seeder
                     'addresses.create', 'addresses.read', 'addresses.update', 'addresses.delete',
                     'contracts.create', 'contracts.read', 'contracts.update', 'contracts.delete',
                     'payments.create', 'payments.read', 'payments.update', 'payments.delete',
-                    'machines.create', 'machines.read', 'machines.update', 'machines.delete',
-                    'visits.create', 'visits.read', 'visits.update', 'visits.delete',
                     'reports.financial', 'reports.contracts', 'reports.clients'
                 ],
                 'is_active' => true
@@ -57,8 +53,6 @@ class RoleSeeder extends Seeder
                     'addresses.read', 'addresses.create', 'addresses.update', 'addresses.delete',
                     'contracts.read', 'contracts.create', 'contracts.update', 'contracts.delete',
                     'payments.read', 'payments.create', 'payments.update', 'payments.delete',
-                    'machines.read', 'machines.create', 'machines.update', 'machines.delete',
-                    'visits.read', 'visits.create', 'visits.update', 'visits.delete',
                     'reports.financial', 'reports.contracts', 'reports.clients'
                 ],
                 'is_active' => true
@@ -71,9 +65,7 @@ class RoleSeeder extends Seeder
                     'clients.read', 'clients.create', 'clients.update',
                     'addresses.read', 'addresses.create', 'addresses.update',
                     'contracts.read', 'contracts.create', 'contracts.update',
-                    'payments.read', 'payments.create', 'payments.update',
-                    'machines.read', 'machines.create', 'machines.update',
-                    'visits.read', 'visits.create', 'visits.update',
+                    'payments.read', 'payments.create', 'payments.update'
                 ],
                 'is_active' => true
             ],
@@ -87,8 +79,6 @@ class RoleSeeder extends Seeder
                     'addresses.read',
                     'contracts.read',
                     'payments.create', 'payments.read', 'payments.update',
-                    'machines.read', 
-                    'visits.read', 
                     'reports.financial'
                 ],
                 'is_active' => true
@@ -102,22 +92,11 @@ class RoleSeeder extends Seeder
                     'addresses.read',
                     'contracts.read',
                     'payments.read',
-                    'machines.read',
-                    'visits.read',
                     'reports.financial'
                 ],
                 'is_active' => true
             ],
-            [
-                'name' => 'technician',
-                'display_name' => 'Technician',
-                'description' => 'Technician who can view and update only assigned visits',
-                'permissions' => [
-                    'visits.read',
-                    'visits.update'
-                ],
-                'is_active' => true
-            ]
+
         
         ];
 

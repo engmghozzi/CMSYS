@@ -72,7 +72,7 @@ This document summarizes the implementation of a strict role-based access contro
 - ✅ Cannot downgrade or remove super_admin permissions
 - ✅ Cannot edit, update, or delete super_admin role
 
-### Other Roles (Technician, Client, etc.)
+### Other Roles (Client, etc.)
 - ✅ Cannot alter features or role assignments
 - ✅ Inherit permissions only from their assigned role
 - ✅ No individual feature customization

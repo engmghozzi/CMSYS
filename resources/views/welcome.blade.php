@@ -114,7 +114,7 @@
     <nav class="absolute top-0 left-0 right-0 z-50 p-6">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <div class="text-white text-2xl font-bold font-cairo">
-                {{ config('app.name', 'CMApp') }}
+                {{ config('app.name', 'CMSYS') }}
             </div>
             
             <div class="flex items-center space-x-4 rtl:space-x-reverse">

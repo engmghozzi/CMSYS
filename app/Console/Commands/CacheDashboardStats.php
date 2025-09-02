@@ -7,8 +7,6 @@ use App\Models\Contract;
 use App\Models\Payment;
 use App\Models\Client;
 use App\Models\User;
-use App\Models\Machine;
-use App\Models\Visit;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -45,8 +43,6 @@ class CacheDashboardStats extends Command
         $this->cachePaymentStats();
         $this->cacheClientStats();
         $this->cacheUserStats();
-        $this->cacheMachineStats();
-        $this->cacheVisitStats();
         $this->cacheFinancialStats();
 
         $this->info('✅ Dashboard statistics cached successfully!');
@@ -148,49 +144,7 @@ class CacheDashboardStats extends Command
         Cache::put('dashboard.user_stats', $stats, now()->addHour());
     }
 
-    private function cacheMachineStats()
-    {
-        $this->info('Caching machine statistics...');
-        
-        $stats = [
-            'total_machines' => Machine::count(),
-            'by_type' => Machine::select('type', DB::raw('count(*) as count'))
-                ->groupBy('type')
-                ->pluck('count', 'type')
-                ->toArray(),
-            'by_brand' => Machine::select('brand', DB::raw('count(*) as count'))
-                ->groupBy('brand')
-                ->pluck('count', 'brand')
-                ->toArray(),
-            'by_uom' => Machine::select('UOM', DB::raw('count(*) as count'))
-                ->groupBy('UOM')
-                ->pluck('count', 'UOM')
-                ->toArray(),
-        ];
 
-        Cache::put('dashboard.machine_stats', $stats, now()->addHour());
-    }
-
-    private function cacheVisitStats()
-    {
-        $this->info('Caching visit statistics...');
-        
-        $stats = [
-            'total_visits' => Visit::count(),
-            'by_status' => Visit::select('visit_status', DB::raw('count(*) as count'))
-                ->groupBy('visit_status')
-                ->pluck('count', 'visit_status')
-                ->toArray(),
-            'by_type' => Visit::select('visit_type', DB::raw('count(*) as count'))
-                ->groupBy('visit_type')
-                ->pluck('count', 'visit_type')
-                ->toArray(),
-            'scheduled_visits' => Visit::where('visit_status', 'scheduled')->count(),
-            'completed_visits' => Visit::where('visit_status', 'completed')->count(),
-        ];
-
-        Cache::put('dashboard.visit_stats', $stats, now()->addHour());
-    }
 
     private function cacheFinancialStats()
     {

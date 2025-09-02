@@ -11,12 +11,10 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\MachineController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\FeatureController;
-use App\Http\Controllers\VisitController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -82,27 +80,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('clients/{client}/contracts/{contract}/payments/create', [PaymentController::class, 'createFromContract'])->name('payments.create.from.contract');
     Route::post('clients/{client}/contracts/{contract}/payments', [PaymentController::class, 'storeFromContract'])->name('payments.store.from.contract');
 
-    // Machine routes
-    Route::get('clients/{client}/machines', [MachineController::class, 'index'])->name('machines.index');
-    Route::get('clients/{client}/machines/create', [MachineController::class, 'create'])->name('machines.create');
-    Route::post('clients/{client}/machines', [MachineController::class, 'store'])->name('machines.store');
-    Route::get('clients/{client}/machines/{machine}', [MachineController::class, 'show'])->name('machines.show');
-    Route::get('clients/{client}/machines/{machine}/edit', [MachineController::class, 'edit'])->name('machines.edit');
-    Route::put('clients/{client}/machines/{machine}', [MachineController::class, 'update'])->name('machines.update');
-    Route::delete('clients/{client}/machines/{machine}', [MachineController::class, 'destroy'])->name('machines.destroy');
 
-    // Contract-specific machine creation
-    Route::get('clients/{client}/contracts/{contract}/machines/create', [MachineController::class, 'createFromContract'])->name('machines.create.from.contract');
-    Route::post('clients/{client}/contracts/{contract}/machines', [MachineController::class, 'storeFromContract'])->name('machines.store.from.contract');
-
-    // Visit routes
-    Route::get('visits', [VisitController::class, 'globalIndex'])->name('pages.visits.globalindex');
-    Route::get('clients/{client}/contracts/{contract}/visits/create', [VisitController::class, 'create'])->name('pages.visits.create');
-    Route::post('clients/{client}/contracts/{contract}/visits', [VisitController::class, 'store'])->name('pages.visits.store');
-    Route::get('clients/{client}/contracts/{contract}/visits/{visit}', [VisitController::class, 'show'])->name('pages.visits.show'); 
-    Route::get('clients/{client}/contracts/{contract}/visits/{visit}/edit', [VisitController::class, 'edit'])->name('pages.visits.edit');
-    Route::put('clients/{client}/contracts/{contract}/visits/{visit}', [VisitController::class, 'update'])->name('pages.visits.update');
-    Route::delete('clients/{client}/contracts/{contract}/visits/{visit}', [VisitController::class, 'destroy'])->name('pages.visits.destroy');
 
     // Global routes
     Route::get('contracts', [ContractController::class, 'globalindex'])->name('contracts.globalindex');

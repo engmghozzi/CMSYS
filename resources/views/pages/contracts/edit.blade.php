@@ -46,21 +46,7 @@
                 </div>
             </div>
 
-            <!-- Machines Section -->
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <h2 class="text-lg font-semibold mb-4 text-gray-900">{{ __('Machines') }}</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Central Machines') }}</label>
-                        <input type="number" name="centeral_machines" value="{{ old('centeral_machines', $contract->centeral_machines) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-                    </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Unit Machines') }}</label>
-                        <input type="number" name="unit_machines" value="{{ old('unit_machines', $contract->unit_machines) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-                    </div>
-                </div>
-            </div>
 
             <!-- Financial Information Section -->
             <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">

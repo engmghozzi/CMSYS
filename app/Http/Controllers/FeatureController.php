@@ -196,7 +196,7 @@ class FeatureController extends Controller
             'clients' => 'Clients',
             'contracts' => 'Contracts',
             'payments' => 'Payments',
-            'machines' => 'Machines',
+
             'addresses' => 'Addresses',
             'reports' => 'Reports',
             'logs' => 'Logs',

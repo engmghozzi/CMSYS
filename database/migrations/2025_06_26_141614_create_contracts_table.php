@@ -21,8 +21,7 @@ return new class extends Migration
 
             $table->enum('type', ['L', 'LS', 'C', 'Other'])->default('L');
 
-            $table->decimal('centeral_machines', 10);
-            $table->decimal('unit_machines', 10);
+
 
             $table->date('start_date');
             $table->decimal('duration_months', 10, 2)->comment('Duration in months');

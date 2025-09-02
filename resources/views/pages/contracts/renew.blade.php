@@ -25,25 +25,7 @@
                         @enderror
                     </div>
 
-                    <!-- Central Machines -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Central Machines') }}</label>
-                        <input type="number" name="centeral_machines" value="{{ old('centeral_machines', $contract->centeral_machines) }}" 
-                               class="w-full border rounded px-4 py-2 bg-white shadow-sm" min="0" required>
-                        @error('centeral_machines')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
 
-                    <!-- Unit Machines -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Unit Machines') }}</label>
-                        <input type="number" name="unit_machines" value="{{ old('unit_machines', $contract->unit_machines) }}" 
-                               class="w-full border rounded px-4 py-2 bg-white shadow-sm" min="0" required>
-                        @error('unit_machines')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
 
                     <!-- Start Date -->
                     <div>

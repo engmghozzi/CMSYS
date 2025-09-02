@@ -146,7 +146,7 @@ class Feature extends Model
             'clients' => 'Clients',
             'contracts' => 'Contracts',
             'payments' => 'Payments',
-            'machines' => 'Machines',
+
             'addresses' => 'Addresses',
             'reports' => 'Reports',
             'logs' => 'Logs',

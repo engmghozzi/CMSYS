@@ -22,7 +22,7 @@ class LogSeeder extends Seeder
         }
 
         $actionTypes = ['create', 'update', 'delete', 'login', 'logout', 'view'];
-        $modelTypes = ['Contract', 'Payment', 'Machine', 'Client', 'User'];
+        $modelTypes = ['Contract', 'Payment', 'Client', 'User'];
         
         $descriptions = [
             'Created new Contract #123',
@@ -34,9 +34,7 @@ class LogSeeder extends Seeder
             'Created new Payment #456',
             'Updated Payment #456',
             'Deleted Payment #456',
-            'Created new Machine #789',
-            'Updated Machine #789',
-            'Deleted Machine #789',
+
             'Created new Client #101',
             'Updated Client #101',
             'Deleted Client #101',

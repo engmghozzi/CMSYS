@@ -20,8 +20,7 @@ class DatabaseSeeder extends Seeder
             AddressSeeder::class,
             ContractSeeder::class,
             PaymentSeeder::class,
-            MachineSeeder::class,
-            VisitSeeder::class,
+
         ]);
     }
 }

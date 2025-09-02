@@ -35,8 +35,7 @@ class LogViewActions
                 'payments.show',
                 'payments.index',
                 'payments.global',
-                'machines.show',
-                'machines.index',
+
                 'dashboard',
                 'logs.index'
             ];
@@ -68,11 +67,6 @@ class LogViewActions
                     $payment = $request->route()->parameter('payment');
                     $modelId = is_object($payment) ? $payment->getKey() : (is_array($payment) ? $payment['id'] ?? null : $payment);
                     $description = "Viewed Payment #{$modelId}";
-                } elseif ($request->route()->hasParameter('machine')) {
-                    $modelType = 'Machine';
-                    $machine = $request->route()->parameter('machine');
-                    $modelId = is_object($machine) ? $machine->getKey() : (is_array($machine) ? $machine['id'] ?? null : $machine);
-                    $description = "Viewed Machine #{$modelId}";
                 }
 
                 Log::create([

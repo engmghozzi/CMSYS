@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\Contract;
 use App\Models\Payment;
-use App\Models\Machine;
 use App\Models\User;
-use App\Models\Visit;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -267,34 +265,7 @@ class DashboardController extends Controller
         $totalClients = Client::count();
         $newClientsThisMonth = Client::whereMonth('created_at', now()->month)->count();
 
-        // Machine Statistics
-        $totalMachines = Machine::count();
-        $activeMachines = Machine::where('status', 'active')->count();
-        $machineTypesCount = Machine::distinct('machine_type')->count();
-        $machineBrandsCount = Machine::distinct('machine_brand')->count();
-        
-        // Most common machine type
-        $mostCommonMachineType = Machine::select('machine_type')
-            ->selectRaw('COUNT(*) as count')
-            ->groupBy('machine_type')
-            ->orderBy('count', 'desc')
-            ->first();
-        $mostCommonMachineType = $mostCommonMachineType ? $mostCommonMachineType->machine_type : 'N/A';
-        
-        // Top machine brand
-        $topMachineBrand = Machine::select('machine_brand')
-            ->selectRaw('COUNT(*) as count')
-            ->groupBy('machine_brand')
-            ->orderBy('count', 'desc')
-            ->first();
-        $topMachineBrand = $topMachineBrand ? $topMachineBrand->machine_brand : 'N/A';
-        
-        // Average efficiency
-        $averageEfficiency = Machine::whereNotNull('efficiency')->avg('efficiency');
-        $averageEfficiency = round($averageEfficiency ?? 0, 1);
-        
-        // High efficiency machines (efficiency > 80%)
-        $highEfficiencyMachines = Machine::where('efficiency', '>', 80)->count();
+
 
         // Payment Transaction Statistics
         $totalPaymentTransactions = Payment::count();
@@ -322,50 +293,13 @@ class DashboardController extends Controller
             ->orderBy('count', 'desc')
             ->get();
             
-        // Visit Statistics
-        $totalVisits = Visit::count();
-        $completedVisits = Visit::where('status', 'completed')->count();
-        $scheduledVisits = Visit::where('status', 'scheduled')->count();
-        $cancelledVisits = Visit::where('status', 'cancelled')->count();
-        
 
-        // Contract Visit Frequency Statistics
-        $contractsWithLowVisits = Visit::select('contract_id', DB::raw('COUNT(*) as visit_count'))
-            ->groupBy('contract_id')
-            ->having('visit_count', '<=', 10)
-            ->count();
-        $contractsWithMediumVisits = Visit::select('contract_id', DB::raw('COUNT(*) as visit_count'))
-            ->groupBy('contract_id')
-            ->having('visit_count', '>', 10)
-            ->having('visit_count', '<=', 20)
-            ->count();
-        $contractsWithHighVisits = Visit::select('contract_id', DB::raw('COUNT(*) as visit_count'))
-            ->groupBy('contract_id')
-            ->having('visit_count', '>', 20)
-            ->count();
-            
-
-        $proactiveVisits = Visit::where('visit_type', 'proactive')->count();
-        $maintenanceVisits = Visit::where('visit_type', 'maintenance')->count();
-        $repairVisits = Visit::where('visit_type', 'repair')->count();
-        $installationVisits = Visit::where('visit_type', 'installation')->count();
-        $otherVisits = Visit::where('visit_type', 'other')->count();
         
         // Recent Activity
         $recentContracts = Contract::with('client')->latest()->take(5)->get();
         $recentPayments = Payment::with('contract.client')->latest()->take(5)->get();
         
-        // Machines by Brand Statistics
-        $machinesByBrand = Machine::select('brand', DB::raw('count(*) as count'))
-            ->groupBy('brand')
-            ->pluck('count', 'brand')
-            ->toArray();
-            
-        // Machines by Type Statistics
-        $machinesByType = Machine::select('type', DB::raw('count(*) as count'))
-            ->groupBy('type')
-            ->pluck('count', 'type')
-            ->toArray();
+
 
         return view('dashboard', compact(
             'totalContracts',
@@ -389,18 +323,8 @@ class DashboardController extends Controller
             'overduePayments',
             'totalClients',
             'newClientsThisMonth',
-            'totalMachines',
-            'activeMachines',
-            'machineTypesCount',
-            'machineBrandsCount',
-            'mostCommonMachineType',
-            'topMachineBrand',
-            'averageEfficiency',
-            'highEfficiencyMachines',
             'recentContracts',
             'recentPayments',
-            'machinesByBrand',
-            'machinesByType',
             // New Financial Data
             'averageContractValue',
             'monthlyRevenue',
@@ -428,21 +352,7 @@ class DashboardController extends Controller
             'smallestPayment',
             'onTimePayments',
             'latePayments',
-            'paymentsByMethod',
-            // Visit Statistics
-            'totalVisits',
-            'completedVisits',
-            'scheduledVisits',
-            'cancelledVisits',
-            'contractsWithLowVisits',
-            'contractsWithMediumVisits',
-            'contractsWithHighVisits',
-            // Visit Type Statistics
-            'proactiveVisits',
-            'maintenanceVisits',
-            'repairVisits',
-            'installationVisits',
-            'otherVisits'
+            'paymentsByMethod'
         ));
     }
 
@@ -474,7 +384,7 @@ class DashboardController extends Controller
         ], now()->addHour());
     }
 
-    private function formatStatsForView($contractStats, $paymentStats, $clientStats, $userStats, $machineStats, $visitStats, $financialStats)
+    private function formatStatsForView($contractStats, $paymentStats, $clientStats, $userStats, $financialStats)
     {
         // Format cached stats to match the view expectations
         return [
@@ -495,8 +405,6 @@ class DashboardController extends Controller
             'topRevenueClients' => $financialStats['top_revenue_clients'],
             // Add other required variables with default values
             'totalClients' => $clientStats['total_clients'] ?? 0,
-            'totalMachines' => $machineStats['total_machines'] ?? 0,
-            'totalVisits' => $visitStats['total_visits'] ?? 0,
         ];
     }
 }

@@ -27,8 +27,7 @@ class ContractFactory extends Factory
             'contract_num' => $contract_num,
             // 'client_id' and 'address_id' will be passed from seeder
             'type' => $this->faker->randomElement(['L', 'LS', 'C', 'Other']),
-            'centeral_machines' => $this->faker->numberBetween(0, 20),
-            'unit_machines' => $this->faker->numberBetween(0, 20),
+
             'start_date' => $start_date->format('Y-m-d'),
             'duration_months' => $duration_months,
             'end_date' => $end_date->format('Y-m-d'),

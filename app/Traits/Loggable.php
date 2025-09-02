@@ -79,7 +79,7 @@ trait Loggable
             'serial_number', 'brand', 'capacity', 'cost', 'description',
             'address', 'city', 'state', 'postal_code', 'country',
             'start_date', 'end_date', 'payment_frequency', 'total_amount',
-            'machine_type', 'efficiency_rating', 'installation_date',
+
             'warranty_expiry', 'maintenance_schedule', 'notes'
         ];
         
@@ -98,7 +98,7 @@ trait Loggable
             
             // Skip foreign key fields (but keep some important ones)
             if (str_contains($key, '_by') || 
-                (str_contains($key, '_id') && !in_array($key, ['id', 'client_id', 'contract_id', 'machine_id']))) {
+                (str_contains($key, '_id') && !in_array($key, ['id', 'client_id', 'contract_id']))) {
                 continue;
             }
             

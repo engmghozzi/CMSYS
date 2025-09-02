@@ -58,15 +58,7 @@ class Contract extends Model
         return $this->paid_amount >= $this->total_amount;
     }
 
-    public function machines()
-    {
-        return $this->hasMany(Machine::class);
-    }
 
-    public function visits()
-    {
-        return $this->hasMany(Visit::class);
-    }
 
     /**
      * Determine if the contract is expired (end_date in the past).

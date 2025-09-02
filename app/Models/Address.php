@@ -41,15 +41,7 @@ class Address extends Model
         return $this->hasManyThrough(Payment::class, Contract::class);
     }
 
-    public function machines()
-    {
-        return $this->hasManyThrough(Machine::class, Contract::class);
-    }
 
-    public function visits()
-    {
-        return $this->hasMany(Visit::class);
-    }
 
     /**
      * Check if this address can have a new contract

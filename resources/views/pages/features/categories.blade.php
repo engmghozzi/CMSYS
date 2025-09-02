@@ -148,7 +148,7 @@
                                 <li><strong>{{ __('clients') }}:</strong> {{ __('Client management features') }}</li>
                                 <li><strong>{{ __('contracts') }}:</strong> {{ __('Contract management features') }}</li>
                                 <li><strong>{{ __('payments') }}:</strong> {{ __('Payment management features') }}</li>
-                                <li><strong>{{ __('machines') }}:</strong> {{ __('Machine management features') }}</li>
+                
                                 <li><strong>{{ __('reports') }}:</strong> {{ __('Reporting features') }}</li>
                                 <li><strong>{{ __('settings') }}:</strong> {{ __('System settings features') }}</li>
                             </ul>

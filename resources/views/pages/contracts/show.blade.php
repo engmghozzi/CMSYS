@@ -139,17 +139,7 @@
                     </p>
                 </div>
 
-                <!-- Machines Info -->
-                <div class="grid grid-cols-2 gap-3 p-2 bg-gray-50 rounded-lg text-sm">
-                    <div>
-                        <label class="text-xs text-gray-500">{{ __('Central Machines') }}</label>
-                        <p class="font-medium text-gray-900">{{ $contract->centeral_machines }}</p>
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-500">{{ __('Unit Machines') }}</label>
-                        <p class="font-medium text-gray-900">{{ $contract->unit_machines }}</p>
-                    </div>
-                </div>
+
 
                 @if($contract->commission_amount)
                 <div class="grid grid-cols-4 gap-3 p-2 bg-yellow-50 rounded-lg text-sm">
@@ -194,122 +184,13 @@
         </div>
 
         <!-- Tabbed Content -->
-        <div x-data="{ tab: '{{ session('active_tab', 'machines') }}' }" class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div x-data="{ tab: '{{ session('active_tab', 'payments') }}' }" class="bg-white rounded-xl shadow-sm border border-gray-200">
             <nav class="flex space-x-2 border-b border-gray-200 px-4 sm:px-6 pt-4">
-                <button @click="tab = 'machines'" :class="tab === 'machines' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-t-lg font-medium focus:outline-none transition-colors">{{__('Machines')}}</button>
                 <button @click="tab = 'payments'" :class="tab === 'payments' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-t-lg font-medium focus:outline-none transition-colors">{{__('Payments')}}</button>
-                <button @click="tab = 'visits'" :class="tab === 'visits' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'" class="px-4 py-2 rounded-t-lg font-medium focus:outline-none transition-colors">{{__('Visits')}}</button>
             </nav>
-            <div class="p-4 sm:p-6">
-                <!-- Machines Tab -->
-                <div x-show="tab === 'machines'">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold text-gray-900">{{__('Machines')}}</h2>
-                        @if(auth()->user()->hasPermission('machines.create') && $contract->dynamic_status === 'active')
-                            <a href="{{ route('machines.create.from.contract', [$client->id, $contract->id]) }}"
-                               class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                                </svg>
-                                {{__('Add Machine')}}
-                            </a>
-                        @endif
-                    </div>
-                    @if ($contract->machines->isEmpty())
-                        <div class="text-center py-8">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">{{__('No machines')}}</h3>
-                            <p class="mt-1 text-sm text-gray-500">{{__('Get started by adding machines for this contract.')}}</p>
-                        </div>
-                    @else
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            @foreach ($contract->machines as $machine)
-                                <div class="relative bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
-                                    <!-- Header -->
-                                    <div class="p-4 border-b border-gray-100">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center space-x-2">
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
-                                                    {{ $machine->brand }}
-                                                </span>
-                                                <h3 class="text-base font-semibold text-gray-900 truncate">{{ $machine->serial_number }}</h3>
-                                            </div>
-                                            @if(auth()->user()->hasAnyOfPermissions(['machines.update', 'machines.delete', 'machines.read']))
-                                                <div class="flex gap-1">
-                                                    @if(auth()->user()->hasPermission('machines.read'))
-                                                        <a href="{{ route('machines.show', [$client->id, $machine->id]) }}"
-                                                            class="inline-flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
-                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                            </svg>
-                                                        </a>
-                                                    @endif
-                                                    @if(auth()->user()->hasPermission('machines.update') && !$contract->address->getActiveContract())
-                                                        <a href="{{ route('machines.edit', [$client->id, $machine->id]) }}"
-                                                            class="inline-flex items-center justify-center w-8 h-8 text-green-600 hover:bg-green-50 rounded-full transition-colors">
-                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
-                                                            </svg>
-                                                        </a>
-                                                    @endif
-                                                    @if(auth()->user()->hasPermission('machines.delete') && $contract->status === 'active' && !$contract->is_expired)
-                                                        <form method="POST" action="{{ route('machines.destroy', [$client->id, $machine->id]) }}"
-                                                              onsubmit="return confirm('Are you sure you want to delete this machine?');"
-                                                              class="inline">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                class="inline-flex items-center justify-center w-8 h-8 text-red-600 hover:bg-red-50 rounded-full transition-colors">
-                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m4-12v1H6V5a1 1 0 011-1h10a1 1 0 011 1z"/>
-                                                                </svg>
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <p class="text-sm text-gray-500 mt-1">{{ $machine->type }}</p>
-                                    </div>
-
-                                    <!-- Details -->
-                                    <div class="p-4 space-y-3">
-                                        <div class="grid grid-cols-2 gap-2 text-sm">
-                                            <div>
-                                                <span class="text-gray-500">{{__('Capacity')}}:</span>
-                                                <span class="font-medium text-gray-900">{{ $machine->capacity }} {{ $machine->UOM }}</span>
-                                            </div>
-                                            <div>
-                                                <span class="text-gray-500">{{__('Efficiency')}}:</span>
-                                                <span class="font-medium text-gray-900">{{ $machine->current_efficiency }}%</span>
-                                            </div>
-                                            <div>
-                                                <span class="text-gray-500">{{__('Cost')}}:</span>
-                                                <span class="font-medium text-gray-900">{{ number_format($machine->cost, 3) }} {{__('KWD')}}</span>
-                                            </div>
-                                            <div>
-                                                <span class="text-gray-500">{{__('Brand')}}:</span>
-                                                <span class="font-medium text-gray-900">{{ $machine->brand }}</span>
-                                            </div>
-                                        </div>
-                                        
-                                        @if($machine->assessment)
-                                            <div class="pt-2 border-t border-gray-100">
-                                                <p class="text-xs text-gray-500">{{__('Assessment')}}:</p>
-                                                <p class="text-sm text-gray-700 line-clamp-2">{{ $machine->assessment }}</p>
-                                            </div>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-                <!-- Payments Tab -->
-                <div x-show="tab === 'payments'">
+            
+            <!-- Payments Tab -->
+            <div x-show="tab === 'payments'" class="p-4 sm:p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-xl font-semibold text-gray-900">{{__('Payment Transactions')}}</h2>
                         @php
@@ -419,94 +300,6 @@
                         </div>
                     @endif
                 </div>
-                <!-- Visits Tab -->
-                <div x-show="tab === 'visits'">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold text-gray-900">{{__('Visits')}}</h2>
-                        @if(auth()->user()->hasPermission('visits.create') && $contract->status === 'active' && !$contract->is_expired)
-                            <a href="{{ route('pages.visits.create', [$client->id, $contract->id]) }}"
-                               class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                                </svg>
-                                {{__('Add Visit')}}
-                            </a>
-                        @endif
-                    </div>
-                    @if ($contract->visits->isEmpty())
-                        <div class="text-center py-8">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
-                            </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">{{__('No visits yet')}}</h3>
-                            <p class="mt-1 text-sm text-gray-500">{{__('Get started by scheduling a visit for this contract.')}}</p>
-                        </div>
-                    @else
-                        <div class="space-y-4">
-                            @foreach($contract->visits as $visit)
-                                <div class="bg-white rounded-lg border border-gray-200 p-4">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <div class="flex items-center gap-2">
-                                                <span class="text-lg font-medium text-gray-900">{{__($visit->visit_type)}}</span>
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                    @if($visit->status === 'completed') bg-green-100 text-green-800
-                                                    @elseif($visit->status === 'scheduled') bg-blue-100 text-blue-800
-                                                    @elseif($visit->status === 'in progress') bg-yellow-100 text-yellow-800
-                                                    @else bg-gray-100 text-gray-800
-                                                    @endif">
-                                                    {{__($visit->visit_status)}}
-                                                </span>
-                                            </div>
-                                            <div class="mt-2 space-y-1">
-                                                <p class="text-sm text-gray-600">{{__('Scheduled Date')}}: {{ $visit->visit_scheduled_date->format('M d, Y') }}</p>
-                                                @if($visit->visit_actual_date)
-                                                    <p class="text-sm text-gray-600">{{__('Actual Date')}}: {{ $visit->visit_actual_date->format('M d, Y') }}</p>
-                                                @endif
-                                                @if($visit->technician)
-                                                    <p class="text-sm text-gray-600">{{__('Technician')}}: {{ $visit->technician->name }}</p>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="flex gap-1">
-                                            @if(auth()->user()->hasPermission('visits.read'))
-                                                <a href="{{ route('pages.visits.show', [$client, $contract, $visit]) }}"
-                                                    class="inline-flex items-center justify-center w-8 h-8 text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                    </svg>
-                                                </a>
-                                            @endif
-                                            @if(auth()->user()->hasPermission('visits.update') && $contract->status === 'active' && !$contract->is_expired)
-                                                <a href="{{ route('pages.visits.edit', [$client, $contract, $visit]) }}"
-                                                    class="inline-flex items-center justify-center w-8 h-8 text-green-600 hover:bg-green-50 rounded-full transition-colors">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
-                                                    </svg>
-                                                </a>
-                                            @endif
-                                            @if(auth()->user()->hasPermission('visits.delete') && $contract->status === 'active' && !$contract->is_expired)
-                                                <form method="POST" action="{{ route('pages.visits.destroy', [$client, $contract, $visit]) }}"
-                                                    onsubmit="return confirm('{{ __('Are you sure you want to delete this visit?') }}');"
-                                                    class="inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="inline-flex items-center justify-center w-8 h-8 text-red-600 hover:bg-red-50 rounded-full transition-colors">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m4-12v1H6V5a1 1 0 011-1h10a1 1 0 011 1z"/>
-                                                        </svg>
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-                
             </div>
         </div>
     </x-ui.form-layout>

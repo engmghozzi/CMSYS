@@ -29,7 +29,7 @@ class AddressController extends Controller
                 $query->orderBy('created_at', 'desc');
             },
             'contracts.payments',
-            'contracts.machines',
+
             'contracts.creator',
             'contracts.updater'
         ]);

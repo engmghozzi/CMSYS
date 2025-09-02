@@ -128,8 +128,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm font-medium text-gray-500">{{ __('Machines') }}</p>
-                        <p class="text-xl sm:text-2xl font-bold text-gray-900">{{ $address->machines->count() }}</p>
+                        
                     </div>
                 </div>
             </div>
@@ -366,8 +365,7 @@
                                     </div>
                                     
                                     <div>
-                                        <p><span class="text-gray-500">{{ __('Central Machines') }}:</span> {{ $contract->centeral_machines }}</p>
-                                        <p><span class="text-gray-500">{{ __('Unit Machines') }}:</span> {{ $contract->unit_machines }}</p>
+                                        
                                     </div>
                                     
                                     <div>

@@ -42,15 +42,7 @@ return new class extends Migration
             $table->index(['contract_id', 'status']);
         });
 
-        // Visits table indexes
-        Schema::table('visits', function (Blueprint $table) {
-            $table->index('contract_id');
-            $table->index('visit_status');
-            $table->index('visit_type');
-            $table->index('visit_scheduled_date');
-            $table->index(['contract_id', 'visit_status']);
-            $table->index(['visit_status', 'visit_scheduled_date']);
-        });
+
 
         // Clients table indexes
         Schema::table('clients', function (Blueprint $table) {
@@ -61,12 +53,7 @@ return new class extends Migration
         });
 
         // Machines table indexes
-        Schema::table('machines', function (Blueprint $table) {
-            $table->index('contract_id');
-            $table->index('type');
-            $table->index('brand');
-            $table->index(['contract_id', 'type']);
-        });
+
 
         // Addresses table indexes
         Schema::table('addresses', function (Blueprint $table) {
@@ -119,15 +106,7 @@ return new class extends Migration
             $table->dropIndex(['contract_id', 'status']);
         });
 
-        // Visits table indexes
-        Schema::table('visits', function (Blueprint $table) {
-            $table->dropIndex(['contract_id']);
-            $table->dropIndex(['visit_status']);
-            $table->dropIndex(['visit_type']);
-            $table->dropIndex(['visit_scheduled_date']);
-            $table->dropIndex(['contract_id', 'visit_status']);
-            $table->dropIndex(['visit_status', 'visit_scheduled_date']);
-        });
+
 
         // Clients table indexes
         Schema::table('clients', function (Blueprint $table) {
@@ -137,13 +116,7 @@ return new class extends Migration
             $table->dropIndex(['status', 'client_type']);
         });
 
-        // Machines table indexes
-        Schema::table('machines', function (Blueprint $table) {
-            $table->dropIndex(['contract_id']);
-            $table->dropIndex(['type']);
-            $table->dropIndex(['brand']);
-            $table->dropIndex(['contract_id', 'type']);
-        });
+
 
         // Addresses table indexes
         Schema::table('addresses', function (Blueprint $table) {

@@ -31,8 +31,7 @@
     "Back to Dashboard": "Back to Dashboard",
     "Edit Payment Transaction": "Edit Payment Transaction",
     "New Payment Transaction": "New Payment Transaction",
-    "Edit Machine": "Edit Machine",
-    "New Machine": "New Machine",
+
     "Update your name and email address": "Update your name and email address",
     "Name": "Name",
     "Email": "Email",
@@ -205,7 +204,7 @@
     "IP": "IP",
     "N/A": "N/A",
     "No logs found": "No logs found",
-    "Machines": "Machines",
+
     "Overview of your contract management system": "Overview of your contract management system",
     "Total Contracts": "Total Contracts",
     "Total": "Total",
@@ -216,10 +215,9 @@
     "overdue payments": "overdue payments",
     "Total Clients": "Total Clients",
     "new this month": "new this month",
-    "Total Machines": "Total Machines",
-    "Machine Types": "Machine Types",
+
     "most common": "most common",
-    "Machine Brands": "Machine Brands",
+
     "top brand": "top brand",
     "Avg Efficiency": "Avg Efficiency",
     "high efficiency": "high efficiency",
@@ -248,8 +246,7 @@
     "Edit Address": "Edit Address",
     "Get started by creating a contract for this address.": "Get started by creating a contract for this address.",
     "View Document": "View Document",
-    "Central Machines": "Central Machines",
-    "Unit Machines": "Unit Machines",
+
     "KWD": "KWD",
     
     "Edit Contract": "Edit Contract",
@@ -293,10 +290,10 @@
     "Contracts Statistics":"Contracts Statistics",
     "Clients Statistics":"Clients Statistics",
     "Payments Statistics":"Payments Statistics",
-    "Machines Statistics":"Machines Statistics",
+
     "Contract Types":"Contract Types",
     "Client Types":"Client Types",
-    "Machines by Brand":"Machines by Brand",
+
             "Contract Status":"Contract Status",
         "New contract created": "New contract created",
         "Total Payment Transactions": "Total Payment Transactions",
@@ -311,24 +308,16 @@
         "Late Payments": "Late Payments",
         "Payments by Method": "Payments by Method",
         "Other":"Other",
-        "Total Visits": "Total Visits",
-        "Completed Visits": "Completed Visits",
-        "Scheduled Visits": "Scheduled Visits",
-        "Cancelled Visits": "Cancelled Visits",
+
+
         
-        "Low Visit Contracts": "Low Visit Contracts",
-        "Medium Visit Contracts": "Medium Visit Contracts",
-        "High Visit Contracts": "High Visit Contracts",
-        "Proactive Visits": "Proactive Visits",
-        "Maintenance Visits": "Maintenance Visits",
-        "Repair Visits": "Repair Visits",
-        "Installation Visits": "Installation Visits",
-        "Other Visits": "Other Visits",
+
+
     "Client Status":"Client Status",
     "vip":"VIP",
     "ordinary":"Ordinary",
     "blocked":"Blocked",
-    "Machines by Type":"Machines by Type",
+
     "Add Address to":"Add Address to",
     "Add Contract for":"Add Contract for",
     "Incentive Bonus":"Incentive Bonus",
@@ -372,16 +361,11 @@
     "No custom permissions set. User will inherit all role permissions.":"No custom permissions set. User will inherit all role permissions.",
     "Role Permissions":"Role Permissions",
     "Select additional permissions beyond what the role provides. Role permissions are automatically granted.":"Select additional permissions beyond what the role provides. Role permissions are automatically granted.",
-    "All Visits":"All Visits",
-    "Visit Type":"Visit Type",
+
     "Date":"Date",
     "Time":"Time",
     "Location":"Location",
-    "Add Visit":"Add Visit",
-    "Edit Visit":"Edit Visit",
-    "New Visit":"New Visit",
-    "Visit Details":"Visit Details",
-    "All Visit Types":"All Visit Types",
+
     "Proactive":"Proactive",
     "Maintenance":"Maintenance",
     "Repair":"Repair",
@@ -395,44 +379,28 @@
     "pending":"pending",
     "Cancelled":"Cancelled",
     "In Progress":"In Progress",
-    "All Machines":"All Machines",
-    "Machine Type":"Machine Type",
-    "Machine Brand":"Machine Brand",
-    "Machine Model":"Machine Model",
-    "Machine Serial Number":"Machine Serial Number",
-    "Machine UOM":"Machine UOM",
-    "Machine Efficiency":"Machine Efficiency",
-    "Machine Estimated Cost":"Machine Estimated Cost",
-    "Machine Assessment Notes":"Machine Assessment Notes",
-    "Machine Notes":"Machine Notes",
-    "Machine Status":"Machine Status",
+
     "Scheduled":"Scheduled",
-    "Technician":"Technician",
-    "Visit Scheduled":"Visit Scheduled",
-    "Actual Visit Date":"Actual Visit Date",
-    "Scheduled Visit Date":"Scheduled Visit Date",
-    "Visit Notes":"Visit Notes",
+
+
     "No notes":"No notes",
     "Back to Contract":"Back to Contract",
     "proactive":"proactive",
     "maintenance":"maintenance",
     "repair":"repair",
     "installation":"installation",
-    "Visit Dates":"Visit Dates",
+
     "Scheduled Date":"Scheduled Date",
     "Actual Date":"Actual Date",
     "Full Address":"Full Address",
-    "Back to Visit":"Back to Visit",
-    "Edit Visit Details":"Edit Visit Details",
-    "Visit Status":"Visit Status",
-    "Assign Technician":"Assign Technician",
-    "Select Technician":"Select Technician",
-    "Update Visit":"Update Visit",
+
+
+
+
     "Commission Details":"Commission Details",
     "Save Contract":"Save Contract",
     "Select Status":"Select Status",
-    "Create Visit":"Create Visit",
-    "Save Visit":"Save Visit",
+
     "New Role":"New Role",
     "Manage system roles and permissions":"Manage system roles and permissions",
     "Edit Payment":"Edit Payment",

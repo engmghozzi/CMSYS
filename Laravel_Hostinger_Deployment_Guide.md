@@ -10,7 +10,7 @@
 ### Step 1: Connect to Server and Navigate to Project
 ```bash
 ssh u622957711@your-server
-cd /home/u622957711/public_html/public_html/cmapp
+cd /home/u622957711/public_html/public_html/cmsys
 ```
 
 ### Step 2: Update Composer to Version 2
@@ -189,7 +189,7 @@ In your Hostinger control panel:
 1. Go to "Domains" or "File Manager"
 2. Set document root for your domain to:
    ```
-   /home/u622957711/public_html/public_html/cmapp/public
+   /home/u622957711/public_html/public_html/cmsys/public
    ```
 
 ### Step 12: Test Your Application
