@@ -69,21 +69,11 @@
                     </div>
                     <div class="relative md:col-span-1">
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Start Date  ≥') }}</label>
-                        <input 
-                            type="date" 
-                            name="start_date" 
-                            class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                            value="{{ request('start_date') }}"
-                        >
+                        <x-date-picker name="start_date" value="{{ request('start_date') }}" />
                     </div>
                     <div class="relative md:col-span-1">
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('End Date  ≤') }}</label>
-                        <input 
-                            type="date" 
-                            name="end_date" 
-                            class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                            value="{{ request('end_date') }}"
-                        >
+                        <x-date-picker name="end_date" value="{{ request('end_date') }}" />
                     </div>
 
                     {{-- buttons --}}
@@ -108,10 +98,10 @@
         </div>
 
         <!-- Export & Print Buttons (Super Admin Only) -->
-        @if(auth()->user()->hasFeature('contracts.export.excel') || auth()->user()->hasFeature('contracts.export.pdf'))
+        @if(auth()->user()->hasPermission('contracts.export.excel') || auth()->user()->hasPermission('contracts.export.pdf'))
             <div class="flex justify-end mb-4">
                 <div class="flex gap-2">
-                    @if(auth()->user()->hasFeature('contracts.export.excel'))
+                    @if(auth()->user()->hasPermission('contracts.export.excel'))
                         <a href="{{ route('contracts.export', request()->query()) }}" 
                            class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -120,7 +110,7 @@
                             {{ __('تصدير إلى إكسل') }}
                         </a>
                     @endif
-                    @if(auth()->user()->hasFeature('contracts.export.pdf'))
+                    @if(auth()->user()->hasPermission('contracts.export.pdf'))
                         <a href="{{ route('contracts.print', request()->query()) }}" 
                            class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -150,6 +140,20 @@
                                             {{ $contract->client->name }}
                                         </a>
                                     </h3>
+                                    <a href="{{ route('clients.show', $contract->client) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline text-xs">
+                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                        </svg>
+                                        {{ $contract->client->mobile_number }}
+                                    </a>
+                                    @if($contract->client->alternate_mobile_number)
+                                        <a href="{{ route('clients.show', $contract->client) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline text-xs">
+                                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                                            </svg>
+                                            {{ $contract->client->alternate_mobile_number }}
+                                        </a>
+                                    @endif
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <span class="px-2 py-0.5 rounded text-xs font-medium @if($contract->dynamic_status === 'active') bg-green-100 text-green-800 @elseif($contract->dynamic_status === 'cancelled') bg-red-100 text-red-800 @elseif($contract->dynamic_status === 'expired') bg-orange-100 text-orange-800 @else bg-gray-100 text-gray-800 @endif">
@@ -163,8 +167,8 @@
 
                             <!-- Middle Row -->
                             <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-sm mb-2">
-                                <span class="text-gray-600">{{__('Start Date')}}: {{ $contract->start_date }}</span>
-                                <span class="text-gray-600">{{__('End Date')}}: {{ $contract->end_date }}</span>
+                                <span class="text-gray-600">{{__('Start Date')}}: {{ \App\Helpers\DateHelper::formatDate($contract->start_date) }}</span>
+                                <span class="text-gray-600">{{__('End Date')}}: {{ \App\Helpers\DateHelper::formatDate($contract->end_date) }}</span>
                                 <span class="text-gray-600">{{ __('Total') }}: <span class="text-green-600 font-medium">{{ number_format($contract->total_amount) }} KWD</span></span>
                                 <span class="text-gray-600">{{ __('Paid') }}: <span class="text-green-600 font-medium">{{ number_format($contract->paid_amount) }} KWD</span></span>
                                 <span class="text-gray-600">{{ __('Rem.') }}: <span class="@if($contract->remaining_amount > 0) text-red-600 @else text-green-600 @endif font-medium">{{ number_format($contract->remaining_amount) }} KWD</span></span>
@@ -173,20 +177,7 @@
 
                             <!-- Bottom Row -->
                             <div class="flex items-center gap-3 text-xs">
-                                <a href="{{ route('clients.show', $contract->client) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline">
-                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                    </svg>
-                                    &nbsp; &nbsp;{{ $contract->client->mobile_number }}
-                                </a>
-                                @if($contract->client->alternate_mobile_number)
-                                    <a href="{{ route('clients.show', $contract->client) }}" class="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline">
-                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                        </svg>
-                                        &nbsp; &nbsp;{{ $contract->client->alternate_mobile_number }}
-                                    </a>
-                                @endif
+                                <!-- Additional actions or info can go here -->
                             </div>
                         </div>
                     </div>

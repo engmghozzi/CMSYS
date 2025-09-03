@@ -93,6 +93,8 @@
     "Client Type": "نوع العميل",
     "Company": "شركة",
     "Contractor": "مقاول",
+    "Central Machines": "الماكينات المركزية",
+    "Unit Machines": "ماكينات الوحدة",
     "other": "أخرى",
     "Back": "رجوع",
     "Client Details": "تفاصيل العميل",

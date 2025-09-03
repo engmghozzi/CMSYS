@@ -27,12 +27,12 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">{{ __('Payment Date') }}</label>
-                    <input type="date" name="payment_date" value="{{ now()->toDateString() }}" required class="form-input w-full border rounded px-4 py-2">
+                    <x-date-picker name="payment_date" value="{{ old('payment_date', \App\Helpers\DateHelper::formatDate(now())) }}" required />
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">{{ __('Due Date') }}</label>
-                    <input type="date" name="due_date" value="{{ now()->addDays(10)->toDateString() }}" class="form-input w-full border rounded px-4 py-2">
+                    <x-date-picker name="due_date" value="{{ old('due_date', \App\Helpers\DateHelper::formatDate(now()->addDays(10))) }}" />
                 </div>
 
                 <div>

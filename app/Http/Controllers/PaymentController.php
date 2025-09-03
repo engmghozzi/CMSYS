@@ -89,8 +89,8 @@ class PaymentController extends Controller
 
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
-            'payment_date' => 'nullable|date_format:d m Y',
-            'due_date' => 'required|date_format:d m Y',
+            'payment_date' => 'nullable|date_format:d-m-Y',
+            'due_date' => 'required|date_format:d-m-Y',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
             'status' => 'required|in:Unpaid,Paid,Other',
@@ -98,8 +98,8 @@ class PaymentController extends Controller
 
         // Only validate payment date if it's provided
         if (!empty($validated['payment_date'])) {
-            $paymentDate = \Carbon\Carbon::createFromFormat('d m Y', $validated['payment_date']);
-            $dueDate = \Carbon\Carbon::createFromFormat('d m Y', $validated['due_date']);
+            $paymentDate = \App\Helpers\DateHelper::parseDate($validated['payment_date']);
+            $dueDate = \App\Helpers\DateHelper::parseDate($validated['due_date']);
             
             if ($paymentDate->lt($dueDate)) {
                 return redirect()->back()
@@ -152,8 +152,8 @@ class PaymentController extends Controller
 
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
-            'payment_date' => 'nullable|date',
-            'due_date' => 'required|date',
+            'payment_date' => 'nullable|date_format:d-m-Y',
+            'due_date' => 'required|date_format:d-m-Y',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
             'status' => 'required|in:Unpaid,Paid,Other',
@@ -161,8 +161,8 @@ class PaymentController extends Controller
 
         // Only validate payment date if it's provided
         if (!empty($validated['payment_date'])) {
-            $paymentDate = \Carbon\Carbon::parse($validated['payment_date']);
-            $dueDate = \Carbon\Carbon::parse($validated['due_date']);
+            $paymentDate = \App\Helpers\DateHelper::parseDate($validated['payment_date']);
+            $dueDate = \App\Helpers\DateHelper::parseDate($validated['due_date']);
             
             if ($paymentDate->lt($dueDate)) {
                 return redirect()->back()
@@ -247,8 +247,8 @@ class PaymentController extends Controller
 
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0',
-            'payment_date' => 'nullable|date',
-            'due_date' => 'required|date',
+            'payment_date' => 'nullable|date_format:d-m-Y',
+            'due_date' => 'required|date_format:d-m-Y',
             'method' => 'required|in:Cash,KNET,Cheque,Wamd,other',
             'notes' => 'nullable|string|max:1000',
             'status' => 'required|in:Unpaid,Paid,Other',

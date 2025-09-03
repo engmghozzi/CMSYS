@@ -35,8 +35,18 @@
                     </div>
 
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Central Machines') }}</label>
+                        <input type="number" min="0" name="centeral_machines" value="{{ old('centeral_machines', $contract->centeral_machines ?? 0) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Unit Machines') }}</label>
+                        <input type="number" min="0" name="unit_machines" value="{{ old('unit_machines', $contract->unit_machines ?? 0) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Start Date') }}</label>
-                        <input type="date" name="start_date" value="{{ old('start_date', $contract->start_date) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                        <x-date-picker name="start_date" value="{{ old('start_date', $contract->start_date ? \App\Helpers\DateHelper::formatDate($contract->start_date) : '') }}" />
                     </div>
 
                     <div>
@@ -98,7 +108,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Commission Date') }}</label>
-                        <input type="date" name="commission_date" value="{{ old('commission_date', $contract->commission_date) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                        <x-date-picker name="commission_date" value="{{ old('commission_date', $contract->commission_date ? \App\Helpers\DateHelper::formatDate($contract->commission_date) : '') }}" />
                     </div>
                 </div>
             </div>

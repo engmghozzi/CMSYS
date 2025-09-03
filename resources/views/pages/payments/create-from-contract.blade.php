@@ -88,15 +88,13 @@
                     {{-- Payment Date --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Payment Date') }}</label>
-                        <input type="date" name="payment_date" value="{{ old('payment_date', now()->toDateString()) }}" required
-                               class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <x-date-picker name="payment_date" value="{{ old('payment_date', \App\Helpers\DateHelper::formatDate(now())) }}" required />
                     </div>
 
                     {{-- Due Date --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Due Date') }}</label>
-                        <input type="date" name="due_date" value="{{ old('due_date', now()->addDays(10)->toDateString()) }}"
-                               class="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <x-date-picker name="due_date" value="{{ old('due_date', \App\Helpers\DateHelper::formatDate(now()->addDays(10))) }}" />
                     </div>
 
                     {{-- Payment Method --}}

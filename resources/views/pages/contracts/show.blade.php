@@ -92,22 +92,30 @@
 
             <div class="p-4 sm:p-6 grid gap-4">
                 <!-- Key Details -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-2 bg-gray-50 rounded-lg text-sm">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-2 bg-gray-50 rounded-lg">
                     <div>
                         <label class="text-xs text-gray-500">{{ __('Contract Type') }}</label>
-                        <p class="font-medium text-gray-900">{{ __($contract->type) }}</p>
+                        <p class="text-sm font-medium text-gray-900">{{ __($contract->type) }}</p>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">{{ __('Central Machines') }}</label>
+                        <p class="text-sm font-medium text-gray-900">{{ $contract->centeral_machines ?? 0 }}</p>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">{{ __('Unit Machines') }}</label>
+                        <p class="text-sm font-medium text-gray-900">{{ $contract->unit_machines ?? 0 }}</p>
                     </div>
                     <div>
                         <label class="text-xs text-gray-500">{{ __('Duration') }}</label>
-                        <p class="font-medium text-gray-900">{{ $contract->duration_months }} {{ __('months') }}</p>
+                        <p class="text-sm font-medium text-gray-900">{{ $contract->duration_months }} {{ __('months') }}</p>
                     </div>
                     <div>
                         <label class="text-xs text-gray-500">{{ __('Start Date') }}</label>
-                        <p class="font-medium text-gray-900">{{ \Carbon\Carbon::parse($contract->start_date)->format('M d, Y') }}</p>
+                        <p class="text-sm font-medium text-gray-900">{{ \App\Helpers\DateHelper::formatDate($contract->start_date) }}</p>
                     </div>
                     <div>
                         <label class="text-xs text-gray-500">{{ __('End Date') }}</label>
-                        <p class="font-medium text-gray-900">{{ \Carbon\Carbon::parse($contract->end_date)->format('M d, Y') }}</p>
+                        <p class="text-sm font-medium text-gray-900">{{ \App\Helpers\DateHelper::formatDate($contract->end_date) }}</p>
                     </div>
                 </div>
 
@@ -115,24 +123,24 @@
                 <div class="grid grid-cols-3 gap-3">
                     <div class="p-2 bg-blue-50 rounded-lg">
                         <label class="text-xs text-blue-600">{{ __('Total Amount') }}</label>
-                        <p class="text-base font-semibold text-blue-900">{{ number_format($contract->total_amount, 3) }} {{ __('KWD') }}</p>
+                        <p class="text-sm font-semibold text-blue-900">{{ number_format($contract->total_amount, 3) }} {{ __('KWD') }}</p>
                     </div>
                     <div class="p-2 bg-green-50 rounded-lg">
                         <label class="text-xs text-green-600">{{ __('Paid Amount') }}</label>
-                        <p class="text-base font-semibold text-green-900">{{ number_format($contract->paid_amount, 3) }} {{ __('KWD') }}</p>
+                        <p class="text-sm font-semibold text-green-900">{{ number_format($contract->paid_amount, 3) }} {{ __('KWD') }}</p>
                     </div>
                     <div class="p-2 @if($contract->remaining_amount > 0) bg-red-50 @else bg-green-50 @endif rounded-lg">
                         <label class="text-xs @if($contract->remaining_amount > 0) text-red-600 @else text-green-600 @endif">{{ __('Remaining') }}</label>
-                        <p class="text-base font-semibold @if($contract->remaining_amount > 0) text-red-900 @else text-green-900 @endif">
+                        <p class="text-sm font-semibold @if($contract->remaining_amount > 0) text-red-900 @else text-green-900 @endif">
                             {{ number_format($contract->remaining_amount, 3) }} {{ __('KWD') }}
                         </p>
                     </div>
                 </div>
 
                 <!-- Address Info -->
-                <div class="p-2 bg-gray-50 rounded-lg text-sm">
+                <div class="p-2 bg-gray-50 rounded-lg">
                     <label class="text-xs text-gray-500">{{ __('Contract Address') }}</label>
-                    <p class="font-medium text-gray-900">
+                    <p class="text-sm font-medium text-gray-900">
                         {{ $contract->address->area }} - {{ $contract->address->block }} - {{ $contract->address->street }} - 
                         {{ $contract->address->house_num }} - {{ $contract->address->floor_num }} - {{ $contract->address->flat_num }} - 
                         {{ $contract->address->paci_num }}
@@ -142,42 +150,42 @@
 
 
                 @if($contract->commission_amount)
-                <div class="grid grid-cols-4 gap-3 p-2 bg-yellow-50 rounded-lg text-sm">
+                <div class="grid grid-cols-4 gap-3 p-2 bg-yellow-50 rounded-lg">
                     <div>
                         <label class="text-xs text-yellow-800">{{ __('Commission Amount') }}</label>
-                        <p class="font-medium text-yellow-900">{{ number_format($contract->commission_amount, 3) }} {{ __('KWD') }}</p>
+                        <p class="text-sm font-medium text-yellow-900">{{ number_format($contract->commission_amount, 3) }} {{ __('KWD') }}</p>
                     </div>
                     <div>
                         <label class="text-xs text-yellow-800">{{ __('Commission Type') }}</label>
-                        <p class="font-medium text-yellow-900">{{ $contract->commission_type }}</p>
+                        <p class="text-sm font-medium text-yellow-900">{{ $contract->commission_type }}</p>
                     </div>
                     <div>
                         <label class="text-xs text-yellow-800">{{ __('Recipient') }}</label>
-                        <p class="font-medium text-yellow-900">{{ $contract->commission_recipient }}</p>
+                        <p class="text-sm font-medium text-yellow-900">{{ $contract->commission_recipient }}</p>
                     </div>
                     <div>
                         <label class="text-xs text-yellow-800">{{ __('Commission Date') }}</label>
-                        <p class="font-medium text-yellow-900">{{ $contract->commission_date ? \Carbon\Carbon::parse($contract->commission_date)->format('M d, Y') : '-' }}</p>
+                        <p class="text-sm font-medium text-yellow-900">{{ $contract->commission_date ? \App\Helpers\DateHelper::formatDate($contract->commission_date) : '-' }}</p>
                     </div>
                 </div>
                 @endif
 
                 @if($contract->details)
-                <div class="p-2 bg-gray-50 rounded-lg text-sm">
+                <div class="p-2 bg-gray-50 rounded-lg">
                     <label class="text-xs text-gray-500">{{ __('Additional Details') }}</label>
-                    <p class="text-gray-900">{{ $contract->details }}</p>
+                    <p class="text-sm text-gray-900">{{ $contract->details }}</p>
                 </div>
                 @endif
 
                 <!-- Record Information -->
-                <div class="grid grid-cols-2 gap-3 p-2 bg-gray-50 rounded-lg text-sm">
+                <div class="grid grid-cols-2 gap-3 p-2 bg-gray-50 rounded-lg">
                     <div>
                         <label class="text-xs text-gray-500">{{ __('Created By') }}</label>
-                        <p class="font-medium text-gray-900">{{ $contract->creator->name }}</p>
+                        <p class="text-sm font-medium text-gray-900">{{ $contract->creator->name }}</p>
                     </div>
                     <div>
                         <label class="text-xs text-gray-500">{{ __('Updated By') }}</label>
-                        <p class="font-medium text-gray-900">{{ $contract->updater->name }}</p>
+                        <p class="text-sm font-medium text-gray-900">{{ $contract->updater->name }}</p>
                     </div>
                 </div>
             </div>
@@ -192,7 +200,7 @@
             <!-- Payments Tab -->
             <div x-show="tab === 'payments'" class="p-4 sm:p-6">
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-xl font-semibold text-gray-900">{{__('Payment Transactions')}}</h2>
+                        <h2 class="text-lg font-semibold text-gray-900">{{__('Payment Transactions')}}</h2>
                         @php
                             $totalPaid = $contract->payments->sum('amount');
                             $remaining = $contract->total_amount - $totalPaid;
@@ -217,7 +225,7 @@
                         </div>
                     @else
                         <div class="space-y-4">
-                            @foreach ($contract->payments as $payment)
+                            @foreach ($contract->payments->sortByDesc('created_at') as $payment)
                                 <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
                                     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 min-h-[80px]">
                                         <!-- Payment Info -->
@@ -225,7 +233,7 @@
                                             <div>
                                                 <p class="text-sm text-gray-600">{{__('Payment No')}} #{{ $payment->id }}</p>
                                                 <div class="flex items-center gap-3">
-                                                    <h3 class="text-lg font-semibold text-gray-900">{{ number_format($payment->amount, 3) }} {{__('KWD')}}</h3>
+                                                    <h3 class="text-base font-semibold text-gray-900">{{ number_format($payment->amount, 3) }} {{__('KWD')}}</h3>
                                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                                         @if($payment->status === 'Paid') bg-green-100 text-green-800
                                                         @elseif($payment->status === 'Unpaid') bg-red-100 text-red-800
@@ -244,12 +252,12 @@
                                                 </div>
                                                 <div>
                                                     <p class="text-sm text-gray-500">{{__('Due Date')}}</p>
-                                                    <p class="text-sm font-medium">{{ $payment->due_date->format('M d, Y') }}</p>
+                                                    <p class="text-sm font-medium">{{ \App\Helpers\DateHelper::formatDate($payment->due_date) }}</p>
                                                 </div>
 
                                                 <div>
                                                     <p class="text-sm text-gray-500">{{__('Payment Date')}}</p>
-                                                    <p class="text-sm font-medium">{{ $payment->payment_date->format('M d, Y') }}</p>
+                                                    <p class="text-sm font-medium">{{ \App\Helpers\DateHelper::formatDate($payment->payment_date) }}</p>
                                                 </div>
                                                 
                                                 @if($payment->notes)

@@ -76,12 +76,18 @@ class ContractController extends Controller
 
         // Filter by start date
         if ($request->filled('start_date')) {
-            $query->where('start_date', '>=', $request->start_date);
+            $startDate = \App\Helpers\DateHelper::parseDate($request->start_date);
+            if ($startDate) {
+                $query->where('start_date', '>=', $startDate->toDateString());
+            }
         }
 
         // Filter by end date
         if ($request->filled('end_date')) {
-            $query->where('end_date', '<=', $request->end_date);
+            $endDate = \App\Helpers\DateHelper::parseDate($request->end_date);
+            if ($endDate) {
+                $query->where('end_date', '<=', $endDate->toDateString());
+            }
         }
 
         // Filter by expiring within months
@@ -206,13 +212,15 @@ class ContractController extends Controller
         $validated = $request->validate([
             'address_id' => 'required|exists:addresses,id',
             'type' => 'required|in:L,LS,C,Other',
-            'start_date' => 'required|date',
+            'centeral_machines' => 'nullable|integer|min:0',
+            'unit_machines' => 'nullable|integer|min:0',
+            'start_date' => 'required|date_format:d-m-Y',
             'duration_months' => 'required|numeric|min:1',
             'total_amount' => 'required|numeric|min:0',
             'commission_amount' => 'nullable|numeric|min:0',
             'commission_type' => 'nullable|in:Incentive Bonus,Referral Commission,Other',
             'commission_recipient' => 'nullable|string|max:255',
-            'commission_date' => 'nullable|date',
+            'commission_date' => 'nullable|date_format:d-m-Y',
             'status' => 'required|in:active,expired,cancelled',
             'details' => 'nullable|string',
             'attachment_url' => 'nullable|file|mimes:pdf|max:2048',
@@ -238,8 +246,8 @@ class ContractController extends Controller
         }
 
         // Generate start & end date
-        $startDate = Carbon::parse($validated['start_date']);
-        $endDate = (clone $startDate)->addMonths((int) $validated['duration_months']);
+        $startDate = \App\Helpers\DateHelper::parseDate($validated['start_date']);
+        $endDate = (clone $startDate)->addMonths((int) $validated['duration_months'])->subDay();
 
         // Generate contract number: CONT/YY/XYZ
         $year = $startDate->format('y');
@@ -280,7 +288,8 @@ class ContractController extends Controller
             'client_id' => $client->id,
             'address_id' => $validated['address_id'],
             'type' => $validated['type'],
-
+            'centeral_machines' => $validated['centeral_machines'] ?? 0,
+            'unit_machines' => $validated['unit_machines'] ?? 0,
             'start_date' => $startDate->toDateString(),
             'duration_months' => $validated['duration_months'],
             'end_date' => $endDate->toDateString(),
@@ -288,7 +297,7 @@ class ContractController extends Controller
             'commission_amount' => $validated['commission_amount'],
             'commission_type' => $validated['commission_type'],
             'commission_recipient' => $validated['commission_recipient'],
-            'commission_date' => $validated['commission_date'],
+            'commission_date' => $validated['commission_date'] ? \App\Helpers\DateHelper::parseDate($validated['commission_date'])->toDateString() : null,
             'status' => $validated['status'],
             'details' => $validated['details'] ?? null,
             'attachment_url' => $filePath,
@@ -347,13 +356,15 @@ class ContractController extends Controller
         $validated = $request->validate([
             'address_id' => 'required|exists:addresses,id',
             'type' => 'required|in:L,LS,C,Other',
-            'start_date' => 'required|date',
+            'centeral_machines' => 'nullable|integer|min:0',
+            'unit_machines' => 'nullable|integer|min:0',
+            'start_date' => 'required|date_format:d-m-Y',
             'duration_months' => 'required|numeric|min:1',
             'total_amount' => 'required|numeric|min:0',
             'commission_amount' => 'nullable|numeric|min:0',
             'commission_type' => 'nullable|in:Incentive Bonus,Referral Commission,Other',
             'commission_recipient' => 'nullable|string|max:255',
-            'commission_date' => 'nullable|date',
+            'commission_date' => 'nullable|date_format:d-m-Y',
             'status' => 'required|in:active,expired,cancelled',
             'details' => 'nullable|string',
             'attachment_url' => 'nullable|file|mimes:pdf|max:2048',
@@ -374,8 +385,8 @@ class ContractController extends Controller
         }
 
         // Recalculate end date based on new start and duration
-        $startDate = Carbon::parse($validated['start_date']);
-        $endDate = (clone $startDate)->addMonths((int) $validated['duration_months']);
+        $startDate = \App\Helpers\DateHelper::parseDate($validated['start_date']);
+        $endDate = (clone $startDate)->addMonths((int) $validated['duration_months'])->subDay();
 
         // Handle file upload/deletion to S3
         $filePath = $contract->attachment_url; // retain old file unless changed
@@ -504,7 +515,8 @@ class ContractController extends Controller
             $updateData = [
                 'address_id' => $validated['address_id'],
                 'type' => $validated['type'],
-
+                'centeral_machines' => $validated['centeral_machines'] ?? $contract->centeral_machines ?? 0,
+                'unit_machines' => $validated['unit_machines'] ?? $contract->unit_machines ?? 0,
                 'start_date' => $startDate->toDateString(),
                 'duration_months' => $validated['duration_months'],
                 'end_date' => $endDate->toDateString(),
@@ -514,7 +526,7 @@ class ContractController extends Controller
                 'commission_amount' => $validated['commission_amount'],
                 'commission_type' => $validated['commission_type'],
                 'commission_recipient' => $validated['commission_recipient'],
-                'commission_date' => $validated['commission_date'],
+                'commission_date' => $validated['commission_date'] ? \App\Helpers\DateHelper::parseDate($validated['commission_date'])->toDateString() : null,
                 'status' => $validated['status'],
                 'details' => $validated['details'],
                 'attachment_url' => $filePath,

@@ -92,6 +92,8 @@
     "Client": "Client",
     "Company": "Company",
     "Contractor": "Contractor",
+    "Central Machines": "Central Machines",
+    "Unit Machines": "Unit Machines",
     "other": "other",
     "Back": "Back",
     "Client Details": "Client Details",

@@ -47,20 +47,13 @@
                 {{-- Due Date --}}
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-gray-700">{{ __('Due Date') }}</label>
-                    <input type="date" 
-                           name="due_date" 
-                           value="{{ old('due_date', $payment->due_date->format('Y-m-d')) }}"
-                           class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2">
+                    <x-date-picker name="due_date" value="{{ old('due_date', \App\Helpers\DateHelper::formatDate($payment->due_date)) }}" />
                 </div>
 
                 {{-- Payment Date --}}
                 <div class="space-y-2">
                     <label class="block text-sm font-medium text-gray-700">{{ __('Payment Date') }}</label>
-                    <input type="date" 
-                           name="payment_date" 
-                           value="{{ old('payment_date', $payment->payment_date->format('Y-m-d')) }}" 
-                           required
-                           class="w-full rounded-lg border-gray-300 shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2">
+                    <x-date-picker name="payment_date" value="{{ old('payment_date', \App\Helpers\DateHelper::formatDate($payment->payment_date)) }}" required />
                 </div>
 
                 {{-- Payment Method --}}

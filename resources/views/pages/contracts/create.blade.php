@@ -59,8 +59,18 @@
                     </div>
 
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Central Machines') }}</label>
+                        <input type="number" min="0" name="centeral_machines" value="{{ old('centeral_machines', isset($contract) ? $contract->centeral_machines : 0) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Unit Machines') }}</label>
+                        <input type="number" min="0" name="unit_machines" value="{{ old('unit_machines', isset($contract) ? $contract->unit_machines : 0) }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Start Date') }}</label>
-                        <input type="date" name="start_date" value="{{ old('start_date', isset($contract) ? date('Y-m-d') : '') }}" required class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
+                        <x-date-picker name="start_date" value="{{ old('start_date', isset($contract) ? \App\Helpers\DateHelper::formatDate($contract->start_date) : '') }}" required />
                     </div>
 
                     <div>
@@ -116,7 +126,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Commission Date') }}</label>
-                        <input type="date" name="commission_date" value="{{ old('commission_date', isset($contract) ? $contract->commission_date : '') }}" class="w-full border rounded px-4 py-2 bg-white shadow-sm" />
+                        <x-date-picker name="commission_date" value="{{ old('commission_date', isset($contract) ? ($contract->commission_date ? \App\Helpers\DateHelper::formatDate($contract->commission_date) : '') : '') }}" />
                     </div>
                 </div>
             </div>
