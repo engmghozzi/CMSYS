@@ -4,115 +4,145 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contracts Report</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            line-height: 1.4;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
+         <style>
+         @page {
+             size: landscape;
+             margin: 10mm;
+         }
+         
+         body {
+             font-family: Arial, sans-serif;
+             font-size: 10px;
+             line-height: 1.2;
+             color: #333;
+             margin: 0;
+             padding: 10px;
+         }
         
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 20px;
-        }
+                 .header {
+             text-align: center;
+             margin-bottom: 15px;
+             border-bottom: 2px solid #333;
+             padding-bottom: 10px;
+         }
+         
+         .header h1 {
+             margin: 0;
+             font-size: 18px;
+             color: #333;
+         }
+         
+         .header p {
+             margin: 3px 0 0 0;
+             color: #666;
+             font-size: 9px;
+         }
         
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-            color: #333;
-        }
+                 .filters {
+             background-color: #f8f9fa;
+             padding: 8px;
+             border-radius: 3px;
+             margin-bottom: 10px;
+         }
+         
+         .filters h3 {
+             margin: 0 0 5px 0;
+             font-size: 10px;
+             color: #333;
+         }
         
-        .header p {
-            margin: 5px 0 0 0;
-            color: #666;
-        }
+                 .filter-item {
+             display: inline-block;
+             margin-right: 15px;
+             margin-bottom: 3px;
+             font-size: 8px;
+         }
+         
+         .filter-label {
+             font-weight: bold;
+             color: #555;
+         }
         
-        .filters {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
+                 .summary {
+             background-color: #e3f2fd;
+             padding: 8px;
+             border-radius: 3px;
+             margin-bottom: 10px;
+         }
+         
+         .summary h3 {
+             margin: 0 0 5px 0;
+             font-size: 10px;
+             color: #1976d2;
+         }
         
-        .filters h3 {
-            margin: 0 0 10px 0;
-            font-size: 14px;
-            color: #333;
-        }
+                 .summary-stats {
+             display: table;
+             width: 100%;
+             table-layout: fixed;
+         }
+         
+         .stat-item {
+             display: table-cell;
+             text-align: center;
+             padding: 3px;
+             vertical-align: top;
+         }
+         
+         .stat-value {
+             font-size: 12px;
+             font-weight: bold;
+             color: #1976d2;
+             display: block;
+         }
+         
+         .stat-label {
+             font-size: 8px;
+             color: #666;
+             display: block;
+         }
         
-        .filter-item {
-            display: inline-block;
-            margin-right: 20px;
-            margin-bottom: 5px;
-        }
-        
-        .filter-label {
-            font-weight: bold;
-            color: #555;
-        }
-        
-        .summary {
-            background-color: #e3f2fd;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        
-        .summary h3 {
-            margin: 0 0 10px 0;
-            font-size: 14px;
-            color: #1976d2;
-        }
-        
-        .summary-stats {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-        }
-        
-        .stat-item {
-            text-align: center;
-            margin: 5px;
-        }
-        
-        .stat-value {
-            font-size: 18px;
-            font-weight: bold;
-            color: #1976d2;
-        }
-        
-        .stat-label {
-            font-size: 10px;
-            color: #666;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-            vertical-align: top;
-        }
-        
-        th {
-            background-color: #f5f5f5;
-            font-weight: bold;
-            font-size: 11px;
-        }
-        
-        td {
-            font-size: 10px;
-        }
+                 table {
+             width: 100%;
+             border-collapse: collapse;
+             margin-top: 15px;
+             table-layout: fixed;
+         }
+         
+         th, td {
+             border: 1px solid #ddd;
+             padding: 4px 2px;
+             text-align: left;
+             vertical-align: top;
+             overflow: hidden;
+             text-overflow: ellipsis;
+             white-space: nowrap;
+         }
+         
+         th {
+             background-color: #f5f5f5;
+             font-weight: bold;
+             font-size: 9px;
+         }
+         
+         td {
+             font-size: 8px;
+         }
+         
+         /* Column widths for landscape layout */
+         th:nth-child(1), td:nth-child(1) { width: 8%; }  /* Contract # */
+         th:nth-child(2), td:nth-child(2) { width: 12%; }  /* Client */
+         th:nth-child(3), td:nth-child(3) { width: 8%; }  /* Mobile */
+         th:nth-child(4), td:nth-child(4) { width: 15%; }  /* Address */
+         th:nth-child(5), td:nth-child(5) { width: 5%; }   /* Type */
+         th:nth-child(6), td:nth-child(6) { width: 6%; }    /* Status */
+         th:nth-child(7), td:nth-child(7) { width: 7%; }    /* Start Date */
+         th:nth-child(8), td:nth-child(8) { width: 7%; }   /* End Date */
+         th:nth-child(9), td:nth-child(9) { width: 6%; }    /* Duration */
+         th:nth-child(10), td:nth-child(10) { width: 8%; } /* Total Amount */
+         th:nth-child(11), td:nth-child(11) { width: 6%; }  /* Paid */
+         th:nth-child(12), td:nth-child(12) { width: 8%; }  /* Remaining */
+         th:nth-child(13), td:nth-child(13) { width: 6%; }  /* Commission */
         
         .status-active {
             color: #28a745;
@@ -133,14 +163,14 @@
             text-align: right;
         }
         
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            font-size: 10px;
-            color: #666;
-            border-top: 1px solid #ddd;
-            padding-top: 10px;
-        }
+                 .footer {
+             margin-top: 15px;
+             text-align: center;
+             font-size: 8px;
+             color: #666;
+             border-top: 1px solid #ddd;
+             padding-top: 5px;
+         }
         
         .page-break {
             page-break-before: always;
@@ -178,12 +208,12 @@
             @endif
             @if(isset($filters['start_date']) && $filters['start_date'])
                 <div class="filter-item">
-                    <span class="filter-label">Start Date ≥:</span> {{ $filters['start_date'] }}
+                    <span class="filter-label">Start Date ≥:</span> {{ \App\Helpers\DateHelper::formatDate($filters['start_date']) }}
                 </div>
             @endif
             @if(isset($filters['end_date']) && $filters['end_date'])
                 <div class="filter-item">
-                    <span class="filter-label">End Date ≤:</span> {{ $filters['end_date'] }}
+                    <span class="filter-label">End Date ≤:</span> {{ \App\Helpers\DateHelper::formatDate($filters['end_date']) }}
                 </div>
             @endif
             @if(isset($filters['expiring_months']) && $filters['expiring_months'])
@@ -257,8 +287,8 @@
                     <td class="status-{{ $contract->dynamic_status }}">
                         {{ ucfirst($contract->dynamic_status) }}
                     </td>
-                    <td>{{ $contract->start_date }}</td>
-                    <td>{{ $contract->end_date }}</td>
+                    <td>{{ $contract->start_date ? \App\Helpers\DateHelper::formatDate($contract->start_date) : '' }}</td>
+                    <td>{{ $contract->end_date ? \App\Helpers\DateHelper::formatDate($contract->end_date) : '' }}</td>
                     <td>{{ $contract->duration_months }}m</td>
                     <td class="amount">{{ number_format($contract->total_amount, 2) }}</td>
                     <td class="amount">{{ number_format($contract->paid_amount, 2) }}</td>
@@ -275,8 +305,8 @@
         </tbody>
     </table>
 
-    <div class="footer">
-        <p>This report was generated on {{ now()->format('Y-m-d H:i:s') }} from the Contract Management System.</p>
-    </div>
+         <div class="footer">
+         <p>This report was generated on {{ \App\Helpers\DateHelper::formatDate(now()) }} from the Contract Management System by {{ auth()->user()->name }} ({{ auth()->user()->email }}).</p>
+     </div>
 </body>
 </html>

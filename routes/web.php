@@ -114,4 +114,27 @@ Route::middleware(['auth'])->group(function () {
     Volt::route('settings/language', 'settings.language')->name('settings.language');
 });
 
+// Temporary test route for S3 deletion debugging
+Route::get('test/s3-debug/{contract}', function(\App\Models\Contract $contract) {
+    $result = [
+        'contract_id' => $contract->id,
+        'attachment_url' => $contract->attachment_url,
+        'raw_attachment_url' => $contract->getRawOriginal('attachment_url'),
+        's3_file_path' => $contract->s3_file_path,
+        'file_exists' => null,
+        'deletion_result' => null
+    ];
+    
+    if ($contract->s3_file_path) {
+        $disk = \Illuminate\Support\Facades\Storage::disk('s3_contracts');
+        $result['file_exists'] = $disk->exists($contract->s3_file_path);
+        
+        if ($result['file_exists']) {
+            $result['deletion_result'] = $disk->delete($contract->s3_file_path);
+        }
+    }
+    
+    return response()->json($result);
+})->name('test.s3.debug');
+
 require __DIR__.'/auth.php';

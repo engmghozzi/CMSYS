@@ -147,6 +147,40 @@ class Contract extends Model
     }
 
     /**
+     * Get the original file path for S3 operations
+     */
+    public function getS3FilePathAttribute()
+    {
+        $originalPath = $this->getRawOriginal('attachment_url');
+        
+        if (!$originalPath) {
+            return null;
+        }
+
+        // Log the original path for debugging
+        \Illuminate\Support\Facades\Log::info('S3 File Path Debug', [
+            'contract_id' => $this->id,
+            'original_path' => $originalPath,
+            'is_url' => filter_var($originalPath, FILTER_VALIDATE_URL)
+        ]);
+
+        // If it's already a full URL, extract the key
+        if (filter_var($originalPath, FILTER_VALIDATE_URL)) {
+            $parsedUrl = parse_url($originalPath);
+            if (isset($parsedUrl['path'])) {
+                $extractedPath = ltrim($parsedUrl['path'], '/');
+                \Illuminate\Support\Facades\Log::info('Extracted S3 path from URL', [
+                    'contract_id' => $this->id,
+                    'extracted_path' => $extractedPath
+                ]);
+                return $extractedPath;
+            }
+        }
+
+        return $originalPath;
+    }
+
+    /**
      * Check if this contract can be renewed
      * A contract can be renewed if it's expired or cancelled and there are no active contracts for the same address
      */

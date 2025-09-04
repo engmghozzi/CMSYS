@@ -139,8 +139,8 @@ class ContractsExport implements FromCollection, WithHeadings, WithMapping, With
             $contract->address->full_address,
             $contract->type,
             $contract->dynamic_status,
-            $contract->start_date,
-            $contract->end_date,
+            $contract->start_date ? \App\Helpers\DateHelper::formatDate($contract->start_date) : '',
+            $contract->end_date ? \App\Helpers\DateHelper::formatDate($contract->end_date) : '',
             $contract->duration_months,
             number_format($contract->total_amount, 2),
             number_format($contract->paid_amount, 2),
@@ -148,7 +148,7 @@ class ContractsExport implements FromCollection, WithHeadings, WithMapping, With
             number_format($contract->commission_amount, 2),
             $contract->commission_type,
             $contract->commission_recipient,
-            $contract->commission_date,
+            $contract->commission_date ? \App\Helpers\DateHelper::formatDate($contract->commission_date) : '',
             $contract->details,
         ];
     }

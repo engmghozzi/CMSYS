@@ -90,44 +90,44 @@ class ContractObserver
     {
         if ($contract->attachment_url) {
             try {
-                // Get the original path (not the accessor value)
-                $originalPath = $contract->getRawOriginal('attachment_url');
+                // Get the S3 file path using the new accessor
+                $s3FilePath = $contract->s3_file_path;
                 
                 Log::info('Attempting to delete contract attachment from S3', [
                     'contract_id' => $contract->id,
-                    'original_path' => $originalPath,
+                    's3_file_path' => $s3FilePath,
                     'attachment_url' => $contract->attachment_url
                 ]);
                 
                 // Check if file exists before deletion
-                $exists = Storage::disk('s3_contracts')->exists($originalPath);
+                $exists = Storage::disk('s3_contracts')->exists($s3FilePath);
                 Log::info('File existence check in observer', [
-                    'file_path' => $originalPath,
+                    'file_path' => $s3FilePath,
                     'exists' => $exists
                 ]);
                 
                 if ($exists) {
-                    $deleted = Storage::disk('s3_contracts')->delete($originalPath);
+                    $deleted = Storage::disk('s3_contracts')->delete($s3FilePath);
                     Log::info('S3 deletion result in observer', [
-                        'file_path' => $originalPath,
+                        'file_path' => $s3FilePath,
                         'deleted' => $deleted
                     ]);
                     
                     if ($deleted) {
                         Log::info('Contract attachment successfully deleted from S3', [
                             'contract_id' => $contract->id,
-                            'file_path' => $originalPath
+                            'file_path' => $s3FilePath
                         ]);
                     } else {
                         Log::error('Failed to delete contract attachment from S3 - delete() returned false', [
                             'contract_id' => $contract->id,
-                            'file_path' => $originalPath
+                            'file_path' => $s3FilePath
                         ]);
                     }
                 } else {
                     Log::warning('Contract attachment file does not exist in S3', [
                         'contract_id' => $contract->id,
-                        'file_path' => $originalPath
+                        'file_path' => $s3FilePath
                     ]);
                 }
             } catch (\Exception $e) {

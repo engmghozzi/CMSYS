@@ -395,43 +395,43 @@ class ContractController extends Controller
         if ($request->input('delete_attachment') === '1') {
             // Delete the old file from S3 if it exists
             if ($contract->attachment_url) {
-                $originalPath = $contract->getRawOriginal('attachment_url');
+                $s3FilePath = $contract->s3_file_path;
                 Log::info('Attempting to delete attachment from S3', [
                     'contract_id' => $contract->id,
-                    'original_path' => $originalPath,
+                    's3_file_path' => $s3FilePath,
                     'attachment_url' => $contract->attachment_url
                 ]);
 
                 try {
                     // Check if file exists before deletion
-                    $exists = Storage::disk('s3_contracts')->exists($originalPath);
+                    $exists = Storage::disk('s3_contracts')->exists($s3FilePath);
                     Log::info('File existence check', [
-                        'file_path' => $originalPath,
+                        'file_path' => $s3FilePath,
                         'exists' => $exists
                     ]);
 
                     if ($exists) {
-                        $deleted = Storage::disk('s3_contracts')->delete($originalPath);
+                        $deleted = Storage::disk('s3_contracts')->delete($s3FilePath);
                         Log::info('S3 deletion result', [
-                            'file_path' => $originalPath,
+                            'file_path' => $s3FilePath,
                             'deleted' => $deleted
                         ]);
 
                         if ($deleted) {
                             Log::info('File successfully deleted from S3', [
                                 'contract_id' => $contract->id,
-                                'file_path' => $originalPath
+                                'file_path' => $s3FilePath
                             ]);
                         } else {
                             Log::error('Failed to delete file from S3 - delete() returned false', [
                                 'contract_id' => $contract->id,
-                                'file_path' => $originalPath
+                                'file_path' => $s3FilePath
                             ]);
                         }
                     } else {
                         Log::warning('File does not exist in S3', [
                             'contract_id' => $contract->id,
-                            'file_path' => $originalPath
+                            'file_path' => $s3FilePath
                         ]);
                         
                         // Try to list files in the contracts directory to debug
@@ -450,7 +450,7 @@ class ContractController extends Controller
                 } catch (\Exception $e) {
                     Log::error('Failed to delete attachment from S3', [
                         'contract_id' => $contract->id,
-                        'file_path' => $originalPath,
+                        'file_path' => $s3FilePath,
                         'error' => $e->getMessage(),
                         'trace' => $e->getTraceAsString()
                     ]);
@@ -466,29 +466,29 @@ class ContractController extends Controller
         elseif ($request->hasFile('attachment_url')) {
             // Delete the old file from S3 if it exists
             if ($contract->attachment_url) {
-                $originalPath = $contract->getRawOriginal('attachment_url');
+                $s3FilePath = $contract->s3_file_path;
                 Log::info('Attempting to delete old attachment before upload', [
                     'contract_id' => $contract->id,
-                    'original_path' => $originalPath
+                    's3_file_path' => $s3FilePath
                 ]);
 
                 try {
-                    $exists = Storage::disk('s3_contracts')->exists($originalPath);
+                    $exists = Storage::disk('s3_contracts')->exists($s3FilePath);
                     if ($exists) {
-                        $deleted = Storage::disk('s3_contracts')->delete($originalPath);
+                        $deleted = Storage::disk('s3_contracts')->delete($s3FilePath);
                         Log::info('Old file deletion result', [
-                            'file_path' => $originalPath,
+                            'file_path' => $s3FilePath,
                             'deleted' => $deleted
                         ]);
                     } else {
                         Log::warning('Old file does not exist in S3', [
-                            'file_path' => $originalPath
+                            'file_path' => $s3FilePath
                         ]);
                     }
                 } catch (\Exception $e) {
                     Log::error('Failed to delete old attachment from S3', [
                         'contract_id' => $contract->id,
-                        'file_path' => $originalPath,
+                        'file_path' => $s3FilePath,
                         'error' => $e->getMessage()
                     ]);
                 }

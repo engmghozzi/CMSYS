@@ -70,7 +70,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Start Date') }}</label>
-                        <x-date-picker name="start_date" value="{{ old('start_date', isset($contract) ? \App\Helpers\DateHelper::formatDate($contract->start_date) : '') }}" required />
+                        <x-date-picker name="start_date" value="{{ old('start_date', isset($contract) ? \App\Helpers\DateHelper::formatDate(now()) : '') }}" required />
                     </div>
 
                     <div>
@@ -126,7 +126,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Commission Date') }}</label>
-                        <x-date-picker name="commission_date" value="{{ old('commission_date', isset($contract) ? ($contract->commission_date ? \App\Helpers\DateHelper::formatDate($contract->commission_date) : '') : '') }}" />
+                        <x-date-picker name="commission_date" value="{{ old('commission_date', isset($contract) ? \App\Helpers\DateHelper::formatDate(now()) : '') }}" />
                     </div>
                 </div>
             </div>
