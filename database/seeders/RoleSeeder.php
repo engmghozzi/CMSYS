@@ -62,10 +62,12 @@ class RoleSeeder extends Seeder
                 'display_name' => 'Employee',
                 'description' => 'Basic access for daily operations',
                 'permissions' => [
+                    'dashboard.read',
                     'clients.read', 'clients.create', 'clients.update',
                     'addresses.read', 'addresses.create', 'addresses.update',
                     'contracts.read', 'contracts.create', 'contracts.update',
-                    'payments.read', 'payments.create', 'payments.update'
+                    'payments.read', 'payments.create', 'payments.update',
+                    'reports.financial', 'reports.contracts', 'reports.clients'
                 ],
                 'is_active' => true
             ],

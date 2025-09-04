@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Eng. Mahmoud Yossry',
                 'email' => 'eng.m.yossry@gmail.com',
-                'password' => bcrypt('0000000000'),
+                'password' => bcrypt('P@$$w0rd'),
                 'is_active' => true,
                 'role_id' => $superAdminRole->id,
             ]
@@ -39,82 +39,24 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Mahmoud Ghozzi',
                 'email' => 'mahmoud@aliandothman.com.kw',
-                'password' => bcrypt('0000000000'),
+                'password' => bcrypt('P@$$w0rd'),
                 'is_active' => true,
                 'role_id' => $superAdminRole->id,
             ]
         );
 
-        // Create Admin Salah
-        User::updateOrCreate(
-            ['email' => 'salah@aliandothman.com.kw'],
-            [
-                'name' => 'Salah Salem',
-                'email' => 'salah@aliandothman.com.kw',
-                'password' => bcrypt('0000000000'),
-                'is_active' => true,
-                'role_id' => $superAdminRole->id,
-            ]
-        );
-
-        // Create Employee Hosni
-        User::updateOrCreate(
-            ['email' => 'hosni@aliandothman.com.kw'],
-            [
-                'name' => 'Hosni',
-                'email' => 'hosni@aliandothman.com.kw',
-                'password' => bcrypt('0000000000'),
-                'is_active' => true,
-                'role_id' => $employeeRole->id,
-            ]
-        );
-
-        // Create Employee Ahmed
-        User::updateOrCreate(
-            ['email' => 'hosni@aliandothman.com.kw'],
-            [
-                'name' => 'Hosni',
-                'email' => 'hosni@aliandothman.com.kw',
-                'password' => bcrypt('0000000000'),
-                'is_active' => true,
-                'role_id' => $employeeRole->id,
-            ]
-        );
-
-        // Create Employee Abdelrahman
-        User::updateOrCreate(
-            ['email' => 'abdelrahman@aliandothman.com.kw'],
-            [
-                'name' => 'Abdelrahman',
-                'email' => 'abdelrahman@aliandothman.com.kw',
-                'password' => bcrypt('0000000000'),
-                'is_active' => true,
-                'role_id' => $employeeRole->id,
-            ]
-        );
-
-        // Create Accountant Mohamed
+        // Create Employee Mohamed
         User::updateOrCreate(
             ['email' => 'mohamed@aliandothman.com.kw'],
             [
                 'name' => 'Mohamed Zaki',
                 'email' => 'mohamed@aliandothman.com.kw',
-                'password' => bcrypt('0000000000'),
+                'password' => bcrypt('61668763m'),
                 'is_active' => true,
-                'role_id' => $accountantRole->id,
+                'role_id' => $employeeRole->id,
             ]
         );
-        // Create Viewer Rakan
-        User::updateOrCreate(
-            ['email' => 'rakan@aliandothman.com.kw'],
-            [
-                'name' => 'Rakan',
-                'email' => 'rakan@aliandothman.com.kw',
-                'password' => bcrypt('0000000000'),
-                'is_active' => true,
-                'role_id' => $viewerRole->id,
-            ]
-        );
+       
 
     }
 }

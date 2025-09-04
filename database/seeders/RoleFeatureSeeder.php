@@ -47,6 +47,7 @@ class RoleFeatureSeeder extends Seeder
                 'reports.financial', 'reports.contracts', 'reports.clients'
             ],
             'employee' => [
+                'dashboard.read',
                 'clients.read', 'clients.create', 'clients.update',
                 'addresses.read', 'addresses.create', 'addresses.update',
                 'contracts.read', 'contracts.create', 'contracts.update',
