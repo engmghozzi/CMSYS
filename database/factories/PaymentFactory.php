@@ -38,8 +38,7 @@ class PaymentFactory extends Factory
             'amount' => $this->faker->randomFloat(0, 50, 2000),
             'status' => $this->faker->randomElement([
                 'Unpaid',
-                'Paid',
-                'Other'
+                'Paid'
             ]),
             
             'method' => $this->faker->randomElement([

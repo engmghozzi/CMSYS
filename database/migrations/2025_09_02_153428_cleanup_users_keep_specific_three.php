@@ -17,13 +17,11 @@ return new class extends Migration
             // Get the employee role
             $employeeRole = Role::where('name', 'employee')->first();
             
-            if (!$employeeRole) {
-                throw new \Exception('Employee role not found');
+            // Only update mohamed if employee role exists
+            if ($employeeRole) {
+                User::where('email', 'mohamed@aliandothman.com.kw')
+                    ->update(['role_id' => $employeeRole->id]);
             }
-            
-            // Update mohamed to employee role
-            User::where('email', 'mohamed@aliandothman.com.kw')
-                ->update(['role_id' => $employeeRole->id]);
             
             // Delete all users except the three specified ones
             User::whereNotIn('email', [
