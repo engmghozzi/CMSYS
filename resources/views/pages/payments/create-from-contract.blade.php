@@ -85,16 +85,16 @@
                         <p class="mt-1 text-sm text-gray-500">{{ __('Maximum:') }} {{ number_format($contract->remaining_amount) }} KWD</p>
                     </div>
 
-                    {{-- Payment Date --}}
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Payment Date') }}</label>
-                        <x-date-picker name="payment_date" value="{{ old('payment_date', \App\Helpers\DateHelper::formatDate(now())) }}" required />
-                    </div>
-
                     {{-- Due Date --}}
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Due Date') }}</label>
                         <x-date-picker name="due_date" value="{{ old('due_date', \App\Helpers\DateHelper::formatDate(now()->addDays(10))) }}" />
+                    </div>
+
+                    {{-- Payment Date --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">{{ __('Payment Date') }} ({{ __('Optional') }})</label>
+                        <x-date-picker name="payment_date" value="{{ old('payment_date', \App\Helpers\DateHelper::formatDate(now())) }}" />
                     </div>
 
                     {{-- Payment Method --}}

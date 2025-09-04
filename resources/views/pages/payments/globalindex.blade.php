@@ -121,15 +121,37 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- Middle - Amount & Notes -->
-                            <div class="flex flex-col md:flex-row md:items-center gap-2 flex-grow px-4">
-                                <span class="font-semibold text-green-600">{{ number_format($payment->amount) }} {{__('KWD')}}</span>
-                                @if($payment->notes)
-                                    <div class="max-w-xs truncate text-sm text-gray-600" title="{{ $payment->notes }}">
-                                        {{ $payment->notes }}
+                            <!-- Middle - Amount, Dates & Notes -->
+                            <div class="flex flex-col md:flex-row md:items-center gap-3 flex-grow px-4">
+                                <div class="flex flex-col">
+                                    <span class="font-semibold text-green-600 text-lg">{{ number_format($payment->amount, 3) }} {{__('KWD')}}</span>
+                                    <div class="flex items-center gap-4 mt-1 text-xs text-gray-600">
+                                        <div class="flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                            <span class="font-medium">{{__('Due')}}:</span>
+                                            <span class="@if($payment->due_date < now() && $payment->status !== 'Paid') text-red-600 font-semibold @else text-gray-700 @endif">
+                                                {{ \App\Helpers\DateHelper::formatDate($payment->due_date) }}
+                                            </span>
+                                        </div>
+                                        @if($payment->payment_date)
+                                        <div class="flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                            </svg>
+                                            <span class="font-medium">{{__('Paid')}}:</span>
+                                            <span class="text-green-600 font-semibold">
+                                                {{ \App\Helpers\DateHelper::formatDate($payment->payment_date) }}
+                                            </span>
+                                        </div>
+                                        @endif
                                     </div>
-                                @else
-                                    <span class="text-gray-400 text-sm">-</span>
+                                </div>
+                                @if($payment->notes)
+                                    <div class="max-w-xs truncate text-sm text-gray-600 border-l border-gray-200 pl-3" title="{{ $payment->notes }}">
+                                        <span class="font-medium text-gray-500">{{__('Notes')}}:</span> {{ $payment->notes }}
+                                    </div>
                                 @endif
                             </div>
                             <!-- Right Side - Contact -->

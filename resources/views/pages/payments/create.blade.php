@@ -26,13 +26,13 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">{{ __('Payment Date') }}</label>
-                    <x-date-picker name="payment_date" value="{{ old('payment_date', \App\Helpers\DateHelper::formatDate(now())) }}" required />
+                    <label class="block text-sm font-medium text-gray-700">{{ __('Due Date') }}</label>
+                    <x-date-picker name="due_date" value="{{ old('due_date', \App\Helpers\DateHelper::formatDate(now()->addDays(10))) }}" />
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">{{ __('Due Date') }}</label>
-                    <x-date-picker name="due_date" value="{{ old('due_date', \App\Helpers\DateHelper::formatDate(now()->addDays(10))) }}" />
+                    <label class="block text-sm font-medium text-gray-700">{{ __('Payment Date') }} ({{ __('Optional') }})</label>
+                    <x-date-picker name="payment_date" value="{{ old('payment_date', \App\Helpers\DateHelper::formatDate(now())) }}" />
                 </div>
 
                 <div>

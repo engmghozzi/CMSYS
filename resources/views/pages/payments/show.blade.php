@@ -64,16 +64,16 @@
                         <p class="text-lg font-medium text-gray-900">{{ number_format($payment->amount, 3) }} {{ __('KWD') }}</p>
                     </div>
                     <div class="space-y-1">
+                        <span class="text-sm text-gray-500">{{ __('Due Date') }}</span>
+                        <p class="text-lg font-medium text-gray-900">{{ \App\Helpers\DateHelper::formatDate($payment->due_date) }}</p>
+                    </div>
+                    <div class="space-y-1">
                         <span class="text-sm text-gray-500">{{ __('Payment Date') }}</span>
                         <p class="text-lg font-medium text-gray-900">{{ \App\Helpers\DateHelper::formatDate($payment->payment_date) }}</p>
                     </div>
                     <div class="space-y-1">
                         <span class="text-sm text-gray-500">{{ __('Payment Method') }}</span>
                         <p class="text-lg font-medium text-gray-900">{{ $payment->method }}</p>
-                    </div>
-                    <div class="space-y-1">
-                        <span class="text-sm text-gray-500">{{ __('Due Date') }}</span>
-                        <p class="text-lg font-medium text-gray-900">{{ \App\Helpers\DateHelper::formatDate($payment->due_date) }}</p>
                     </div>
                     <div class="space-y-1">
                         <span class="text-sm text-gray-500">{{ __('Contract') }}</span>

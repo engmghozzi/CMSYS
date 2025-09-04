@@ -52,8 +52,8 @@
 
                 {{-- Payment Date --}}
                 <div class="space-y-2">
-                    <label class="block text-sm font-medium text-gray-700">{{ __('Payment Date') }}</label>
-                    <x-date-picker name="payment_date" value="{{ old('payment_date', \App\Helpers\DateHelper::formatDate($payment->payment_date)) }}" required />
+                    <label class="block text-sm font-medium text-gray-700">{{ __('Payment Date') }} ({{ __('Optional') }})</label>
+                    <x-date-picker name="payment_date" value="{{ old('payment_date', \App\Helpers\DateHelper::formatDate($payment->payment_date)) }}" />
                 </div>
 
                 {{-- Payment Method --}}
