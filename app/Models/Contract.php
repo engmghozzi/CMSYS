@@ -91,25 +91,28 @@ class Contract extends Model
             return $value;
         }
 
-        // Generate permanent URL (no expiration)
+        // Generate pre-signed URL with long expiration (1 year)
         try {
             $disk = Storage::disk('s3_contracts');
+            
+            // Use Laravel's temporaryUrl method with 1 year expiration
+            return $disk->temporaryUrl($value, now()->addYear());
+        } catch (\Exception $e) {
+            Log::error('Failed to generate pre-signed URL', [
+                'file_path' => $value,
+                'error' => $e->getMessage()
+            ]);
+            
+            // Fallback to direct URL if pre-signed fails
             $bucket = config('filesystems.disks.s3_contracts.bucket');
             $region = config('filesystems.disks.s3_contracts.region');
             $url = config('filesystems.disks.s3_contracts.url');
             
-            // Construct the permanent URL
             if ($url) {
                 return rtrim($url, '/') . '/' . $value;
             } else {
                 return "https://{$bucket}.s3.{$region}.amazonaws.com/{$value}";
             }
-        } catch (\Exception $e) {
-            Log::error('Failed to generate S3 URL', [
-                'file_path' => $value,
-                'error' => $e->getMessage()
-            ]);
-            return null;
         }
     }
 
