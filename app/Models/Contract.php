@@ -93,10 +93,25 @@ class Contract extends Model
 
         // Generate pre-signed URL with long expiration (1 year)
         try {
-            $disk = Storage::disk('s3_contracts');
+            // Use AWS SDK directly to create pre-signed URL
+            $s3Client = new \Aws\S3\S3Client([
+                'version' => 'latest',
+                'region'  => config('filesystems.disks.s3_contracts.region'),
+                'credentials' => [
+                    'key'    => config('filesystems.disks.s3_contracts.key'),
+                    'secret' => config('filesystems.disks.s3_contracts.secret'),
+                ],
+            ]);
             
-            // Use Laravel's temporaryUrl method with 1 year expiration
-            return $disk->temporaryUrl($value, now()->addYear());
+            $command = $s3Client->getCommand('GetObject', [
+                'Bucket' => config('filesystems.disks.s3_contracts.bucket'),
+                'Key'    => $value
+            ]);
+            
+            // Generate URL with 1 year expiration
+            $request = $s3Client->createPresignedRequest($command, '+1 year');
+            
+            return (string) $request->getUri();
         } catch (\Exception $e) {
             Log::error('Failed to generate pre-signed URL', [
                 'file_path' => $value,
