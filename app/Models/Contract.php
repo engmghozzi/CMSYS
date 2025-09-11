@@ -91,27 +91,25 @@ class Contract extends Model
             return $value;
         }
 
+        // Generate permanent URL (no expiration)
         try {
-            // Generate pre-signed URL for secure access
             $disk = Storage::disk('s3_contracts');
-            $s3Client = $disk->getClient();
+            $bucket = config('filesystems.disks.s3_contracts.bucket');
+            $region = config('filesystems.disks.s3_contracts.region');
+            $url = config('filesystems.disks.s3_contracts.url');
             
-            $command = $s3Client->getCommand('GetObject', [
-                'Bucket' => config('filesystems.disks.s3_contracts.bucket'),
-                'Key'    => $value
-            ]);
-            
-            $request = $s3Client->createPresignedRequest($command, '+20 minutes');
-            
-            return (string) $request->getUri();
+            // Construct the permanent URL
+            if ($url) {
+                return rtrim($url, '/') . '/' . $value;
+            } else {
+                return "https://{$bucket}.s3.{$region}.amazonaws.com/{$value}";
+            }
         } catch (\Exception $e) {
-            Log::error('Failed to generate pre-signed URL', [
+            Log::error('Failed to generate S3 URL', [
                 'file_path' => $value,
                 'error' => $e->getMessage()
             ]);
-            
-            // Fallback to direct URL if pre-signed fails
-            return Storage::disk('s3_contracts')->url($value);
+            return null;
         }
     }
 
@@ -166,9 +164,8 @@ class Contract extends Model
 
         // If it's already a full URL, extract the key
         if (filter_var($originalPath, FILTER_VALIDATE_URL)) {
-            $parsedUrl = parse_url($originalPath);
-            if (isset($parsedUrl['path'])) {
-                $extractedPath = ltrim($parsedUrl['path'], '/');
+            $extractedPath = $this->extractS3KeyFromUrl($originalPath);
+            if ($extractedPath) {
                 \Illuminate\Support\Facades\Log::info('Extracted S3 path from URL', [
                     'contract_id' => $this->id,
                     'extracted_path' => $extractedPath
@@ -179,6 +176,7 @@ class Contract extends Model
 
         return $originalPath;
     }
+
 
     /**
      * Check if this contract can be renewed
