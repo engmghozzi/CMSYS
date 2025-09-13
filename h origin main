@@ -1,0 +1,99 @@
+[1mdiff --git a/app/Http/Controllers/ContractController.php b/app/Http/Controllers/ContractController.php[m
+[1mindex 2aa3998..bddffaf 100644[m
+[1m--- a/app/Http/Controllers/ContractController.php[m
+[1m+++ b/app/Http/Controllers/ContractController.php[m
+[36m@@ -325,8 +325,8 @@[m [mpublic function edit(Client $client, Contract $contract)[m
+                 ->with('error', 'Cannot edit contracts for a blocked client.');[m
+         }[m
+ [m
+[31m-        // Check if contract is expired[m
+[31m-        if ($contract->status === 'expired') {[m
+[32m+[m[32m        // Check if contract is expired - allow super admin to edit expired contracts[m
+[32m+[m[32m        if ($contract->status === 'expired' && !(Auth::user() && Auth::user()->role && Auth::user()->role->name === 'super_admin')) {[m
+             return redirect()->route('contracts.show', [$client, $contract])[m
+                 ->with('error', 'Cannot edit expired contracts.');[m
+         }[m
+[36m@@ -343,8 +343,8 @@[m [mpublic function update(Request $request, Client $client, Contract $contract)[m
+                 ->with('error', 'Cannot update contracts for a blocked client.');[m
+         }[m
+ [m
+[31m-        // Check if contract is expired[m
+[31m-        if ($contract->status === 'expired') {[m
+[32m+[m[32m        // Check if contract is expired - allow super admin to update expired contracts[m
+[32m+[m[32m        if ($contract->status === 'expired' && !(Auth::user() && Auth::user()->role && Auth::user()->role->name === 'super_admin')) {[m
+             return redirect()->route('contracts.show', [$client, $contract])[m
+                 ->with('error', 'Cannot update expired contracts.');[m
+         }[m
+[36m@@ -568,8 +568,8 @@[m [mpublic function destroy(Client $client, Contract $contract)[m
+                 ->with('error', 'Cannot delete contracts for a blocked client.');[m
+         }[m
+ [m
+[31m-        // Check if contract is expired[m
+[31m-        if ($contract->status === 'expired') {[m
+[32m+[m[32m        // Check if contract is expired - allow super admin to delete expired contracts[m
+[32m+[m[32m        if ($contract->status === 'expired' && !(Auth::user() && Auth::user()->role && Auth::user()->role->name === 'super_admin')) {[m
+             return redirect()->route('contracts.show', [$client, $contract])[m
+                 ->with('error', 'Cannot delete expired contracts.');[m
+         }[m
+[1mdiff --git a/resources/views/pages/addresses/show.blade.php b/resources/views/pages/addresses/show.blade.php[m
+[1mindex 7e61428..b0d9039 100644[m
+[1m--- a/resources/views/pages/addresses/show.blade.php[m
+[1m+++ b/resources/views/pages/addresses/show.blade.php[m
+[36m@@ -281,7 +281,7 @@[m [mclass="p-1.5 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-co[m
+                                                 </svg>[m
+                                             </a>[m
+                                         @endif[m
+[31m-                                        @if(auth()->user()->hasPermission('contracts.update') && $contract->status === 'active' && !$contract->is_expired)[m
+[32m+[m[32m                                        @if(auth()->user()->hasPermission('contracts.update') && ($contract->status === 'active' && !$contract->is_expired || (auth()->user()->role && auth()->user()->role->name === 'super_admin' && $contract->status === 'expired')))[m
+                                             <a href="{{ route('contracts.edit', [$client->id, $contract->id]) }}"[m
+                                             class="p-1.5 rounded-md bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors"[m
+                                             title="{{ __('Edit Contract') }}">[m
+[36m@@ -289,7 +289,7 @@[m [mclass="p-1.5 rounded-md bg-gray-50 text-gray-600 hover:bg-gray-100 transition-co[m
+                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />[m
+                                                 </svg>[m
+                                             </a>[m
+[31m-                                        @elseif(auth()->user()->hasPermission('contracts.update') && ($contract->status !== 'active' || $contract->is_expired))[m
+[32m+[m[32m                                        @elseif(auth()->user()->hasPermission('contracts.update') && ($contract->status !== 'active' || $contract->is_expired) && !(auth()->user()->role && auth()->user()->role->name === 'super_admin' && $contract->status === 'expired'))[m
+                                             <span class="p-1.5 rounded-md bg-gray-50 text-gray-300 cursor-not-allowed" [m
+                                                   title="{{ __('Cannot edit') }} {{ $contract->is_expired ? __('expired') : __($contract->status) }} {{ __('contracts') }}">[m
+                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">[m
+[36m@@ -297,7 +297,7 @@[m [mclass="p-1.5 rounded-md bg-gray-50 text-gray-600 hover:bg-gray-100 transition-co[m
+                                                 </svg>[m
+                                             </span>[m
+                                         @endif[m
+[31m-                                        @if(auth()->user()->hasPermission('contracts.destroy') && $contract->status === 'active' && !$contract->is_expired)[m
+[32m+[m[32m                                        @if(auth()->user()->hasPermission('contracts.destroy') && ($contract->status === 'active' && !$contract->is_expired || (auth()->user()->role && auth()->user()->role->name === 'super_admin' && $contract->status === 'expired')))[m
+                                             <form method="POST" action="{{ route('contracts.destroy', [$client->id, $contract->id]) }}"[m
+                                                 onsubmit="return confirm('Are you sure you want to delete this contract?');"[m
+                                                 class="inline">[m
+[36m@@ -311,7 +311,7 @@[m [mclass="p-1.5 rounded-md bg-red-50 text-red-600 hover:bg-red-100 transition-color[m
+                                                     </svg>[m
+                                                 </button>                        [m
+                                             </form> [m
+[31m-                                        @elseif(auth()->user()->hasPermission('contracts.destroy') && ($contract->status !== 'active' || $contract->is_expired))[m
+[32m+[m[32m                                        @elseif(auth()->user()->hasPermission('contracts.destroy') && ($contract->status !== 'active' || $contract->is_expired) && !(auth()->user()->role && auth()->user()->role->name === 'super_admin' && $contract->status === 'expired'))[m
+                                             <span class="p-1.5 rounded-md bg-gray-50 text-gray-300 cursor-not-allowed" [m
+                                                   title="{{ __('Cannot delete') }} {{ $contract->is_expired ? __('expired') : __($contract->status) }} {{ __('contracts') }}">[m
+                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">[m
+[1mdiff --git a/resources/views/pages/contracts/show.blade.php b/resources/views/pages/contracts/show.blade.php[m
+[1mindex 730bc16..d02c687 100644[m
+[1m--- a/resources/views/pages/contracts/show.blade.php[m
+[1m+++ b/resources/views/pages/contracts/show.blade.php[m
+[36m@@ -8,7 +8,7 @@[m
+     >[m
+         <!-- Action Buttons -->[m
+         <div class="flex flex-wrap gap-3 mb-6">[m
+[31m-            @if(auth()->user()->hasPermission('contracts.update') && $contract->status === 'active' && !$contract->is_expired)[m
+[32m+[m[32m            @if(auth()->user()->hasPermission('contracts.update') && ($contract->status === 'active' && !$contract->is_expired || (auth()->user()->role && auth()->user()->role->name === 'super_admin' && $contract->status === 'expired')))[m
+                 <a href="{{ route('contracts.edit', [$client->id, $contract->id]) }}"[m
+                    class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 sm:px-4 py-2 text-sm text-white hover:bg-blue-700 transition-colors">[m
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">[m
+[36m@@ -287,7 +287,7 @@[m [mclass="inline-flex items-center justify-center w-8 h-8 text-green-600 hover:bg-g[m
+                                                     </svg>[m
+                                                 </a>[m
+                                             @endif[m
+[31m-                                            @if(auth()->user()->hasPermission('payments.delete') && $contract->status === 'active' && !$contract->is_expired)[m
+[32m+[m[32m                                            @if(auth()->user()->hasPermission('payments.delete') && ($contract->status === 'active' && !$contract->is_expired || (auth()->user()->role && auth()->user()->role->name === 'super_admin' && $contract->status === 'expired')))[m
+                                                 <form method="POST" action="{{ route('payments.destroy', [$client->id, $payment->id]) }}"[m
+                                                     onsubmit="return confirm('{{ __('Are you sure you want to delete this payment?') }}');"[m
+                                                     class="inline">[m
