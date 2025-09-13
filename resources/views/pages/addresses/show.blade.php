@@ -281,7 +281,7 @@
                                                 </svg>
                                             </a>
                                         @endif
-                                        @if(auth()->user()->hasPermission('contracts.update') && $contract->status === 'active' && !$contract->is_expired)
+                                        @if(auth()->user()->hasPermission('contracts.update') && ($contract->status === 'active' && !$contract->is_expired || (auth()->user()->role && auth()->user()->role->name === 'super_admin' && $contract->status === 'expired')))
                                             <a href="{{ route('contracts.edit', [$client->id, $contract->id]) }}"
                                             class="p-1.5 rounded-md bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors"
                                             title="{{ __('Edit Contract') }}">
@@ -289,7 +289,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 3.487a2.25 2.25 0 013.182 3.182L7.5 19.5H4.5v-3L16.862 3.487z" />
                                                 </svg>
                                             </a>
-                                        @elseif(auth()->user()->hasPermission('contracts.update') && ($contract->status !== 'active' || $contract->is_expired))
+                                        @elseif(auth()->user()->hasPermission('contracts.update') && ($contract->status !== 'active' || $contract->is_expired) && !(auth()->user()->role && auth()->user()->role->name === 'super_admin' && $contract->status === 'expired'))
                                             <span class="p-1.5 rounded-md bg-gray-50 text-gray-300 cursor-not-allowed" 
                                                   title="{{ __('Cannot edit') }} {{ $contract->is_expired ? __('expired') : __($contract->status) }} {{ __('contracts') }}">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -297,7 +297,7 @@
                                                 </svg>
                                             </span>
                                         @endif
-                                        @if(auth()->user()->hasPermission('contracts.destroy') && $contract->status === 'active' && !$contract->is_expired)
+                                        @if(auth()->user()->hasPermission('contracts.destroy') && ($contract->status === 'active' && !$contract->is_expired || (auth()->user()->role && auth()->user()->role->name === 'super_admin' && $contract->status === 'expired')))
                                             <form method="POST" action="{{ route('contracts.destroy', [$client->id, $contract->id]) }}"
                                                 onsubmit="return confirm('Are you sure you want to delete this contract?');"
                                                 class="inline">
@@ -311,7 +311,7 @@
                                                     </svg>
                                                 </button>                        
                                             </form> 
-                                        @elseif(auth()->user()->hasPermission('contracts.destroy') && ($contract->status !== 'active' || $contract->is_expired))
+                                        @elseif(auth()->user()->hasPermission('contracts.destroy') && ($contract->status !== 'active' || $contract->is_expired) && !(auth()->user()->role && auth()->user()->role->name === 'super_admin' && $contract->status === 'expired'))
                                             <span class="p-1.5 rounded-md bg-gray-50 text-gray-300 cursor-not-allowed" 
                                                   title="{{ __('Cannot delete') }} {{ $contract->is_expired ? __('expired') : __($contract->status) }} {{ __('contracts') }}">
                                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -325,8 +325,8 @@ class ContractController extends Controller
                 ->with('error', 'Cannot edit contracts for a blocked client.');
         }
 
-        // Check if contract is expired
-        if ($contract->status === 'expired') {
+        // Check if contract is expired - allow super admin to edit expired contracts
+        if ($contract->status === 'expired' && !(Auth::user() && Auth::user()->role && Auth::user()->role->name === 'super_admin')) {
             return redirect()->route('contracts.show', [$client, $contract])
                 ->with('error', 'Cannot edit expired contracts.');
         }
@@ -343,8 +343,8 @@ class ContractController extends Controller
                 ->with('error', 'Cannot update contracts for a blocked client.');
         }
 
-        // Check if contract is expired
-        if ($contract->status === 'expired') {
+        // Check if contract is expired - allow super admin to update expired contracts
+        if ($contract->status === 'expired' && !(Auth::user() && Auth::user()->role && Auth::user()->role->name === 'super_admin')) {
             return redirect()->route('contracts.show', [$client, $contract])
                 ->with('error', 'Cannot update expired contracts.');
         }
@@ -568,8 +568,8 @@ class ContractController extends Controller
                 ->with('error', 'Cannot delete contracts for a blocked client.');
         }
 
-        // Check if contract is expired
-        if ($contract->status === 'expired') {
+        // Check if contract is expired - allow super admin to delete expired contracts
+        if ($contract->status === 'expired' && !(Auth::user() && Auth::user()->role && Auth::user()->role->name === 'super_admin')) {
             return redirect()->route('contracts.show', [$client, $contract])
                 ->with('error', 'Cannot delete expired contracts.');
         }

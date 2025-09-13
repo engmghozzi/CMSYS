@@ -8,7 +8,7 @@
     >
         <!-- Action Buttons -->
         <div class="flex flex-wrap gap-3 mb-6">
-            @if(auth()->user()->hasPermission('contracts.update') && $contract->status === 'active' && !$contract->is_expired)
+            @if(auth()->user()->hasPermission('contracts.update') && ($contract->status === 'active' && !$contract->is_expired || (auth()->user()->role && auth()->user()->role->name === 'super_admin' && $contract->status === 'expired')))
                 <a href="{{ route('contracts.edit', [$client->id, $contract->id]) }}"
                    class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 sm:px-4 py-2 text-sm text-white hover:bg-blue-700 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -287,7 +287,7 @@
                                                     </svg>
                                                 </a>
                                             @endif
-                                            @if(auth()->user()->hasPermission('payments.delete') && $contract->status === 'active' && !$contract->is_expired)
+                                            @if(auth()->user()->hasPermission('payments.delete') && ($contract->status === 'active' && !$contract->is_expired || (auth()->user()->role && auth()->user()->role->name === 'super_admin' && $contract->status === 'expired')))
                                                 <form method="POST" action="{{ route('payments.destroy', [$client->id, $payment->id]) }}"
                                                     onsubmit="return confirm('{{ __('Are you sure you want to delete this payment?') }}');"
                                                     class="inline">
