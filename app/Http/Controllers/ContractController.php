@@ -249,6 +249,21 @@ class ContractController extends Controller
         $startDate = \App\Helpers\DateHelper::parseDate($validated['start_date']);
         $endDate = (clone $startDate)->addMonths((int) $validated['duration_months'])->subDay();
 
+        // Validate and correct status based on expiration date
+        $calculatedStatus = $this->calculateContractStatus($startDate, $endDate, $request->input('status'));
+        $validated['status'] = $calculatedStatus;
+
+        // Log status validation for transparency
+        if ($validated['status'] !== $request->input('status')) {
+            Log::info('Contract status auto-corrected during creation', [
+                'requested_status' => $request->input('status'),
+                'calculated_status' => $calculatedStatus,
+                'start_date' => $startDate->toDateString(),
+                'end_date' => $endDate->toDateString(),
+                'duration_months' => $validated['duration_months']
+            ]);
+        }
+
         // Generate contract number: CONT/YY/XYZ
         $year = $startDate->format('y');
         
@@ -387,6 +402,22 @@ class ContractController extends Controller
         // Recalculate end date based on new start and duration
         $startDate = \App\Helpers\DateHelper::parseDate($validated['start_date']);
         $endDate = (clone $startDate)->addMonths((int) $validated['duration_months'])->subDay();
+
+        // Validate and correct status based on expiration date
+        $calculatedStatus = $this->calculateContractStatus($startDate, $endDate, $request->input('status'));
+        $validated['status'] = $calculatedStatus;
+
+        // Log status validation for transparency
+        if ($validated['status'] !== $request->input('status')) {
+            Log::info('Contract status auto-corrected during update', [
+                'contract_id' => $contract->id,
+                'requested_status' => $request->input('status'),
+                'calculated_status' => $calculatedStatus,
+                'start_date' => $startDate->toDateString(),
+                'end_date' => $endDate->toDateString(),
+                'duration_months' => $validated['duration_months']
+            ]);
+        }
 
         // Handle file upload/deletion to S3
         $filePath = $contract->attachment_url; // retain old file unless changed
@@ -733,5 +764,36 @@ class ContractController extends Controller
 
         $pdf = Pdf::loadView('pages.contracts.print', compact('contracts', 'filters'));
         return $pdf->download('contracts-' . now()->format('Y-m-d-H-i-s') . '.pdf');
+    }
+
+    /**
+     * Calculate the correct contract status based on start and end dates
+     */
+    private function calculateContractStatus($startDate, $endDate, $requestedStatus = null)
+    {
+        $now = now();
+        
+        // If user explicitly sets status to cancelled, respect that choice
+        if ($requestedStatus === 'cancelled') {
+            return 'cancelled';
+        }
+        
+        // If end_date is in the past, contract should be expired
+        if ($endDate < $now) {
+            return 'expired';
+        }
+        
+        // If start_date is in the future, contract should be active (not yet started)
+        if ($startDate > $now) {
+            return 'active';
+        }
+        
+        // If we're between start and end dates, contract should be active
+        if ($startDate <= $now && $endDate >= $now) {
+            return 'active';
+        }
+        
+        // Default fallback
+        return 'active';
     }
 }

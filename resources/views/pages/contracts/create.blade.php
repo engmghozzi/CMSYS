@@ -87,7 +87,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Status') }}</label>
-                        <select name="status" required class="w-full border rounded px-4 py-2 bg-white shadow-sm">
+                        <select name="status" required class="w-full border rounded px-4 py-2 bg-white shadow-sm" id="status-select">
                             @if(isset($contract))
                                 <option value="active" selected>{{ __('active') }}</option>
                             @else
@@ -96,6 +96,9 @@
                                 @endforeach
                             @endif
                         </select>
+                        <div id="status-warning" class="hidden mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+                            <strong>{{ __('Note:') }}</strong> {{ __('The status will be automatically corrected based on the contract dates.') }}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -158,4 +161,62 @@
             </div>
         </form>
     </x-ui.form-layout>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startDateInput = document.querySelector('input[name="start_date"]');
+            const durationInput = document.querySelector('input[name="duration_months"]');
+            const statusSelect = document.getElementById('status-select');
+            const statusWarning = document.getElementById('status-warning');
+            
+            function calculateEndDate() {
+                const startDate = startDateInput.value;
+                const duration = parseFloat(durationInput.value);
+                
+                if (startDate && duration) {
+                    const start = new Date(startDate);
+                    const end = new Date(start);
+                    end.setMonth(end.getMonth() + duration);
+                    end.setDate(end.getDate() - 1); // Subtract 1 day
+                    
+                    return end;
+                }
+                return null;
+            }
+            
+            function checkStatusValidation() {
+                const endDate = calculateEndDate();
+                const selectedStatus = statusSelect.value;
+                
+                if (endDate) {
+                    const now = new Date();
+                    const calculatedStatus = endDate < now ? 'expired' : 'active';
+                    
+                    if (selectedStatus !== calculatedStatus && selectedStatus !== 'cancelled') {
+                        statusWarning.classList.remove('hidden');
+                        statusWarning.innerHTML = `
+                            <strong>{{ __('Note:') }}</strong> 
+                            {{ __('The status will be automatically corrected from') }} 
+                            <strong>${selectedStatus}</strong> 
+                            {{ __('to') }} 
+                            <strong>${calculatedStatus}</strong> 
+                            {{ __('based on the contract dates.') }}
+                        `;
+                    } else {
+                        statusWarning.classList.add('hidden');
+                    }
+                } else {
+                    statusWarning.classList.add('hidden');
+                }
+            }
+            
+            // Add event listeners
+            if (startDateInput) startDateInput.addEventListener('change', checkStatusValidation);
+            if (durationInput) durationInput.addEventListener('input', checkStatusValidation);
+            if (statusSelect) statusSelect.addEventListener('change', checkStatusValidation);
+            
+            // Initial check
+            checkStatusValidation();
+        });
+    </script>
 </x-layouts.app>

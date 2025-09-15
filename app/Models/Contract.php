@@ -78,6 +78,86 @@ class Contract extends Model
     }
 
     /**
+     * Validate and correct contract status based on expiration date.
+     * This method ensures the status matches the actual expiration state.
+     */
+    public function validateStatus()
+    {
+        $calculatedStatus = $this->calculateStatusFromDates();
+        
+        // If the stored status doesn't match the calculated status, update it
+        if ($this->status !== $calculatedStatus) {
+            $this->status = $calculatedStatus;
+            $this->save();
+            
+            \Illuminate\Support\Facades\Log::info('Contract status auto-corrected', [
+                'contract_id' => $this->id,
+                'contract_number' => $this->contract_number,
+                'old_status' => $this->getOriginal('status'),
+                'new_status' => $calculatedStatus,
+                'end_date' => $this->end_date,
+                'is_expired' => $this->is_expired
+            ]);
+        }
+        
+        return $calculatedStatus;
+    }
+
+    /**
+     * Calculate the correct status based on start_date, end_date, and duration.
+     */
+    public function calculateStatusFromDates()
+    {
+        $now = now();
+        
+        // If contract is cancelled, keep it cancelled regardless of dates
+        if ($this->status === 'cancelled') {
+            return 'cancelled';
+        }
+        
+        // If end_date is in the past, contract should be expired
+        if ($this->end_date < $now) {
+            return 'expired';
+        }
+        
+        // If start_date is in the future, contract should be active (not yet started)
+        if ($this->start_date > $now) {
+            return 'active';
+        }
+        
+        // If we're between start and end dates, contract should be active
+        if ($this->start_date <= $now && $this->end_date >= $now) {
+            return 'active';
+        }
+        
+        // Default fallback
+        return 'active';
+    }
+
+    /**
+     * Boot method to automatically validate status on model events
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        // Validate status before saving
+        static::saving(function ($contract) {
+            $contract->validateStatus();
+        });
+        
+        // Validate status after creating
+        static::created(function ($contract) {
+            $contract->validateStatus();
+        });
+        
+        // Validate status after updating
+        static::updated(function ($contract) {
+            $contract->validateStatus();
+        });
+    }
+
+    /**
      * Get the S3 URL for the contract attachment
      */
     public function getAttachmentUrlAttribute($value)
