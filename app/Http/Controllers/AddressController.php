@@ -76,8 +76,8 @@ class AddressController extends Controller
                 ->with('error', 'Cannot edit addresses for a blocked client.');
         }
 
-        // Check if address has active contract
-        if (!$address->canHaveNewContract()) {
+        // Check if address has active contract (allow users with addresses.update permission to override)
+        if (!$address->canHaveNewContract() && !Auth::user()->hasPermission('addresses.update')) {
             return redirect()->route('addresses.show', [$client->id, $address->id])
                 ->with('error', 'Cannot edit address with an active contract.');
         }
@@ -94,8 +94,8 @@ class AddressController extends Controller
                 ->with('error', 'Cannot update addresses for a blocked client.');
         }
 
-        // Check if address has active contract
-        if (!$address->canHaveNewContract()) {
+        // Check if address has active contract (allow users with addresses.update permission to override)
+        if (!$address->canHaveNewContract() && !Auth::user()->hasPermission('addresses.update')) {
             return redirect()->route('addresses.show', [$client->id, $address->id])
                 ->with('error', 'Cannot update address with an active contract.');
         }
@@ -129,8 +129,8 @@ class AddressController extends Controller
                 ->with('error', 'Cannot delete addresses for a blocked client.');
         }
 
-        // Check if address has active contract
-        if (!$address->canHaveNewContract()) {
+        // Check if address has active contract (allow users with addresses.delete permission to override)
+        if (!$address->canHaveNewContract() && !Auth::user()->hasPermission('addresses.delete')) {
             return redirect()->route('addresses.show', [$client->id, $address->id])
                 ->with('error', 'Cannot delete address with an active contract.');
         }
